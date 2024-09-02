@@ -153,6 +153,10 @@ p {
   margin: 0;
 }
 
+.btn-primary {
+  background-color: #4341CC;
+}
+
 .heading-sub-title {
   font-family: 'Code Next';
   font-style: normal;
@@ -3214,7 +3218,7 @@ strong {
 
 .web-app-image-section::after {
   content: '';
-  background-color: #5135fa;
+  background-color: #4341CC;
   filter: blur(480px);
   width: 620px;
   height: 620px;
@@ -3283,7 +3287,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .tw-form .tw-login-form .tw-input.form-control:active,
 .tw-form .tw-login-form .tw-input.form-control:focus {
-  border: 1px solid #5135fa;
+  border: 1px solid #4341CC;
   box-shadow: unset;
   color: #161e34;
 }
@@ -3344,7 +3348,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .tw-form .tw-login-form form .tw-request .btn.btn-primary span {
-  color: #5135fa;
+  color: #4341CC;
   /* font-size: 20px; */
 }
 
@@ -3372,7 +3376,7 @@ input[type='number']::-webkit-inner-spin-button {
 .tw-form .tw-login-form .tw-form-buttons button {
   width: 100%;
   margin-top: 8px;
-  background: #5135fa;
+  background: #4341CC;
   border-radius: 8px;
 }
 
@@ -3384,7 +3388,7 @@ input[type='number']::-webkit-inner-spin-button {
   line-height: 24px;
   text-align: center;
   letter-spacing: -0.008em;
-  color: #5135fa;
+  color: #4341CC;
   border: unset;
   background-color: #ffffff;
   padding: 0;
@@ -3849,7 +3853,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .tw-register-set-password .tw-form-buttons .tw-top-button .btn-primary:disabled {
-  background: #5135fa;
+  background: #4341CC;
   opacity: 1;
 }
 
@@ -4092,7 +4096,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .sidebar-control ul .active .li {
-  background-color: #4341cc;
+  background-color: #4341CC;
   border-radius: 8px;
 }
 
@@ -5081,7 +5085,7 @@ input[type='number']::-webkit-inner-spin-button {
   background-position: center;
   padding: 24px 32px;
   justify-content: space-between;
-  background-color: #5135fa;
+  background-color: #4341CC;
   border-radius: 8px;
 }
 
@@ -5290,7 +5294,7 @@ input[type='number']::-webkit-inner-spin-button {
 .deposit-tab .deposit-tab-content .tab-content .input-item button {
   width: 100%;
   margin-top: 24px;
-  background-color: #5135fa;
+  background-color: #4341CC;
   border-radius: 8px;
   padding: 12px 0;
   align-items: center;
@@ -5689,7 +5693,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .deposit-tab-content .tab-content .card-section .card-item .card-item-inner .check-box .form-check-input:checked {
-  background-color: #5135fa;
+  background-color: #4341CC;
 }
 
 .deposit-tab-content .tab-content .card-section .card-item .card-item-inner .check-box .form-check-input {
@@ -6102,6 +6106,49 @@ input[type='number']::-webkit-inner-spin-button {
   color: #4341cc;
 }
 
+.card-buttons {
+  box-sizing: border-box;
+}
+
+.card-buttons .buttons-inner {
+  margin-top: 14px;
+  margin-bottom: 14px;
+  display: flex;
+}
+
+.card-buttons .buttons-inner button {
+  height: 48px;
+  padding: 12px 0;
+  width: 100%;
+  border-color: #4341CC;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.024em;
+}
+
+.card-buttons .buttons-inner :hover {
+  background-color: #4341CC !important;
+}
+
+.card-buttons .buttons-inner button:last-child {
+  margin-left: 10px;
+  width: 120px;
+  padding: 0px 0;
+  cursor: pointer;
+}
+
+
+.card-buttons .buttons-inner button:first-child {
+  margin-right: 10px;
+}
+
 .trans-history-sidebar {
   padding: 4px 20px 37px 20px;
   max-height: 200px;
@@ -6195,7 +6242,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .tw-single-button button:hover {
-  background-color: #4341cc;
+  background-color: #4341CC;
   box-shadow: unset;
   border-color: unset;
 }
@@ -9543,7 +9590,7 @@ input[type='number'] {
   padding: 30px 34px 0 32px;
   border-radius: 10px;
   cursor: pointer;
-  background-color: #5135fa;
+  background-color: #4341CC;
 }
 
 .featured {
@@ -9831,19 +9878,19 @@ input[type='number'] {
 
 .form-button-left.btn-primary:hover {
   color: #fff;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #4341cc;
 }
 
 .form-button-right.btn-primary:hover {
   color: #fff;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #4341cc;
 }
 
 .form-button-right.btn-primary {
   color: #4341cc;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #ffffff;
   border-radius: 8px;
   padding: 12px 0;
@@ -10016,7 +10063,7 @@ input[type='number'] {
 }
 
 .form-check-radio .form-check-inline .form-check-input:checked {
-  background-color: #5135fa;
+  background-color: #4341CC;
   background-image: url(/option-bg-small.svg);
   display: flex;
   align-items: center;
@@ -10305,7 +10352,7 @@ hr {
 
 .confirm-button .button-link-left .btn-primary {
   color: #4341cc;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #ffffff;
   border-radius: 8px;
   padding: 12px 0;
@@ -10313,7 +10360,7 @@ hr {
 
 .confirm-button .button-link-right .btn-primary {
   color: #4341cc;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #ffffff;
   border-radius: 8px;
   padding: 12px 0;
@@ -10321,7 +10368,7 @@ hr {
 
 .confirm-button .button-link-right .btn-primary:hover {
   color: #ffffff;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #4341cc;
   border-radius: 8px;
   padding: 12px 0;
@@ -10329,7 +10376,7 @@ hr {
 
 .confirm-button .button-link-left .btn-primary:hover {
   color: #ffffff;
-  border-color: #5135fa;
+  border-color: #4341CC;
   background: #4341cc;
   border-radius: 8px;
   padding: 12px 0;
@@ -11328,7 +11375,7 @@ hr {
 }
 
 .tw-switch input:checked+span {
-  background-color: #5135fa;
+  background-color: #4341CC;
 }
 
 .tw-switch span {
