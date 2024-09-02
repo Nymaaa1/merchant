@@ -1,0 +1,79 @@
+{
+    "login": {
+        "title": "Login",
+        "phone": "Mobile number",
+        "login": "Login",
+        "validation": {
+            "phone": "Phone number is invalid",
+            "password": "Please enter your password"
+        },
+        "password": "Password",
+        "recover": "Recover password",
+        "register": "Монпэй хамтрагч болох бол энд дарна уу!",
+        "account": "Үндсэн данс",
+        "branch": "Салбарын эрхээр"
+    },
+    "request": {
+        "phone": "Утасны дугаар",
+        "title": "Монпэй хамтрагч болох хүсэлт",
+        "name": "Нэр / Байгууллагын нэр",
+        "email": "И-Мэйл хаяг",
+        "button": "Хүсэлт илгээх",
+        "back": "Back"
+    },
+    "forgot-password": {
+        "back": "Back",
+        "password-recover": "Password recovery",
+        "phone-number": "Phone number",
+        "send-code": "Send a verification code",
+        "create-password": "Create a new password",
+        "enter-password": "Enter your password",
+        "repeat-password": "Repeat your password",
+        "save": "Save",
+        "login": "Login",
+        "success": "Success",
+        "desc": "Your new password has been successfully generated.  Below Please log in by clicking the button",
+        "confirm": "Confirmation",
+        "get-code-again": "Get the code again",
+        "desc-2": "We are your number sent the dragon code. Enter in the field below Please confirm.",
+        "register": "Register № last 6 digits",
+        "enter-register": "Please enter the last 6 digits of the register №"
+    },
+    "sidebar": {
+        "title": {
+            "dashboard": "Удирдлага",
+            "account": "Тооцоо нийлэх акт",
+            "payment": "Дашбоард, демограф",
+            "transaction-history": "Гүйлгээний түүх",
+            "help": "Тусламж",
+            "settings": "FAQ",
+            "log-out": "Системээс гарах"
+        }
+    },
+    "dashboard": {
+        "balance": "Дансны үлдэгдэл",
+        "mp-account": "Monpay данс",
+        "loan-balance": "Зээлийн үлдэгдэл",
+        "remaining-days": "Үлдсэн хугацаа",
+        "loan-repay": "Зээл төлөх",
+        "consumption-fee": "Хэрэглээний төлбөр",
+        "changes-exp": "Орлого, зарлагын өөрчлөлт",
+        "easy-transaction": "Хялбар гүйлгээ",
+        "payment-history": "Төлбөрийн түүх",
+        "income": "Орлого",
+        "exp": "Зарлага",
+        "days": "xоног",
+        "charge": "Цэнэглэх",
+        "transfer": "Шилжүүлэх",
+        "desc": "Та зээлийн үйлчилгээг авахын тулд үйлчилгээний эрх нээлгэх гэрээ байгуулах шаардлагатай.",
+        "close-you": "Өөрт хамгийн ойр",
+        "title-1": "Мобикомын салбар дээр",
+        "title-2": "очиж гэрээгээ байгуулаарай.",
+        "contract-points": "Гэрээ байгууллах цэгүүд",
+        "possible-products": "Боломжит зээлийх эрх",
+        "get-loan": "Зээл авах",
+        "read-more": "Дэлгэрэнгүй",
+        "dashboard": "Удирдлага",
+        "trans-temp-desc": "Уучлаарай, танд одоогоор хадгалсан гүйлгээний загвар алга байна."
+    }
+}
