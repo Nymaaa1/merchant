@@ -48,7 +48,6 @@ namespace authBranchService {
                     headers: { Authorization: `Bearer ${getBranchToken()}`, }
                 });
                 const data: BaseResponse<BanksResponse> = await response.json();
-                alert(JSON.stringify(data));
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
@@ -199,7 +198,6 @@ namespace authBranchService {
     export const changePassword = (body: ChangePasswordModel): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
-                alert("---"+JSON.stringify(body))
                 const response = await fetch('/api/branch/password/new', {
                     method: 'POST',
                     headers: {

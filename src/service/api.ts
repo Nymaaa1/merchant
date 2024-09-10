@@ -122,7 +122,6 @@ namespace authService {
                     headers: { Authorization: `Bearer ${getToken()}`, }
                 });
                 const data: BaseResponse<BanksResponse> = await response.json();
-                alert(JSON.stringify(data));
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
@@ -156,7 +155,6 @@ namespace authService {
                     }),
                 });
                 const data: BaseResponse<any> = await response.json();
-                alert(JSON.stringify(data));
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
@@ -257,7 +255,6 @@ namespace authService {
     export const changePassword = (body: ChangePasswordModel): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
-                alert("---"+JSON.stringify(body))
                 const response = await fetch('/api/password/new', {
                     method: 'POST',
                     headers: {

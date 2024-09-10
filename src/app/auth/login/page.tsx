@@ -93,7 +93,6 @@ const Login: React.FC = () => {
 
     return (
         <Container fluid>
-            {"---" + loginType+"---"}
             <Row className="tw-form">
                 <Col
                     className="tw-image-section d-none d-xl-flex"
