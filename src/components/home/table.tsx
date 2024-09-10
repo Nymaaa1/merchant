@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useLoading } from "@/context/loading";
 
 const HomeTable = () => {
-    const { setLoading } = useLoading();
+    const { setLoading, setColor } = useLoading();
     let dayjs = require('dayjs');
     const [recent, setRecent] = useState<TransactionListResponse>({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0 });
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
@@ -36,6 +36,7 @@ const HomeTable = () => {
     }
 
     useEffect(() => {
+        setColor("#4341CC")
         recentAction.run(partner?.profileId, params);
     }, []);
 

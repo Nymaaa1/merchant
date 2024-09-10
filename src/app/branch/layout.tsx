@@ -104,7 +104,7 @@ export default function RootLayout({
                                                                         <img src="/dashboard/act.svg" />
                                                                     </div>
                                                                     <div className="image-white">
-                                                                        <img src="/dashboard/act.svg" />
+                                                                        <img src="/svg/demo-active.svg" />
                                                                     </div>
                                                                     <span className="title">{t('title.payment')}</span>
                                                                 </div>
@@ -128,7 +128,7 @@ export default function RootLayout({
                                                                     <img src="/dashboard/dashboard.svg" />
                                                                 </div>
                                                                 <div className="image-white">
-                                                                    <img src="/dashboard/dashboard.svg" />
+                                                                    <img src="/svg/help-active.svg" />
                                                                 </div>
                                                                 <span className="title">{t('title.help')}</span>
                                                             </div>
