@@ -1,5 +1,3 @@
-import { Base } from "..";
-
 export interface Partner {
     profileId: number;
     profileType: string;
@@ -16,4 +14,20 @@ export interface Partner {
 export interface LoginResult {
     token: string;
     partner: Partner;
+}
+
+
+export interface Branch {
+    accountIdMerch: number;
+    branchType: string;
+    phone: string;
+    username: string;
+    profileId: number;
+    name: string;
+    branchId: number;
+    hasPinCode: boolean;
+}
+export interface BranchResponse {
+    token: string;
+    branch: Branch;
 }

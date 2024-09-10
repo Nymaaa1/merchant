@@ -5,17 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import jsCookie from 'js-cookie';
 import { useRouter } from 'next/navigation';
-// import { getRegistrationPin } from 'pages/registration';
 import FailNotification from '@/components/notification/fail-notif';
-import LanguageChange from '@/components/language/language-change';
 import { useTranslations } from 'next-intl';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import IctContext from '@/context/ict-context';
 import { emailRegex, phoneRegex } from '@/utils/utils';
+import authBranchService from '@/service/branch';
 
 const ForgotPassword: React.FC = () => {
-    const { setPasswordRecoverOTP } = useContext(IctContext);
+    const { setPasswordRecoverOTP, loginType } = useContext(IctContext);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [validated, setValidated] = useState(false);
     const [phoneEmail, setPhoneEmail] = useState<string>("");
@@ -39,17 +38,33 @@ const ForgotPassword: React.FC = () => {
         } else {
             const phoneNumber = form.number.value;
             setPhoneEmail(phoneNumber);
-            const phoneRegex = /^\d{8}$/;
             const values = {
                 accessType: phoneRegex.test(phoneNumber) ? "PHONE" : "EMAIL",
                 accessValue: phoneNumber,
             };
-            otpAction.run(values);
+            if (loginType === "creater") {
+                otpAction.run(values);
+            } else {
+                branchOTPAction.run(values);
+            }
         }
         setValidated(true);
     };
 
     const otpAction = useRequest(authService.getPasswordOtp, {
+        manual: true,
+        onSuccess: async (data) => {
+            alert(data.result.state)
+            setPasswordRecoverOTP(data.result.state);
+            jsCookie.set('phoneAndEmail', phoneEmail);
+            router.push('/auth/otp');
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        }
+    })
+
+    const branchOTPAction = useRequest(authBranchService.getPasswordOtp, {
         manual: true,
         onSuccess: async (data) => {
             alert(data.result.state)
@@ -80,7 +95,6 @@ const ForgotPassword: React.FC = () => {
                     </div> */}
                 </Col>
                 <Col className="tw-login-form forgot-password" xl={5} xxl={5} xs={12}>
-                    <LanguageChange />
                     <div className="tw-logo-title">
                         <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
                         <div className="tw-form-title">

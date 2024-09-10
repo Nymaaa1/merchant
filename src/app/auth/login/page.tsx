@@ -3,43 +3,66 @@
 import React, { useContext, useState, FormEvent } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup, Tabs, Tab } from 'react-bootstrap';
 import Link from 'next/link';
-import jsCookie from 'js-cookie';
 import IctContext from '@/context/ict-context';
 import FailNotification from '@/components/notification/fail-notif';
-import LanguageChange from '@/components/language/language-change';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import { useRouter } from 'next/navigation';
+import authBranchService from '@/service/branch';
+import { useLoading } from "@/context/loading";
 
 const Login: React.FC = () => {
     const t = useTranslations('login');
-    const { setPartner } = useContext(IctContext);
+    const { setPartner, setBranch, setUserRole, setLoginType, loginType } = useContext(IctContext);
     const [passwordShown, setPasswordShown] = useState(false);
     const [validated, setValidated] = useState(false);
-    const [branch, setBranch] = useState(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
-    const [currentTab, setCurrentTab] = useState('creater');
     const router = useRouter();
+    const { setLoading, setColor } = useLoading();
 
-    // Toggle password visibility
     const togglePasswordVisibility = () => {
         setPasswordShown(!passwordShown);
     };
-    const handleChangeType = () => {
-        setBranch(!branch);
-    }
 
     const loginAction = useRequest(authService.login, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
             setPartner(data.result.partner);
+            setUserRole("partner");
             authService.setPartner(JSON.stringify(data.result.partner), data.result.token);
+            setLoading(false);
             router.push("/app/dashboard");
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
+        },
+        onFinally: () => {
+            setLoading(false);
+        }
+    })
+
+    const branchLoginAction = useRequest(authBranchService.login, {
+        onBefore: () => {
+            setLoading(true);
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            setBranch(data.result.branch);
+            setUserRole("branch");
+            authBranchService.setBranch(JSON.stringify(data.result.branch), data.result.token);
+            setLoading(false);
+            router.push("/branch/dashboard");
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        },
+        onFinally: () => {
+            setLoading(false);
         }
     })
 
@@ -51,72 +74,26 @@ const Login: React.FC = () => {
             setValidated(true);
             return;
         }
-
         const formData = new FormData(form);
         const values = {
             username: formData.get('username') as string,
             password: formData.get('password') as string,
         };
-        // setPaswoard(values.password);
-        loginAction.run(values);
-        // loginAction.run();
-
-        // const resp = await fetch("/api/login", {
-        //     method: "POST",
-        //     body: JSON.stringify({
-        //         username: username,
-        //         password: password
-        //     })
-        // });
-
-        // if (!resp.ok) {
-        //     const errorData = await resp.json();
-        //     alert("bdjv" + errorData.error);
-        // } else {
-        //     const data = await resp.json();
-        //     alert(JSON.stringify({ data }));
-        // }
-
-        // try {
-        //     const resp = await axios.post(process.env.MONPAY_API_URL + '/partner/login', body);
-        //     const authToken = resp.data.authToken;
-        //     alert("cbsjc" + resp.status);
-        //     jsCookie.set('auth', authToken, { expires: 1 / 24 / 6 });
-
-        //     const userInfo = await getShortInfo();
-        //     setLogin(userInfo.data.result);
-
-        //     if (userInfo.data.result.pin) {
-        //         // Redirect to dashboard if pin exists
-        //         // router.push('/app/dashboard');
-        //     } else {
-        //         // Redirect to pin registration if pin doesn't exist
-        //         // router.push('/registration/pin');
-        //     }
-        // } catch (error: any) {
-        //     alert("cbsjc" + error.response.data.info);
-        //     if (error.response?.status === 408) {
-        //         const permToken = error.response.data.permToken;
-        //         jsCookie.set('perm', permToken);
-        //         // router.push('/registration/personal-info');
-        //     }
-        //     setAlert({ show: true, message: error.response?.data?.info });
-        // }
-
-        // setValidated(true);
+        setColor("#ffff")
+        if (loginType === "creater") {
+            loginAction.run(values);
+        } else {
+            branchLoginAction.run(values);
+        }
     };
 
-    const getShortInfo = async () => {
-        // return axiosInstance.get('/api/user/short');
-    };
-
-    // Close alert notification
     const closeNotification = () => {
         setAlert({ show: false, message: "" });
     };
 
     return (
         <Container fluid>
+            {"---" + loginType+"---"}
             <Row className="tw-form">
                 <Col
                     className="tw-image-section d-none d-xl-flex"
@@ -126,10 +103,8 @@ const Login: React.FC = () => {
                     xl={7}
                     xxl={7}
                 >
-                    {/* Optional image section */}
                 </Col>
                 <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <LanguageChange />
                     <div className="tw-logo-title">
                         <Link href="/auth/login">
                             <div>
@@ -145,12 +120,11 @@ const Login: React.FC = () => {
                             <Form
                                 validated={validated}
                                 name="creater"
-                                onSubmit={handleChangeType}
                             >
                                 <Tabs
                                     id="controlled-tab-example"
-                                    defaultActiveKey="creater"
-                                    onSelect={(key) => setCurrentTab(key || 'branch')}
+                                    defaultActiveKey={loginType}
+                                    onSelect={(key) => setLoginType(key || 'branch')}
                                     className="recharge-tab"
                                 >
                                     <Tab eventKey="creater" title={t('account')} />
@@ -208,7 +182,10 @@ const Login: React.FC = () => {
                                 <Button type="submit">{t('login')}</Button>
                             </div>
                             <div className="tw-request">
-                                <Button> Монпэй хамтрагч болох бол  <Link href="/auth/request"><span>ЭНД ДАРНА</span></Link> уу!</Button>
+                                <Button>Монпэй хамтрагч болох бол <Link href="/auth/request"><span>ЭНД ДАРНА</span></Link> уу!</Button>
+                            </div>
+                            <div className="help-and-services">
+                                <Button><Link href="/auth/help">Тусламж</Link> • <Link href="/auth/faq">FAQ</Link></Button>
                             </div>
                         </div>
                     </Form>

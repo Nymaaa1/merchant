@@ -2,10 +2,10 @@
 
 import { LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseResponse } from "@/types";
+import { BaseResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
-export const tokenKey = "token";
+export const tokenKey = "partnerToken";
 
 class ApiError extends Error {
     public status: number;
@@ -34,8 +34,9 @@ namespace authService {
     export const setPartner = (partner: string, token: string) => {
         localStorage.setItem('partner', partner);
         Cookies.set(tokenKey, token, { expires: 12 });
-        localStorage.setItem('token', token);
+        localStorage.setItem(tokenKey, token);
         Cookies.set("partner", partner);
+        localStorage.setItem("partnerRole", "partner");
     };
 
     export const getBalance = async (profileId: number): Promise<BalanceResult> => {
@@ -63,7 +64,7 @@ namespace authService {
         });
     };
 
-    export const getRecent = async (profileId: number): Promise<RecentBody> => {
+    export const getRecent = async (profileId: number,params: DatePickerModel): Promise<TransactionListResponse> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/recent', {
@@ -71,12 +72,36 @@ namespace authService {
                     headers: { Authorization: `Bearer ${getToken()}`, },
                     body: JSON.stringify({ "profileId": profileId })
                 });
-                const data: BaseResponse<RecentBody> = await response.json();
-                alert(JSON.stringify(data));
+                const data: TransactionListResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
-                    resolve(data.result);
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const profileChangePassword = async (password: string, passwordOld: string): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/password', {
+                    method: 'PUT',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "password": password, "passwordOld": passwordOld })
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
                 }
             } catch (error) {
                 if (error instanceof ApiError) {
@@ -205,7 +230,35 @@ namespace authService {
     export const postPasswordOtp = (body: PostPasswordRecover): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await fetch('/api/password/otp', {
+                const response = await fetch('/api/password/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                });
+                const data: BaseResponse<PostPasswordRecoverResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const changePassword = (body: ChangePasswordModel): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                alert("---"+JSON.stringify(body))
+                const response = await fetch('/api/password/new', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

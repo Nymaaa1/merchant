@@ -23,6 +23,13 @@ interface PostPasswordRecover {
     otpValue: string;
 }
 
+interface ChangePasswordModel {
+    accessType: string;
+    newPassword: string;
+    accessValue: string;
+    passwordTokenValue: string;
+}
+
 interface PostPasswordRecoverResponse {
     passwordToken: string;
 }

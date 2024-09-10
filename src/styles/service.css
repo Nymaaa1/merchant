@@ -1,0 +1,48 @@
+.container {
+    margin-top: 3rem;
+  }
+  
+  .leftColumn,
+  .rightColumn {
+    padding: 2rem;
+    border-radius: 8px;
+  }
+  
+  .leftColumn {
+    background-color: #e2f4f3;
+    color: #2d9c90;
+  }
+  
+  .rightColumn {
+    background-color: #ffede9;
+    color: #f89577;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .subtitle {
+    color: #6c757d; /* Bootstrap's muted color */
+    margin-bottom: 1rem;
+  }
+  
+  .buttonWrapper {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  .buttonPrimary {
+    background-color: #2d9c90;
+    color: #fff;
+    border: none;
+  }
+  
+  .buttonWarning {
+    background-color: #f89577;
+    color: #fff;
+    border: none;
+  }
+  

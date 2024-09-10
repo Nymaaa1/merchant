@@ -38,7 +38,7 @@
 
 /* Code Next */
 
-@font-face {
+/* @font-face {
   font-family: 'Code Next';
   src: url('../fonts/subset-CodeNext-Bold.eot');
   src: url('../fonts/subset-CodeNext-Bold.eot?#iefix') format('embedded-opentype'),
@@ -48,7 +48,7 @@
   font-weight: bold;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 @font-face {
   font-family: 'Code Next';
@@ -3347,6 +3347,23 @@ input[type='number']::-webkit-inner-spin-button {
   padding: 0;
 }
 
+.tw-form .tw-login-form form .help-and-services .btn.btn-primary {
+  position: absolute;
+  margin-top: 120px;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.008em;
+  color: #4341CC;
+  background-color: #ffffff;
+  border-color: unset;
+  border: unset;
+  padding: 0;
+}
+
 .tw-form .tw-login-form form .tw-request .btn.btn-primary span {
   color: #4341CC;
   /* font-size: 20px; */
@@ -6069,6 +6086,55 @@ input[type='number']::-webkit-inner-spin-button {
   margin-bottom: 8px;
 }
 
+.auto-transfer-buttons {
+  padding: 10px;
+  /* box-sizing: border-box; */
+  background-color: #ffffff;
+}
+
+.auto-transfer-buttons .buttons-inner {
+  gap: 10px;
+  display: flex;
+}
+
+.auto-transfer-buttons button {
+  padding: 12px 0;
+  height: 48px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #4341cc;
+  border-radius: 8px;
+  border-color: #4341cc;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.024em;
+  color: #ffff;
+}
+
+.auto-transfer-buttons .buttons-inner button {
+  padding: 0px 0;
+  height: 48px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #ffff;
+  border-radius: 8px;
+  border-color: #E8EDF5;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.024em;
+  color: #4B5563;
+}
+
 .transfer-buttons {
   border-top: 1px solid #e8edf5;
   box-sizing: border-box;
@@ -7134,6 +7200,7 @@ input[type='number']::-webkit-inner-spin-button {
   background: rgba(232, 237, 245, 0.32);
   border-top: 1px solid #e8edf5;
   border-bottom: 1px solid #e8edf5;
+  margin-left: "10px";
   box-sizing: border-box;
 }
 
@@ -7148,7 +7215,7 @@ input[type='number']::-webkit-inner-spin-button {
   font-size: 11px;
   line-height: 16px;
   letter-spacing: -0.016em;
-  color: #5b698e;
+  color: #161e34;
   text-align: center;
 }
 
@@ -7168,7 +7235,7 @@ input[type='number']::-webkit-inner-spin-button {
   font-size: 11px !important;
   line-height: 16px;
   letter-spacing: -0.016em;
-  color: #161e34;
+  color: #5b698e;
   margin: 0;
 }
 
@@ -7180,7 +7247,7 @@ input[type='number']::-webkit-inner-spin-button {
   line-height: 24px;
   text-align: right;
   letter-spacing: -0.024em;
-  color: #161e34;
+  color: #5b698e;
 }
 
 .transaction-history.table tbody tr td .total-decrease {
@@ -7208,6 +7275,9 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .transaction-history.table tbody tr {
+  border-spacing: 10px 10px;
+  /* Adds vertical space between rows */
+  border-collapse: separate;
   border-bottom: 1px solid #e8edf5;
 }
 
@@ -7667,6 +7737,7 @@ input[type='number']::-webkit-inner-spin-button {
   border-radius: 8px;
   padding: 0;
   width: 40px;
+  color: #4B5563;
   height: 40px;
   position: relative;
   display: flex;
@@ -7674,26 +7745,17 @@ input[type='number']::-webkit-inner-spin-button {
   justify-content: center;
 }
 
-.transaction-pagination .pagination .prev .page-link::before {
-  background-image: url(/icon-arrow-left-pagination.svg);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: absolute;
-  content: '';
-  width: 16px;
-  height: 16px;
+.transaction-pagination .pagination .page-item.active .page-link {
+  background-color: red;
+  border-color: #007bff;
+  /* Custom border color */
+  color: white;
 }
-
-.transaction-pagination .pagination .next .page-link::before {
-  background-image: url(/icon-arrow-right-pagination.svg);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: absolute;
-  content: '';
-  width: 16px;
-  height: 16px;
+/* Custom styles for active pagination item */
+.custom-pagination .page-item.active .page-link {
+  background-color: #4341cc; /* Custom background color */
+  border-color: #4341cc; /* Custom border color */
+  color: white; /* Custom text color */
 }
 
 .transaction-pagination .pagination .prev .page-link {
@@ -8049,6 +8111,30 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .dashboard-features .mp-wallet .content .mp-current-wallet .content-item .show>img {
+  content: '';
+  background-image: url(/deposit-icon-off.svg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.dashboard-features .mp-wallet .contents .mp-current-wallet .content-item {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-features .mp-wallet .contents .mp-current-wallet .content-item .show,
+.dashboard-features .mp-wallet .contents .mp-current-wallet .content-item .hide {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.dashboard-features .mp-wallet .contents .mp-current-wallet .content-item .show>img {
   content: '';
   background-image: url(/deposit-icon-off.svg);
   background-position: center center;
@@ -9107,6 +9193,13 @@ input[type='number']::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   padding-right: 32px;
+}
+
+.help-and-service {
+  position: absolute;
+  bottom: 0;
+  right: auto;
+  padding-bottom: 32px;
 }
 
 .lang-change .en::before {
@@ -11916,6 +12009,48 @@ header .mp-header-button ul li {
   margin-right: 32px;
 }
 
+.mp-profile-menu .information {
+  background-color: #fff;
+  /* Ensure the background is white */
+  border-color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  /* Subtle shadow effect */
+  padding: 25px;
+  border-radius: 8px;
+  /* Optional: rounded corners for a modern look */
+}
+
+.mp-profile-menu .btn-primary {
+  color: #fff;
+  background-color: unset;
+  border-color: unset;
+  padding: 0;
+  width: 100%;
+  /* Make button full width */
+}
+
+.mp-profile-menu li {
+  font-size: 9px;
+  margin-bottom: 4px;
+  color: #5B698E;
+}
+
+.mp-profile-menu .information {
+  font-size: 13px;
+}
+
+.mp-profile-menu .information .btn-primary {
+  color: #fff;
+  background-color: #4341cc;
+  border: none;
+  font-size: 13px;
+  padding: 6px 0;
+  /* Adjust padding for a clean look */
+  width: 100%;
+  /* Ensure full-width button */
+}
+
+
 .mp-notification {
   padding-right: 32px;
   display: flex;
@@ -12471,4 +12606,74 @@ header .mp-header-button ul li {
   color: black;
 }
 
-/* personal information css end here */
+.auto-transfer {
+  border: 1px solid #E8EDF5;
+  background-color: #ffff;
+  padding: 15px;
+  border-radius: 10px;
+  border-color: #E8EDF5;
+}
+
+.auto-transfer i {
+  font-size: 15px;
+  color: #161E34;
+}
+
+.auto-transfer span {
+  font-size: 12px;
+  color: #8089AC;
+}
+
+.auto-transfer .information {
+  padding: 20px;
+  color: #8089AC;
+  font-size: 13px;
+  text-align: center;
+}
+
+.auto-transfer .information span {
+  font-size: 13px;
+  color: #4341CC;
+}
+
+.customAlert {
+  border: 1px solid #f8d7da;
+  background-color: rgba(255, 29, 69, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  border-color: #FF1D45;
+}
+
+.customAlert i {
+  font-size: 16px;
+  color: #FF1D45;
+}
+
+.customAlert span {
+  font-size: 13px;
+  color: rgba(255, 29, 69, 0.5);
+}
+
+
+.table-alert-success {
+  background-color: #EDFFEA;
+  /* color: #000; */
+}
+
+.table-alert-fee {
+  background-color: #EDFFEA;
+  /* color: #000; */
+}
+
+.table-transaction-success {
+  width: 120px;
+  border: none;
+}
+
+.custom-divider {
+  border-top: 1px solid #e8edf5;
+  width: calc(100% + 6rem);
+  margin-left: -3rem;
+  margin-right: -3rem;
+}
+

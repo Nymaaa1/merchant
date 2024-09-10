@@ -2,26 +2,15 @@
 import React, { useState, FormEvent } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import Link from 'next/link';
-import IctContext from '@/context/ict-context';
 import FailNotification from '@/components/notification/fail-notif';
-import LanguageChange from '@/components/language/language-change';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
-interface Alert {
-    show: boolean;
-    message?: string;
-}
-
 const Login: React.FC = () => {
     const t = useTranslations('request')
-    // const { setPaswoard } = useContext(IctContext);
-    const [result, setResult] = useState<string>("");
-    const [alert, setAlert] = useState<Alert>({ show: false });
+    const [alert, setAlert] = useState<Alert>({ show: false, message: "" });
     const [loading, setLoading] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-
-    //   const router = useRouter();
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -54,7 +43,7 @@ const Login: React.FC = () => {
     };
 
     const closeNotification = () => {
-        setAlert({ show: false });
+        setAlert({ show: false, message: "" });
     };
 
     return (
@@ -71,7 +60,6 @@ const Login: React.FC = () => {
 
                 </Col>
                 <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <LanguageChange />
                     <div className="tw-logo-title">
                         <Link href="/">
                             <div>

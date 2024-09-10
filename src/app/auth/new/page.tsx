@@ -4,21 +4,21 @@ import React, { useState, useEffect, useContext } from 'react';
 import MustContainItem from './components/must-contain-tem';
 import jsCookie from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import FailNotification from '@/components/notification/fail-notif';
-import LanguageChange from '@/components/language/language-change';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import IctContext from '@/context/ict-context';
+import { phoneRegex } from '@/utils/utils';
+import authBranchService from '@/service/branch';
 
 type CheckValidation = [string, boolean][];
 
 const ForgotNewPassword = () => {
-    const { setPasswordRecoverOTP } = useContext(IctContext);
+    const { setPasswordRecoverOTP, loginType } = useContext(IctContext);
     const [passwordShown, setPasswordShown] = useState<boolean>(false);
-    const [alert, setAlert] = useState<Alert>({ show: false, message: "" });
+    const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const t = useTranslations('forgot-password');
     const togglePasswordVisiblity = () => {
         setPasswordShown(passwordShown ? false : true);
@@ -90,7 +90,7 @@ const ForgotNewPassword = () => {
         passwordMatch,
     ]);
 
-    const otpAction = useRequest(authService.getPasswordOtp, {
+    const otpAction = useRequest(authService.changePassword, {
         manual: true,
         onSuccess: async (data) => {
             setPasswordRecoverOTP("");
@@ -103,33 +103,36 @@ const ForgotNewPassword = () => {
         }
     })
 
-    const handleSubmit = (event) => {
+    const branchOTPAction = useRequest(authBranchService.changePassword, {
+        manual: true,
+        onSuccess: async (data) => {
+            setPasswordRecoverOTP("");
+            jsCookie.remove('passwordToken');
+            jsCookie.remove('phoneAndEmail');
+            router.push('/auth/success');
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        }
+    })
+
+    const handleSubmit = (event: any) => {
         event.preventDefault();
-        router.push("/auth/success");
         const form = event.target;
-        const password = password2;
         if (form.checkValidity() === false || !allValid) {
             event.preventDefault();
         } else {
-            const phone = phoneNumber;
-            const body = {
-                password: "",
-                verifiedPhone: phoneNumber
+            const body: ChangePasswordModel = {
+                accessType: phoneRegex.test(phoneNumber) ? "PHONE" : "EMAIL",
+                newPassword: password1,
+                accessValue: phoneNumber,
+                passwordTokenValue: token
             };
-            // axios.post('/api/registration/change-password', body).then(
-            //     (resp) => {
-            //         // clearPasswordCookies();
-            //         jsCookie.remove('passwordToken');
-            //         router.push('/forgot-password/success');
-            //     },
-            //     (error) => {
-            //         setAlert({
-            //             show: true,
-            //             message: error.response?.data?.info,
-            //         });
-            //         event.stopPropagation();
-            //     }
-            // );
+            if (loginType === "creater") {
+                otpAction.run(body);
+            } else {
+                branchOTPAction.run(body);
+            }
         }
     };
 
@@ -155,7 +158,6 @@ const ForgotNewPassword = () => {
                     </div>
                 </Col>
                 <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <LanguageChange />
                     <div className="tw-logo-title">
                         <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
                         <div className="tw-form-title">
@@ -229,10 +231,10 @@ const ForgotNewPassword = () => {
                     </Form>
                 </Col>
             </Row>
-            {alert?.show && (
+            {alerts?.show && (
                 <FailNotification
-                    show={alert.show}
-                    infos={alert.message}
+                    show={alerts.show}
+                    infos={alerts.message}
                     close={closeNotification} position={undefined}>
                 </FailNotification>
             )}

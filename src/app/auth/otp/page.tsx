@@ -6,21 +6,23 @@ import jsCookie from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { AutoTabProvider } from 'react-auto-tab';
 import FailNotification from '@/components/notification/fail-notif';
-import LanguageChange from '@/components/language/language-change';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import IctContext from '@/context/ict-context';
 import { phoneRegex } from '@/utils/utils';
+import authBranchService from '@/service/branch';
+import Notification from '@/components/notification/notification';
 
 const ForgotPasswordConfirm = () => {
-    const { setPasswordRecoverOTP } = useContext(IctContext);
+    const { setPasswordRecoverOTP, loginType } = useContext(IctContext);
     const t = useTranslations('forgot-password');
     const [counter, setCounter] = useState<number>(60);
     const [phoneMasked, setPhoneMasked] = useState<string>("");
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [phoneEmail, setPhoneEmail] = useState<string>("");
+    const [notification, setNotification] = useState<Alert>({ show: false, message: "" });
     const router = useRouter();
 
     useEffect(() => {
@@ -49,14 +51,29 @@ const ForgotPasswordConfirm = () => {
         manual: true,
         onSuccess: async (data) => {
             setPasswordRecoverOTP(data.result.state);
-            router.push('/auth/otp');
+            setNotification({ message: data.result.state, show: true });
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        }
+    });
+
+    const closeNotification = () => {
+        setNotification({ message: "", show: false });
+    };
+
+    const branchOtpAction = useRequest(authBranchService.getPasswordOtp, {
+        manual: true,
+        onSuccess: async (data) => {
+            setPasswordRecoverOTP(data.result.state);
+            setNotification({ message: data.result.state, show: true });
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
         }
     })
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: any) => {
         const form = event.target;
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -68,14 +85,17 @@ const ForgotPasswordConfirm = () => {
                 accessValue: phoneEmail,
                 accessType: phoneRegex.test(phoneEmail) ? "PHONE" : "EMAIL"
             };
-            postOTPAction.run(body);
+            if (loginType === "creater") {
+                postOTPAction.run(body);
+            } else {
+                postOTPBranchAction.run(body);
+            }
         }
     };
 
     const postOTPAction = useRequest(authService.postPasswordOtp, {
         manual: true,
         onSuccess: async (data) => {
-            alert(data.result.passwordToken);
             jsCookie.set('passwordToken', data.result.passwordToken);
             router.push('/auth/new');
         },
@@ -84,7 +104,18 @@ const ForgotPasswordConfirm = () => {
         }
     })
 
-    const handleEnter = (event) => {
+    const postOTPBranchAction = useRequest(authBranchService.postPasswordOtp, {
+        manual: true,
+        onSuccess: async (data) => {
+            jsCookie.set('passwordToken', data.result.passwordToken);
+            router.push('/auth/new');
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        }
+    })
+
+    const handleEnter = (event: any) => {
         if (event.key.toLowerCase() === 'enter') {
             const form = event.target.form;
             const index = [...form].indexOf(event.target);
@@ -93,7 +124,7 @@ const ForgotPasswordConfirm = () => {
         }
     };
 
-    const closeNotification = () => {
+    const closeFailNotification = () => {
         setAlert({ message: "", show: false });
     };
 
@@ -102,7 +133,11 @@ const ForgotPasswordConfirm = () => {
             accessType: phoneRegex.test(phoneEmail) ? "PHONE" : "EMAIL",
             accessValue: phoneEmail,
         };
-        otpAction.run(values);
+        if (loginType === "creater") {
+            otpAction.run(values);
+        } else {
+            branchOtpAction.run(values);
+        }
         setCounter(60);
     };
 
@@ -124,7 +159,6 @@ const ForgotPasswordConfirm = () => {
                     </div>
                 </Col>
                 <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <LanguageChange />
                     <div className="tw-logo-title">
                         <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
                         <div className="tw-form-title">
@@ -214,7 +248,7 @@ const ForgotPasswordConfirm = () => {
                             </div>
                         </AutoTabProvider>
                         <div className="timer">
-                            {counter === 0 ? (
+                            {counter > 0 ? (
                                 <span className="timer-text" onClick={retryPin}>
                                     {t('get-code-again')}
                                 </span>
@@ -242,11 +276,18 @@ const ForgotPasswordConfirm = () => {
                     </Form>
                 </Col>
             </Row>
+            {notification?.show && (
+                <Notification
+                    show={notification.show}
+                    infos={notification.message}
+                    close={closeNotification}
+                />
+            )}
             {alerts?.show && (
                 <FailNotification
                     show={alerts.show}
                     infos={alerts.message}
-                    close={closeNotification} position={undefined}>
+                    close={closeFailNotification} position={undefined}>
                 </FailNotification>
             )}
         </Container>

@@ -8,6 +8,7 @@ import FailNotification from "../notification/fail-notif";
 import { Bank } from "@/types/bank";
 import DynamicConfirm from "./dynamicConfirm";
 import IctContext from "@/context/ict-context";
+import Image from "next/image";
 
 interface SelectedTemplate {
     destAccountNo: string;
@@ -709,37 +710,72 @@ const HomeTransaction = () => {
                     <DynamicConfirm />
                 }
                 <Col style={{ paddingLeft: "20px" }}>
-                    <div>
-                        <Alert variant="danger" className="d-flex align-items-center">
-                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                            <span>
-                                Нэг удаагийн гүйлгээний дээд хэмжээ 5,000,000₮ байх тул та шилжүүлэх дүнгээ таван саяас доош дүнгээр оруулна уу.
-                                <br />
-                                Хэрэв та таван саяас дээш дүнгээр гүйлгээ хийх бол хэсэгчлэн шилжүүлнэ үү.
-                            </span>
-                        </Alert>
-                        <Card className="mt-3">
-                            <Card.Body>
-                                <Card.Title>
-                                    <strong>Авто гүйлгээ хийх үйлчилгээ</strong>
-                                </Card.Title>
-                                <Card.Text>
-                                    Та авто шилжүүлгийн үйлчилгээнд бүртгүүлснээр орлого болон төлбөрийн дүнгийн тодорхой хязгаараас тогтмол, автоматаар хийж болно.
-                                </Card.Text>
-                                <a href="#" className="text-primary">
-                                    ЭНД дарж үзнэ үү
-                                </a>
-                            </Card.Body>
-                        </Card>
-                        <div className="d-flex justify-content-center mt-3">
-                            <Button variant="primary" className="me-2">
-                                <i className="bi bi-upload me-1"></i> Файл 1
-                            </Button>
-                            <Button variant="primary">
-                                <i className="bi bi-upload me-1"></i> Файл оруулах
+                    <Alert variant="danger" className={`customAlert`}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <img src="/svg/transfer-warning.svg" alt="Warning" className="mr-3" />
+                            <i className="bi bi-exclamation-triangle-fill me-2">Анхааруулга</i>
+                        </div>
+                        <hr className="my-2" style={{ borderColor: '#D1D5E4', opacity: 0.5 }} />
+                        <span>
+                            Нэг удаагийн гүйлгээний дээд хэмжээ 5,000,000₮ байх тул та шилжүүлэх дүнгээ таван саяас доош дүнгээр оруулна уу.
+                            <br />
+                            <div className="pt-4"> Хэрэв та таван саяас дээш дүнгээр гүйлгээ хийх бол хэсэгчлэн шилжүүлнэ үү.</div>
+                        </span>
+                    </Alert>
+
+                    <Alert variant="danger" className="auto-transfer">
+                        <i className="bi bi-exclamation-triangle-fill me-2">Авто гүйлгээ хийх үйлчилгээ</i>
+                        <br />
+                        <span>
+                            Та авто шилжүүлэг үйлчилгээнд бүртгүүлснээр орлогоо татан төвлөрүүлэх үйлдлийг тодорхой хугацаанд тогтмол, автоматаар хийх боломжтой.
+                        </span>
+                        <hr className="my-2" style={{ borderColor: '#D1D5E4', opacity: 0.5 }} />
+                        <div className="information">
+                            Авто шилжүүлэх үйлчилгээний хуудас бөглөх
+                            загвар <span>ЭНД ДАРЖ</span> үзнэ үү
+                        </div>
+                        <div className="auto-transfer-buttons">
+                            <div className="buttons-inner">
+                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1">
+                                    <Image
+                                        className="ml-2"
+                                        src="/svg/table-cloud-output.svg"
+                                        alt="Toggle password visibility"
+                                        width={24}
+                                        height={24}
+                                    />
+                                    <Col>
+                                        Файл татах
+                                        <br />
+                                        <span>Хувь хүнээр</span>
+                                    </Col>
+                                </Button>
+                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1">
+                                    <Image
+                                        className="ml-2"
+                                        src="/svg/table-cloud-output.svg"
+                                        alt="Toggle password visibility"
+                                        width={24}
+                                        height={24}
+                                    />
+                                    <Col>
+                                        Файл татах
+                                        <br />
+                                        <span>Байгууллагаар</span>
+                                    </Col>
+                                </Button>
+                            </div>
+                            <Button variant="primary" className="d-flex justify-content-center align-items-center mt-3 gap-2">
+                                <Image
+                                    src="/svg/table-cloud-input.svg"
+                                    alt="Toggle password visibility"
+                                    width={24}
+                                    height={24}
+                                />
+                                Файл оруулах
                             </Button>
                         </div>
-                    </div>
+                    </Alert>
                 </Col>
             </Row >
             {alerts.show && (

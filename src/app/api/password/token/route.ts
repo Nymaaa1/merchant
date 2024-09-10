@@ -11,7 +11,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const res = await axios.post(
             process.env.MONPAY_API_URL +
             "/partner/resetPassword/otp?" +
-            "accessType=" + body.accessType + "&" + "accessValue=" + body.accessValue,
+            "accessType=" + body.accessType + "&" + "accessValue=" + body.accessValue + "&otpValue=" + body.otpValue,
             config
         );
 

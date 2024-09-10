@@ -31,7 +31,8 @@ import '@/styles/responsive.css';
 import React from "react";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { IctProvider } from '@/context/ict-context';
-import { SSRProvider } from '@react-aria/ssr';
+import { LoadingProvider } from '@/context/loading';
+import Loading from '@/components/loading';
 
 interface RootLayoutProps {
     children: React.ReactNode;
@@ -47,13 +48,14 @@ export default function RootLayout({
     return (
         <html lang={locale}>
             <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
-                {/* <SSRProvider> */}
-                    <NextIntlClientProvider messages={messages}>
+                <NextIntlClientProvider messages={messages}>
+                    <LoadingProvider>
                         <IctProvider>
                             {children}
                         </IctProvider>
-                    </NextIntlClientProvider>
-                {/* </SSRProvider> */}
+                        <Loading />
+                    </LoadingProvider>
+                </NextIntlClientProvider>
             </body>
         </html>
     );

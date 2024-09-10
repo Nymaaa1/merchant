@@ -1,19 +1,21 @@
-import { User } from "./user";
+import { Transaction } from "./bank";
+
 
 export type Optional<T> = T | undefined | null;
-
-export interface Base {
-  uuid: string;
-  created_date: Date;
-  modified_date: Date;
-  creator: User;
-  modifier: User;
-}
 
 export interface BaseResponse<T> {
   code: number;
   info: string;
   result: T;
+}
+
+export interface TransactionListResponse {
+  code: number;
+  info: string;
+  result: Transaction[];
+  offset: number;
+  limit: number;
+  total: number;
 }
 
 export interface FileResponse {

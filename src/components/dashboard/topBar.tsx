@@ -1,48 +1,23 @@
 "use client";
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Dropdown } from 'react-bootstrap';
-import axios from 'axios';
+import { Button, Col, Dropdown, Row } from 'react-bootstrap';
 import IctContext from '@/context/ict-context';
-import LanguageChange from '../language/language-change';
 import { useTranslations } from 'next-intl';
 
-const Topbar = ({ name, logo }) => {
+interface TopbarProps {
+    name: string;
+    logo: string;
+}
+
+const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
     const [notifications, setNotifications] = useState([]);
     const router = useRouter();
     const [displayName, setDisplayName] = useState('');
     const [alert, setAlert] = useState(false);
     const { partner } = useContext(IctContext);
     const t = useTranslations('common');
-
-    useEffect(() => {
-        // const userShortInfo = JSON.parse(localStorage.getItem('user'));
-        // if (!userShortInfo) return router.push('/login');
-        // setDisplayName(
-        //     `${userShortInfo.lastName?.substring(0, 1)}. ${userShortInfo.firstName}`
-        // );
-        // isReadData();
-    }, []);
-    const isReadData = (value, i) => {
-        const body = {
-            limit: null,
-        };
-        axios.post(`/api/notifications/getnotification`, body).then(
-            (resp) => {
-                setNotifications(resp.data.result ?? []);
-                resp.data.result &&
-                    resp.data.result.map((item) => {
-                        if (item.isRead == false) {
-                            setAlert(true);
-                        }
-                    });
-            },
-            (error) => {
-                setNotifications([]);
-            }
-        );
-    };
 
     return (
         <>
@@ -67,7 +42,6 @@ const Topbar = ({ name, logo }) => {
                     </div>
                 </div>
                 <div className="top-right-side">
-                    <LanguageChange />
                     <div className="mp-notification">
                         <Dropdown>
                             <Dropdown.Toggle id="dropdown-autoclose-true">
@@ -80,7 +54,7 @@ const Topbar = ({ name, logo }) => {
                                 />
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="mp-notifivation-menu">
-                                <div className="mp-medegdel">{t('notif')}</div>
+                                {/* <div className="mp-medegdel">{t('notif')}</div> */}
                                 {partner ? (
                                     notifications &&
                                     notifications.map((notification, i) => {
@@ -130,20 +104,43 @@ const Topbar = ({ name, logo }) => {
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
-                    <Link href="/app/dashboard/profile" className="content">
-                        <div className="inner">
-                            <div className="info">
-                                <span className="people-name">{displayName}</span>
-                                <span className="people-phone-number">{partner?.name}</span>
-                            </div>
-                            <div className="avatar">
-                                <img className="profileImgSmall" src={partner?.image} />
-                                <div className="user-icon-verify">
-                                    <img src="/user-icon-verify.svg" />
+                    <div className="mp-profile-menu">
+                        <Dropdown align="end">
+                            <Dropdown.Toggle id="dropdown-autoclose-true">
+                                <div className="inner d-flex align-items-center">
+                                    <div className="info me-2">
+                                        <span className="people-phone-number" style={{ fontSize: "16px", color: "#161E34" }}>{partner?.name}</span>
+                                    </div>
+                                    <div className="avatar position-relative">
+                                        <img className="profileImgSmall rounded-circle" src="/topbar-avatar-img.png" alt="Profile" />
+                                        <div className="user-icon-verify position-absolute">
+                                            <img src="/user-icon-verify.svg" alt="User Verified" />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </Link>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu className="information">
+                                <li className="text-muted mb-2">Тохиргоо</li>
+                                <Dropdown.Item className="d-flex align-items-center mb-8 mr-8">
+                                    <img src="/icon-user.svg" alt="User Icon" />
+                                    <span className='ml-3' style={{ color: "#5B698E" }}>Мерчант мэдээлэл</span>
+                                </Dropdown.Item>
+                                <Dropdown.Divider style={{ color: "#5B698E" }} />
+                                <Dropdown.Item className="d-flex align-items-center p-0 mt-3"
+                                    href="/app/settings">
+                                    <Button variant="primary" className="w-100" style={{ borderRadius: "8px" }}>
+                                        <Row className="align-items-center g-0">
+                                            <Col xs="auto" className='ml-3'>
+                                                <img src="/svg/icon-password.svg" alt="User Icon" />
+                                            </Col>
+                                            <Col className='mr-3'>Нууц үг солих</Col>
+                                        </Row>
+                                    </Button>
+                                </Dropdown.Item >
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
                 </div>
             </div>
         </>

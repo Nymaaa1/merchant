@@ -3,16 +3,13 @@ import React, { useContext } from 'react';
 import Link from 'next/link';
 import IctContext from '@/context/ict-context';
 import { Navbar } from 'react-bootstrap';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 const SidebarControl = () => {
     const t = useTranslations('sidebar');
     const { setLogout } = useContext(IctContext);
-    const router = useRouter();
     const pathName = usePathname();
-
-    
 
     return (
         <Navbar expand="lg" className="dashboard-navbar">
@@ -32,7 +29,7 @@ const SidebarControl = () => {
                                         <Link href="/app/dashboard">
                                             <div
                                                 className={
-                                                    pathName == '/app/dashboard' ? 'active' : ''
+                                                    pathName === '/app/dashboard' ? 'active' : ''
                                                 }
                                             >
                                                 <div className="li">
@@ -46,29 +43,29 @@ const SidebarControl = () => {
                                                 </div>
                                             </div>
                                         </Link>
-                                        <Link href="/app/dashboard">
+                                        <Link href="/app/service">
                                             <div
                                                 className={
-                                                    pathName.search('/dashboard/account') >= 0
+                                                    pathName === '/app/dashboard/s'
                                                         ? 'active'
                                                         : ''
                                                 }
                                             >
                                                 <div className="li">
                                                     <div className="image">
-                                                        <img src="/sidebar-icon-wallet.svg" />
+                                                        <img src="/dashboard/help.svg" />
                                                     </div>
                                                     <div className="image-white">
-                                                        <img src="/sidebar-icon-wallet-white.svg" />
+                                                        <img src="/dashboard/help.svg" />
                                                     </div>
                                                     <span className="title">{t('title.account')}</span>
                                                 </div>
                                             </div>
                                         </Link>
-                                        <Link href="/app/dashboard">
+                                        <Link href="/app/service">
                                             <div
                                                 className={
-                                                    pathName.search('/dashboard/account') >= 0
+                                                    pathName === '/app/service'
                                                         ? 'active'
                                                         : ''
                                                 }
@@ -84,20 +81,20 @@ const SidebarControl = () => {
                                                 </div>
                                             </div>
                                         </Link>
-                                        <Link href="/app/dashboard">
+                                        <Link href="/app/graphic">
                                             <div
                                                 className={
-                                                    pathName.search('/dashboard/payment') >= 0
+                                                    pathName === '/app/graphic'
                                                         ? 'active'
                                                         : ''
                                                 }
                                             >
                                                 <div className="li">
                                                     <div className="image">
-                                                        <img src="/sidebar-icon-payment.svg" />
+                                                        <img src="/dashboard/act.svg" />
                                                     </div>
                                                     <div className="image-white">
-                                                        <img src="/sidebar-icon-payment-white.svg" />
+                                                        <img src="/dashboard/act.svg" />
                                                     </div>
                                                     <span className="title">{t('title.payment')}</span>
                                                 </div>
@@ -108,20 +105,20 @@ const SidebarControl = () => {
                             </div>
                             <div className="sidebar-bottom-menu">
                                 <ul>
-                                    <Link href="/app/dashboard">
+                                    <Link href="/app/help">
                                         <div
                                             className={
-                                                pathName.search('/app/dashboard/help') >= 0
+                                                pathName === '/app/help'
                                                     ? 'active'
                                                     : ''
                                             }
                                         >
                                             <div className="li">
                                                 <div className="image">
-                                                    <img src="/sidebar-icon-question.svg" />
+                                                    <img src="/dashboard/dashboard.svg" />
                                                 </div>
                                                 <div className="image-white">
-                                                    <img src="/icon-question-white.svg" />
+                                                    <img src="/dashboard/dashboard.svg" />
                                                 </div>
                                                 <span className="title">{t('title.help')}</span>
                                             </div>
@@ -130,7 +127,7 @@ const SidebarControl = () => {
                                     <Link href="/app/faq">
                                         <div
                                             className={
-                                                pathName.search('/app/faq') >= 0
+                                                pathName === '/app/faq'
                                                     ? 'active'
                                                     : ''
                                             }

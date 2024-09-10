@@ -1,18 +1,26 @@
 "use client";
 
-import React, { useEffect, useState, ReactNode } from 'react';
+import React, { useState, ReactNode } from 'react';
 import jsCookie from 'js-cookie';
 import { useRouter, usePathname } from 'next/navigation';
-import { Partner } from '@/types/user';
+import { Branch, Partner } from '@/types/user';
 import { BalanceResult } from '@/types/user/balance';
+import authBranchService from '@/service/branch';
+import authService from '@/service/api';
+import { BranchBalance } from '@/types/branch';
 
 interface IctContextProps {
+    userRole: string;
+    branch: Branch;
     partner: Partner;
+    loginType: string;
+    branchBalance: BranchBalance;
     partnerBalance: BalanceResult;
     cardIndex: number;
-    alerts: any[];
     passwordRecoverOTP: string;
     transferInfo: TransferProps;
+    setUserRole: (val: string) => void;
+    setLoginType: (val: string) => void;
     setPartner: (val: Partner) => void;
     setLogout: () => void;
     setUserInfo: (val: any) => void;
@@ -20,22 +28,63 @@ interface IctContextProps {
     setPasswordRecoverOTP: (val: string) => void;
     setPartnerBalance: (val: BalanceResult) => void;
     setCardIndex: (val: number) => void;
+    setBranch: (val: Branch) => void;
+    setBranchBalance: (val: BranchBalance) => void;
 }
 
 const IctContext = React.createContext<IctContextProps>({
+    branch: { name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false },
     partner: { profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },
     cardIndex: 0,
-    alerts: [],
+    userRole: "",
     partnerBalance: { totalBalance: 0, balanceList: [] },
     passwordRecoverOTP: "",
     transferInfo: { title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" } },
+    branchBalance: {
+        accountNo: "",
+        ibanAccount: "",
+        accountId: 0,
+        balance: 0,
+        balanceDate: "",
+        journal: {
+            id: 0,
+            transactionId: 0,
+            transactionNo: "",
+            date: "",
+            transactionType: "",
+            amount: 0,
+            balance: 0,
+            balanceOld: 0,
+            accountNo: "",
+            accountId: 0,
+            deviceType: "",
+            deviceValue: "",
+            coopAccountNo: "",
+            coopAccountId: 0,
+            coopDeviceType: "",
+            coopDeviceValue: "",
+            coopProfileId: 0,
+            coopAccountName: "",
+            coopBranchName: "",
+            branchName: "",
+            description: "",
+            channel: "",
+            branchId: 0,
+            accountName: ""
+        }
+    },
+    loginType: "creater",
+    setLoginType: () => { },
     setPartner: () => { },
     setPasswordRecoverOTP: () => { },
     setLogout: () => { },
     setUserInfo: () => { },
     setTransferInfo: () => { },
     setPartnerBalance: () => { },
-    setCardIndex: () => { }
+    setCardIndex: () => { },
+    setBranch: () => { },
+    setUserRole: () => { },
+    setBranchBalance: () => { },
 });
 
 interface IctProviderProps {
@@ -43,41 +92,137 @@ interface IctProviderProps {
 }
 
 export const IctProvider: React.FC<IctProviderProps> = (props) => {
+    const [userRole, setUserRole] = useState<string>("");
+    const [loginType, setLoginType] = useState<string>("");
     const [partner, setPartner] = useState<Partner>({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
     const [cardIndex, setCardIndex] = useState<number>(0);
-    const [alerts, setAlerts] = useState<any[]>([]);
     const [transferInfo, setTransferInfo] = useState<TransferProps>({ title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" } });
     const [passwordRecoverOTP, setPasswordRecoverOTP] = useState<string>("");
     const [partnerBalance, setPartnerBalance] = useState<BalanceResult>({ totalBalance: 0, balanceList: [] });
+    const [branch, setBranch] = useState<Branch>({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
+    const [branchBalance, setBranchBalance] = useState<BranchBalance>({
+        accountNo: "",
+        ibanAccount: "",
+        accountId: 0,
+        balance: 0,
+        balanceDate: "",
+        journal: {
+            id: 0,
+            transactionId: 0,
+            transactionNo: "",
+            date: "",
+            transactionType: "",
+            amount: 0,
+            balance: 0,
+            balanceOld: 0,
+            accountNo: "",
+            accountId: 0,
+            deviceType: "",
+            deviceValue: "",
+            coopAccountNo: "",
+            coopAccountId: 0,
+            coopDeviceType: "",
+            coopDeviceValue: "",
+            coopProfileId: 0,
+            coopAccountName: "",
+            coopBranchName: "",
+            branchName: "",
+            description: "",
+            channel: "",
+            branchId: 0,
+            accountName: ""
+        }
+    });
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        const authToken = jsCookie.get('token');
-        const userFromStorage = jsCookie.get('partner');
-        if (pathname.startsWith("/")) {
-            if (pathname.startsWith('/app')) {
-                if (!authToken) {
-                    setLogout();
-                } else {
-                    if (!userFromStorage) {
-                        setLogout();
-                        router.push('/auth/login');
-                    } else {
-                        // router.push('/app/dashboard');
-                        setPartner(JSON.parse(userFromStorage || '{}'));
-                    }
-                }
+    React.useEffect(() => {
+        const partnerToken = localStorage.getItem('partnerToken');
+        const partnerData = localStorage.getItem('partner');
+        const branchToken = localStorage.getItem("branchToken");
+        const branchData = localStorage.getItem("branch");
+        const branchRole = localStorage.getItem("branchRole");
+        const partnerRole = localStorage.getItem("partnerRole");
+
+        if (pathname?.match("/(app)/")) {
+            if (partnerData && partnerToken && partnerRole) {
+                setUserRole("partner");
+                setPartner(JSON.parse(partnerData));
+                authService.setPartner(partnerData, partnerToken);
+            } else if (branchToken && branchData && branchRole) {
+                authBranchService.setBranch(branchData, branchToken);
+                setBranch(JSON.parse(branchData));
+                router.push("/branch/dashboard")
+                setUserRole("branch");
+            } else {
+                router.push("/auth/login");
             }
-            if (pathname == "/") {
-                router.push("/app/dashboard")
+        } else if (pathname?.match("/(branch)/")) {
+            if (partnerData && partnerToken && partnerRole) {
+                setUserRole("partner");
+                setPartner(JSON.parse(partnerData));
+                authService.setPartner(partnerData, partnerToken);
+                router.push("/app/dashboard");
+            } else if (branchToken && branchData && branchRole) {
+                authBranchService.setBranch(branchData, branchToken);
+                setBranch(JSON.parse(branchData));
+                setUserRole("branch");
+            } else {
+                router.push("/auth/login");
             }
-        } else if (
-            pathname?.match('(login|new|forgot-password|)')
-        ) {
-            if (authToken) return router.push('/app/dashboard');
+        } else if (pathname?.match('(login|new|forgot-password|success|request)')) {
+            if (partnerData && partnerToken && partnerRole) {
+                router.push("/app/dashboard");
+            } else if (branchToken && branchData && branchRole) {
+                router.push("/branch/dashboard");
+            }
+        } else if (pathname === "/") {
+            if (partnerData && partnerToken && partnerRole) {
+                setUserRole("partner");
+                setPartner(JSON.parse(partnerData));
+                authService.setPartner(partnerData, partnerToken);
+                router.push("/app/dashboard");
+            } else if (branchToken && branchData && branchRole) {
+                authBranchService.setBranch(branchData, branchToken);
+                setBranch(JSON.parse(branchData));
+                setUserRole("branch");
+                router.push("/branch/dashboard");
+            } else {
+                router.push("/auth/login");
+                setLogout();
+            }
         }
-    }, [cardIndex, pathname]);
+    }, [pathname]);
+
+
+    // useEffect(() => {
+    //     const authToken = jsCookie.get('token');
+    //     const userFromStorage = jsCookie.get('partner');
+    //     const branchToken = jsCookie.get("branchToken");
+    //     const branchData = jsCookie.get("branch");
+    //     if (pathname.startsWith("/")) {
+    //         if (pathname.startsWith('/app')) {
+    //             if (!authToken) {
+    //                 setLogout();
+    //             } else {
+    //                 if (!userFromStorage) {
+    //                     setLogout();
+    //                     router.push('/auth/login');
+    //                 } else {
+    //                     // router.push('/app/dashboard');
+    //                     setPartner(JSON.parse(userFromStorage || '{}'));
+    //                 }
+    //             }
+    //         }
+    //         if (pathname == "/") {
+    //             router.push("/app/dashboard")
+    //         }
+    //     } else if (
+    //         pathname?.match('(login|new|forgot-password|)')
+    //     ) {
+    //         if (authToken) return router.push('/app/dashboard');
+    //     }
+    // }, [cardIndex, pathname]);
 
     const setUserInfo = (val: any) => {
         const now = new Date();
@@ -86,29 +231,43 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
 
     const setLogout = () => {
         setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
+        setBranch({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
         setCardIndex(0);
+        setLoginType("creater");
         clear();
+        setUserRole("");
         router.push('/auth/login');
     };
 
     const clear = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('partner');
-        jsCookie.remove('token');
-        jsCookie.remove('auth');
-        jsCookie.remove('phone');
-        jsCookie.remove('passwordToken');
+        localStorage.removeItem('branchToken');
+        localStorage.removeItem('branch');
+        localStorage.removeItem("partner");
+        localStorage.removeItem("partnerRole");
+        localStorage.removeItem("partner");
+        localStorage.removeItem("branchRole");
+        jsCookie.remove('partnerToken');
+        jsCookie.remove('partner');
+        jsCookie.remove('branch');
+        jsCookie.remove('branchToken');
     };
 
     return (
         <IctContext.Provider
             value={{
                 partner,
+                loginType,
+                branchBalance,
+                userRole,
+                branch,
                 partnerBalance,
                 passwordRecoverOTP,
                 transferInfo,
                 cardIndex,
-                alerts,
+                setUserRole,
+                setLoginType,
+                setBranchBalance,
+                setBranch,
                 setPartnerBalance,
                 setPasswordRecoverOTP,
                 setPartner,
