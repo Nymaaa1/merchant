@@ -3,6 +3,13 @@ interface Alert {
     message: string;
 }
 
+
+type ReponseProps = {
+    success: boolean;
+    message: string;
+    info: string;
+}
+
 interface DefaultResponse {
     code: number;
     info: string;
@@ -16,4 +23,13 @@ interface DatePickerModel {
     maxPage: number;
     beginDate: string;
     endDate: string;
-  }
+}
+
+interface ContractsExcel {
+    "№": number,
+    "ГҮЙЛГЭЭНИЙ НЭР": string,
+    "ТӨЛӨВ": string,
+    "ДҮН": number,
+    "ХАРИЛЦСАН ДАНС": string,
+    "ОН, САР, ӨДӨР": string,
+}

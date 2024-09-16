@@ -4,8 +4,18 @@ interface BankProps {
 }
 
 interface TransferProps {
+    type: string,
     title: string,
-    bank: TransferBank
+    bank: TransferBank,
+    monpay: TransferMonpay,
+    merchant: TransferMerchant
+}
+
+interface TransferMerchant {
+    phoneNumber: string,
+    userName: string,
+    amount: string,
+    description: string,
 }
 
 interface TransferBank {
@@ -15,5 +25,12 @@ interface TransferBank {
     accountName: string,
     description: string,
     sourceAccountNo: string
+}
+
+interface TransferMonpay {
+    phoneNumber: string,
+    userName: string,
+    amount: string,
+    description: string,
 }
 

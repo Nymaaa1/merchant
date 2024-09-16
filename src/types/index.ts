@@ -1,4 +1,5 @@
 import { Transaction } from "./bank";
+import { AgeCount } from "./demo";
 
 
 export type Optional<T> = T | undefined | null;
@@ -9,6 +10,13 @@ export interface BaseResponse<T> {
   result: T;
 }
 
+
+export interface BaseListResponse<T> {
+  code: number;
+  info: string;
+  result: T[];
+}
+
 export interface TransactionListResponse {
   code: number;
   info: string;
@@ -16,6 +24,13 @@ export interface TransactionListResponse {
   offset: number;
   limit: number;
   total: number;
+}
+
+
+export interface GraphicAgeResponse {
+  code: number;
+  info: string;
+  result: AgeCount[];
 }
 
 export interface FileResponse {
@@ -36,3 +51,4 @@ export interface DeleteConfirm {
 export type SuccessResponse = { success: boolean };
 
 export type SortDirection = "ASC" | "DESC";
+

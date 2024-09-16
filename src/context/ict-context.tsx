@@ -10,7 +10,7 @@ import authService from '@/service/api';
 import { BranchBalance } from '@/types/branch';
 
 interface IctContextProps {
-    userRole: string;
+    userRole: "branch" | "partner" | "";
     branch: Branch;
     partner: Partner;
     loginType: string;
@@ -19,7 +19,7 @@ interface IctContextProps {
     cardIndex: number;
     passwordRecoverOTP: string;
     transferInfo: TransferProps;
-    setUserRole: (val: string) => void;
+    setUserRole: (val: "branch" | "partner" | "") => void;
     setLoginType: (val: string) => void;
     setPartner: (val: Partner) => void;
     setLogout: () => void;
@@ -39,7 +39,7 @@ const IctContext = React.createContext<IctContextProps>({
     userRole: "",
     partnerBalance: { totalBalance: 0, balanceList: [] },
     passwordRecoverOTP: "",
-    transferInfo: { title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" } },
+    transferInfo: { type: "", title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" }, monpay: { phoneNumber: "", userName: "", amount: "", description: "" }, merchant: { phoneNumber: "", userName: "", amount: "", description: "" } },
     branchBalance: {
         accountNo: "",
         ibanAccount: "",
@@ -92,11 +92,11 @@ interface IctProviderProps {
 }
 
 export const IctProvider: React.FC<IctProviderProps> = (props) => {
-    const [userRole, setUserRole] = useState<string>("");
+    const [userRole, setUserRole] = useState<"branch" | "partner" | "">("");
     const [loginType, setLoginType] = useState<string>("");
     const [partner, setPartner] = useState<Partner>({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
     const [cardIndex, setCardIndex] = useState<number>(0);
-    const [transferInfo, setTransferInfo] = useState<TransferProps>({ title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" } });
+    const [transferInfo, setTransferInfo] = useState<TransferProps>({ type: "", title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" }, monpay: { phoneNumber: "", userName: "", amount: "", description: "" }, merchant: { phoneNumber: "", userName: "", amount: "", description: "" } });
     const [passwordRecoverOTP, setPasswordRecoverOTP] = useState<string>("");
     const [partnerBalance, setPartnerBalance] = useState<BalanceResult>({ totalBalance: 0, balanceList: [] });
     const [branch, setBranch] = useState<Branch>({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
@@ -194,36 +194,6 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         }
     }, [pathname]);
 
-
-    // useEffect(() => {
-    //     const authToken = jsCookie.get('token');
-    //     const userFromStorage = jsCookie.get('partner');
-    //     const branchToken = jsCookie.get("branchToken");
-    //     const branchData = jsCookie.get("branch");
-    //     if (pathname.startsWith("/")) {
-    //         if (pathname.startsWith('/app')) {
-    //             if (!authToken) {
-    //                 setLogout();
-    //             } else {
-    //                 if (!userFromStorage) {
-    //                     setLogout();
-    //                     router.push('/auth/login');
-    //                 } else {
-    //                     // router.push('/app/dashboard');
-    //                     setPartner(JSON.parse(userFromStorage || '{}'));
-    //                 }
-    //             }
-    //         }
-    //         if (pathname == "/") {
-    //             router.push("/app/dashboard")
-    //         }
-    //     } else if (
-    //         pathname?.match('(login|new|forgot-password|)')
-    //     ) {
-    //         if (authToken) return router.push('/app/dashboard');
-    //     }
-    // }, [cardIndex, pathname]);
-
     const setUserInfo = (val: any) => {
         const now = new Date();
         val.lastUpdated = now.getTime();
@@ -232,7 +202,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const setLogout = () => {
         setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
         setBranch({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
-        setCardIndex(0);
+        // setCardIndex(0);
         setLoginType("creater");
         clear();
         setUserRole("");

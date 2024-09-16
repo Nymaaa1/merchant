@@ -16,7 +16,6 @@ export async function POST(request: Request): Promise<NextResponse> {
         );
 
         const data = res.data;
-        console.log("====" + JSON.stringify(data));
         if (res.status === 200) return NextResponse.json(data, { status: 200 });
         else return NextResponse.json(
             { info: 'Unexpected status code' },

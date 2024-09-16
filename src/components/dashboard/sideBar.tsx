@@ -56,7 +56,7 @@ const SidebarControl = () => {
                                                         <img src="/dashboard/help.svg" />
                                                     </div>
                                                     <div className="image-white">
-                                                        <img src="/dashboard/help.svg" />
+                                                        <img src="/svg/act-active.svg" />
                                                     </div>
                                                     <span className="title">{t('title.account')}</span>
                                                 </div>

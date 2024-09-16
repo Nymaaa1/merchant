@@ -1,7 +1,12 @@
-import React from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+"use client";
+import React, { useState } from 'react';
+import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 
 const HomePage = () => {
+    const serviceMonpayPlus: string[] = ["", "", ""];
+    const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
+    const [validated, setValidated] = useState(false);
+
     return (
         <Container fluid>
             <Row className="wrapper-row">
@@ -9,12 +14,11 @@ const HomePage = () => {
                     style={{
                         margin: 'auto',
                         paddingLeft: '40px',
-                        paddingRight: "40px"
+                        paddingRight: "40px",
                     }}
                 >
                     <div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Left Column */}
                             <div className="p-10 rounded-lg flex flex-col justify-between" style={{ color: "#5B698E", backgroundColor: "#DCFDFF" }} >
                                 <div>
                                     <h2 style={{ color: "#15A3AA", fontSize: "32px" }}>MONPAY PLUS ҮЙЛЧИЛГЭЭ</h2>
@@ -45,21 +49,33 @@ const HomePage = () => {
                                         дагуу MonPay Plus үйлчилгээгээ аваарай.
                                     </p>
                                 </div>
-                                <Row className='mt-20'>
+                                <div
+                                    style={{
+                                        overflowX: 'auto',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    <Row className="flex-nowrap g-2">
+                                        {serviceMonpayPlus.map((service, index) => (
+                                            <Col key={index} style={{ display: 'inline-block', gap: "2px" }}>
+                                                <div className='mt-10' style={{ height: "209px", width: "209px", backgroundColor: "#BBDEE0", borderRadius: "8px" }}></div>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                </div>
+                                <Row className='mt-10'>
                                     <Col className='d-flex align-items-center'>
                                         <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
                                             Та MonPay Plus үйлчилгээнд нэгдэх бол хүсэлт илгээж бидэнтэй холбогдох боломжтой.
                                         </p>
                                     </Col>
                                     <Col className='d-flex justify-content-end align-items-center'>
-                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#15A3AA", color: "#ffff", width: "225px", height: "48px" }}>
+                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#15A3AA", color: "#ffff", width: "225px", height: "48px" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
                                             Хүсэлт илгээх →
                                         </Button>
                                     </Col>
                                 </Row>
                             </div>
-
-                            {/* Right Column */}
                             <div className="p-10 rounded-lg flex flex-col justify-between" style={{ color: "#5B698E", backgroundColor: 'rgba(255, 134, 80, 0.1)' }} >
                                 <div>
                                     <h2 style={{ color: "#FF8650", fontSize: "32px" }}>MONPAY AWWW</h2>
@@ -88,7 +104,21 @@ const HomePage = () => {
                                         дагуу MonPay Plus үйлчилгээгээ аваарай.
                                     </p>
                                 </div>
-                                <Row className='mt-20'>
+                                <div
+                                    style={{
+                                        overflowX: 'auto',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    <Row className="flex-nowrap g-2">
+                                        {serviceMonpayPlus.map((service, index) => (
+                                            <Col key={index} style={{ display: 'inline-block', gap: "2px" }}>
+                                                <div className='mt-10' style={{ height: "209px", width: "209px", backgroundColor: "#F9E3DB", borderRadius: "8px" }}></div>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                </div>
+                                <Row className='mt-10'>
                                     <Col className='d-flex align-items-center'>
                                         <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
                                             Та MonPay AWWW үйлчилгээнд нэгдэх бол хүсэлт илгээж бидэнтэй холбогдох боломжтой.
@@ -105,6 +135,89 @@ const HomePage = () => {
                     </div>
                 </div>
             </Row>
+            <Modal
+                show={showPaymentPassword}
+                onHide={() => setShowPaymentPassword(false)}
+                dialogClassName="save-template"
+                centered
+            >
+                <Modal.Header closeButton className="d-flex justify-content-between align-items-center">
+                    <div className="header-title" >
+                        <h5>Илгээх мэдээлэл</h5>
+                    </div>
+                </Modal.Header>
+                <Modal.Body
+                    style={{
+                        paddingBottom: '0',
+                    }}
+                >
+                    <Form noValidate validated={validated} onSubmit={() => { }}>
+                        <Form.Group>
+                            <div className="template-body">
+                                <div className="tw-user-bottom">
+                                    <div className="tw-user-form">
+                                        <div className="person-title">
+                                            <h5>Нэр / Байгууллагын нэр</h5>
+                                        </div>
+                                        <div className="input-item">
+                                            <InputGroup hasValidation>
+                                                <Form.Control
+                                                    className="save-temp-input"
+                                                    type="text"
+                                                    onChange={(e) => {
+                                                        // handleCheck(e);
+                                                        // setUid(e.target?.value);
+                                                    }}
+                                                />
+                                            </InputGroup>
+                                        </div>
+                                        <div className="person-title">
+                                            <h5>Утасны дугаар</h5>
+                                        </div>
+                                        <div className="input-item">
+                                            <InputGroup hasValidation>
+                                                <Form.Control
+                                                    className="save-temp-input"
+                                                    type="number"
+                                                    maxLength={8}
+                                                    plaintext
+                                                    onChange={(e) => {
+                                                        // handleCheck(e);
+                                                        // setUid(e.target?.value);
+                                                    }}
+                                                />
+                                            </InputGroup>
+                                        </div>
+                                        <div className="person-title">
+                                            <h5>И-Мэйл хаяг</h5>
+                                        </div>
+                                        <div className="input-item">
+                                            <InputGroup hasValidation>
+                                                <Form.Control
+                                                    className="save-temp-input"
+                                                    type="text"
+                                                    onChange={(e) => {
+                                                        // handleCheck(e);
+                                                        // setUid(e.target?.value);
+                                                    }}
+                                                />
+                                            </InputGroup>
+                                        </div>
+                                    </div>
+                                    <div className="tw-form-buttons" style={{ marginTop: "30px" }}>
+                                        <div className="tw-single-button">
+                                            <Button type="submit">Хүсэлт илгээх</Button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

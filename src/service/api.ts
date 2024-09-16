@@ -2,9 +2,11 @@
 
 import { LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseResponse, TransactionListResponse } from "@/types";
+import { BaseListResponse, BaseResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
+import { DistrictGraphicResponse, GenderGraphicResponse, SalesGraphic, SalesPartnerGraphic } from "@/types/demo";
+import { TransactionBranchListResponse } from "@/types/branch";
 export const tokenKey = "partnerToken";
 
 class ApiError extends Error {
@@ -64,7 +66,7 @@ namespace authService {
         });
     };
 
-    export const getRecent = async (profileId: number,params: DatePickerModel): Promise<TransactionListResponse> => {
+    export const getRecent = async (profileId: number, params: DatePickerModel): Promise<TransactionListResponse> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/recent', {
@@ -263,6 +265,302 @@ namespace authService {
                     body: JSON.stringify(body),
                 });
                 const data: BaseResponse<PostPasswordRecoverResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getMonpayUserName = async (phoneNumber: string): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/transfer/getMonpayUserName', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "phoneNumber": phoneNumber })
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getGraphicAge = async (): Promise<GraphicAgeResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/demo/age', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: GraphicAgeResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getGraphicDistrict = async (): Promise<DistrictGraphicResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/demo/district', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: DistrictGraphicResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getGraphicGender = async (): Promise<GenderGraphicResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/demo/gender', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: GenderGraphicResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getGraphicBriefinfo = async (): Promise<BaseResponse<SalesGraphic>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/demo/sales', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: BaseResponse<SalesGraphic> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getGraphicSales = async (type: string): Promise<BaseResponse<SalesPartnerGraphic[]>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/demo/salespartner', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "type": type })
+                });
+                const data: BaseResponse<SalesPartnerGraphic[]> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getBranchTableData = async (accountId: number, params: DatePickerModel): Promise<TransactionBranchListResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/branch/merchant', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "accountId": accountId, "beginDate": params.beginDate, "endDate": params.endDate, "pagingStart": params.pagingStart })
+                });
+                const data: TransactionBranchListResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+
+    export const getPartnerDetialTransaction = async (accountId: number, params: DatePickerModel): Promise<TransactionBranchListResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/recent/partner', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "accountId": accountId, "beginDate": params.beginDate, "endDate": params.endDate, "pagingStart": params.pagingStart })
+                });
+                const data: TransactionBranchListResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getOTPCode = async (): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/transfer/otp', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const postOTPCode = async (pinCode: string): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/transfer/otp', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({ "otpValue": pinCode })
+                });
+                const data: BaseResponse<PostPasswordRecoverResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const transferToMonpay = async (body: TransferToMonpayModel): Promise<any> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/transfer/monpay', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const changePinCode = async (body: ChangePinCodeModel): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/password/pinchange', {
+                    method: 'PUT',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify(body)
+                });
+                const data: DefaultResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

@@ -10,7 +10,7 @@ import FailNotification from '@/components/notification/fail-notif';
 import { thousands } from '@/utils/utils';
 import "../../../styles/CustomSwitchComponent.css";
 import authBranchService from '@/service/branch';
-import BranchTable from '@/components/branch/table';
+import BranchTable from '@/components/graphic/table';
 
 const Page = () => {
     const t = useTranslations('dashboard');

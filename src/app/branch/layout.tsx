@@ -6,7 +6,7 @@ import IctContext from '@/context/ict-context';
 import { Navbar } from 'react-bootstrap';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import BranchTopbar from "@/components/branch/topBar";
+import BranchTopbar from "@/components/graphic/topBar";
 
 interface RootLayoutProps {
     children: React.ReactNode;
@@ -66,7 +66,7 @@ export default function RootLayout({
                                                                         <img src="/dashboard/help.svg" />
                                                                     </div>
                                                                     <div className="image-white">
-                                                                        <img src="/dashboard/help.svg" />
+                                                                        <img src="/svg/act-active.svg" />
                                                                     </div>
                                                                     <span className="title">{t('title.account')}</span>
                                                                 </div>
@@ -88,25 +88,6 @@ export default function RootLayout({
                                                                         <img src="/sidebar-icon-wallet-white.svg" />
                                                                     </div>
                                                                     <span className="title">{t('title.add-service')}</span>
-                                                                </div>
-                                                            </div>
-                                                        </Link>
-                                                        <Link href="/branch/graphic">
-                                                            <div
-                                                                className={
-                                                                    pathName === '/branch/graphic'
-                                                                        ? 'active'
-                                                                        : ''
-                                                                }
-                                                            >
-                                                                <div className="li">
-                                                                    <div className="image">
-                                                                        <img src="/dashboard/act.svg" />
-                                                                    </div>
-                                                                    <div className="image-white">
-                                                                        <img src="/svg/demo-active.svg" />
-                                                                    </div>
-                                                                    <span className="title">{t('title.payment')}</span>
                                                                 </div>
                                                             </div>
                                                         </Link>

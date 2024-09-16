@@ -4,7 +4,7 @@ import { BranchResponse, LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
 import { BaseResponse, TransactionListResponse } from "@/types";
 import { BanksResponse } from "@/types/bank";
-import { BranchBalance, TransactionBranchListResponse } from "@/types/branch";
+import { BranchBalance, ChangePasswordBranchModel, TransactionBranchListResponse } from "@/types/branch";
 export const tokenKey = "branchToken";
 
 class ApiError extends Error {
@@ -167,7 +167,7 @@ namespace authBranchService {
             }
         });
     };
-    
+
     export const postPasswordOtp = (body: PostPasswordRecover): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -206,6 +206,33 @@ namespace authBranchService {
                     body: JSON.stringify(body),
                 });
                 const data: BaseResponse<PostPasswordRecoverResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const changePasswordSettingsBranch = (body: ChangePasswordBranchModel): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/branch/password/change', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${getBranchToken()}`,
+                    },
+                    body: JSON.stringify(body),
+                });
+                const data: DefaultResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

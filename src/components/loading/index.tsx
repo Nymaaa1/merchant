@@ -10,7 +10,7 @@ const Loading = () => {
   return (
     <>
       {loading && (
-        <div className={`fixed inset-0 bg-opacity-0`} style={{ backdropFilter: 'blur(1px)' }}>
+        <div className={`fixed inset-0 bg-opacity-0`} style={{ backdropFilter: 'blur(4px)' }}>
           <Container
             className="d-flex justify-content-center align-items-center"
             style={{ height: '100vh', width: '100vw', color: color }}>

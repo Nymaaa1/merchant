@@ -9,7 +9,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         };
         const res = await axios.get(
             process.env.MONPAY_API_URL +
-            "/achcandytobank/banklist",
+            "/achcandytobank/banklist/detailed",
             config
         );
         const data = res.data;

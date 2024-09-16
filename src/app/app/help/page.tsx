@@ -103,13 +103,15 @@ const Control = () => {
                                         <h4 style={{ color: "#5B698E", fontSize: "13px", textAlign: "center" }}>
                                             Та Монпэй хөгжүүлэлттэй холбоотой бүх төрлийн зааварчилгааг доорх Site-с мэдээлэл аваарай.
                                         </h4>
-                                        <Button
-                                            className="d-flex justify-content-center align-items-center gap-2 mt-3"
-                                            style={{ borderRadius: "8px", border: "none", backgroundColor: "#4341CC", color: "#ffff", width: "177px", height: "48px" }}
-                                        >
-                                            <Image src={"/svg/help-world.svg"} alt="" width={24} height={24} />
-                                            Сайтаар зочлох
-                                        </Button>
+                                        <Link href="https://developers.monpay.mn/">
+                                            <Button
+                                                className="d-flex justify-content-center align-items-center gap-2 mt-3"
+                                                style={{ borderRadius: "8px", border: "none", backgroundColor: "#4341CC", color: "#ffff", width: "177px", height: "48px" }}
+                                            >
+                                                <Image src={"/svg/help-world.svg"} alt="" width={24} height={24} />
+                                                Сайтаар зочлох
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
 

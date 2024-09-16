@@ -74,3 +74,8 @@ export interface TransactionPagination {
     size: number;
     maxPage: number;
 }
+
+export interface ChangePasswordBranchModel {
+    credentialOld: string;
+    credentialNew: string;
+}

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     Container,
     Row,
@@ -15,15 +15,18 @@ import { useTranslations } from 'next-intl';
 import MustContainItem from '@/app/auth/new/components/must-contain-tem';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
+import IctContext from '@/context/ict-context';
+import authBranchService from '@/service/branch';
 
 type CheckValidation = [string, boolean][];
 
 const ProfileChangePass = () => {
     const t = useTranslations('profile');
-    const [alert, setAlert] = useState<Alert>({ show: false, message: "" });
+    const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [notification, setNotification] = useState<Alert>({ show: false, message: "" });
     const [oldPassword, setOldPassword] = useState<string>("");
     const [passwordShown, setPasswordShown] = useState(false);
+    const { userRole } = useContext(IctContext);
     const togglePasswordVisiblity = () => {
         setPasswordShown(passwordShown ? false : true);
     };
@@ -45,7 +48,11 @@ const ProfileChangePass = () => {
         if (!allValid) {
         } else {
             if (password === password2) {
-                balanceAction.run(password, oldPassword);
+                if (userRole === "partner") {
+                    balanceAction.run(password, oldPassword);
+                } else if (userRole === "branch") {
+                    changePasswordBranch.run({ "credentialNew": password, "credentialOld": oldPassword });
+                }
             } else {
                 setAlert({
                     show: true,
@@ -73,10 +80,32 @@ const ProfileChangePass = () => {
         }
     });
 
+    const changePasswordBranch = useRequest(authBranchService.changePasswordSettingsBranch, {
+        manual: true,
+        onSuccess: async (data) => {
+            setResponse({ info: data.info, code: data.code, result: data.result });
+            setShowModal(true);
+            setPassword2('');
+            setPassword1('');
+        },
+        onError: (error: any) => {
+            setShowModal(true);
+            setResponse({
+                info: error.data.info,
+                result: error.message,
+                code: 1
+            });
+        }
+    });
+
     const handleModal = () => {
         setShowModal(false);
         if (response.code === 0) {
-            router.push('/app/dashboard');
+            if (userRole === "partner") {
+                router.push('/app/dashboard');
+            } else if (userRole === "branch") {
+                router.push('/branch/dashboard');
+            }
         }
     };
 
@@ -254,10 +283,10 @@ const ProfileChangePass = () => {
                     close={closeNotification}
                 />
             )}
-            {alert?.show && (
+            {alerts?.show && (
                 <FailNotification
-                    show={alert.show}
-                    infos={alert.message}
+                    show={alerts.show}
+                    infos={alerts.message}
                     close={closeFailNotification}
                 ></FailNotification>
             )}
@@ -291,7 +320,7 @@ const ProfileChangePass = () => {
                                     <p>{"Таны нууц үг амжилттай солигдлоо"}</p>
                                 ) : (
                                     <p>
-                                        <strong>Алдаа</strong>
+                                        <strong>{response.info ?? "Алдаа"}</strong>
                                     </p>
                                 )}
                             </div>

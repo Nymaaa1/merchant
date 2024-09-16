@@ -1,86 +1,192 @@
 "use client";
 import authService from "@/service/api";
 import { useRequest } from "ahooks";
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
-import { Alert, Button, Card, Col, Form, FormControl, InputGroup, Row, Tab, Tabs } from "react-bootstrap";
+import { ChangeEvent, FormEvent, use, useContext, useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Form, InputGroup, Row, Tab, Tabs } from "react-bootstrap";
 import CurrencyInput from 'react-currency-input-field';
 import FailNotification from "../notification/fail-notif";
 import { Bank } from "@/types/bank";
 import DynamicConfirm from "./dynamicConfirm";
 import IctContext from "@/context/ict-context";
 import Image from "next/image";
-
-interface SelectedTemplate {
-    destAccountNo: string;
-    destCustomerName: string;
-}
-
-interface CamUserInfo {
-    bankName: string;
-    username: string;
-    accountNo: string;
-}
-
+import { useLoading } from "@/context/loading";
 
 const HomeTransaction = () => {
     const { setTransferInfo } = useContext(IctContext);
+    const { setLoading, setColor } = useLoading();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    //Bank to transfer
     const [sendBankAccount, setSendBankAccount] = useState<string>("");
     const [sendBankUserName, setSendBankUserName] = useState<string>("");
     const [sendBankAmount, setSendBankAmount] = useState<string>("");
     const [sendBankDescription, setSendBankDescription] = useState<string>("");
     const [confirmation, setConfirmation] = useState<boolean>(true);
+    const [forDisabledBank, setForDisabledBank] = useState<boolean>(false);
+    const [banks, setBanks] = useState<Bank[]>([]);
     const [selectedBank, setSelectedBank] = useState<Bank>({
         code: "",
         nameMn: "",
         nameEn: "",
         fee: 0,
-        ibankCode: ""
+        bic: ""
     });
+
+    //Transfer to Monpay
+    const [receiverNameMonpay, setReceiverNameMonpay] = useState<string>('');
+    const [forDisabledMonpay, setForDisabledMonpay] = useState<boolean>(false);
+    const [sendToMonpayAmount, setSendToMonpayAmount] = useState<string>("");
+    const [sendToMonpayDescription, setSendToMonpayDescription] = useState<string>("");
+    const [sendToMonpayPhone, setSendToMonpayPhone] = useState<string>("");
+
+    //Transfer to Merchant
+    const [receiverNameMerchant, setReceiverNameMerchant] = useState<string>('');
+    const [forDisabledMerchant, setForDisabledMerchant] = useState<boolean>(false);
+    const [sendToMerchantAmount, setSendToMerchantAmount] = useState<string>("");
+    const [sendToMerchantDescription, setSendToMerchantDescription] = useState<string>("");
+    const [sendToMerchantPhone, setSendToMerchantPhone] = useState<string>("");
 
     const [validated, setValidated] = useState<boolean>(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [currentTab, setCurrentTab] = useState<string>('candy');
-    const [forDisabled, setForDisabled] = useState<boolean>(false);
     const [lastChecked, setLastChecked] = useState<string>('');
-    const [addAmount, setAddAmount] = useState<string>('');
-    const [receiverName, setReceiverName] = useState<string>('');
-    const [actionType, setActionType] = useState<string>('');
-    const [banks, setBanks] = useState<Bank[]>([]);
     const [addAmountFund, setAddAmountFund] = useState<string>('');
-    const [camInfoFound, setCamInfoFound] = useState<boolean>(false);
-    const [addAmountBank, setAddAmountBank] = useState<string>('');
-    const [forDisabledBank, setForDisabledBank] = useState<boolean>(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    const [camUserInfo, setCamUserInfo] = useState<CamUserInfo>({
-        bankName: '',
-        username: '',
-        accountNo: '',
-    });
+    const handleDownload = (type: string) => {
+        const fileUrl = `/auto-transfer/${type}.pdf`;
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = `monpay-${type}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    useEffect(() => {
+        setColor("#4341CC");
+        if (currentTab === "bank") {
+            if (sendBankAccount?.length === 10 && sendBankAmount?.length > 0 && sendBankDescription?.length > 0 && sendBankUserName?.length > 0) {
+                setForDisabledBank(true);
+            } else {
+                setForDisabledBank(false);
+            }
+        } else if (currentTab === "candy") {
+            if (sendToMonpayPhone?.length === 8 && sendToMonpayAmount?.length > 0 && sendToMonpayDescription?.length > 0 && receiverNameMonpay?.length > 0) {
+                setForDisabledMonpay(true);
+            } else {
+                setForDisabledMonpay(false);
+            }
+        } else if (currentTab === "merchant") {
+            if (sendToMerchantPhone?.length === 11 && sendToMerchantAmount?.length > 0 && sendToMerchantDescription?.length > 0 && receiverNameMerchant?.length > 0) {
+                setForDisabledMerchant(true);
+            } else {
+                setForDisabledMerchant(false);
+            }
+        }
+    }, [currentTab, sendBankAccount, sendBankAmount, sendBankDescription, sendBankUserName, sendToMonpayPhone, sendToMonpayAmount, sendToMonpayDescription, receiverNameMonpay, receiverNameMerchant, sendToMerchantAmount, sendToMerchantDescription, sendToMerchantPhone]);
+
+    useEffect(() => {
+        if (selectedFile) {
+            handleUpload();
+        }
+    }, [selectedFile]);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (currentTab === "bank") {
             setTransferInfo({
+                type: "bank",
                 title: "Банкны данс руу шилжүүлэг",
                 bank: {
-                    sourceAccountNo: selectedBank?.ibankCode,
+                    sourceAccountNo: selectedBank?.bic,
                     accountName: sendBankUserName,
                     bankName: selectedBank?.nameMn,
                     bankAccount: sendBankAccount,
                     amount: sendBankAmount,
                     description: sendBankDescription
+                }, monpay: {
+                    phoneNumber: "",
+                    userName: "",
+                    amount: "",
+                    description: ""
+                },
+                merchant: {
+                    phoneNumber: "",
+                    userName: "",
+                    amount: "",
+                    description: ""
+                }
+            });
+            setConfirmation(false);
+        } else if (currentTab === "candy") {
+            setTransferInfo({
+                type: "candy",
+                title: "Monpay хэрэглэгч рүү хийх шилжүүлэг",
+                bank: {
+                    sourceAccountNo: "",
+                    accountName: "",
+                    bankName: "",
+                    bankAccount: "",
+                    amount: "",
+                    description: ""
+                },
+                merchant: {
+                    phoneNumber: "",
+                    userName: "",
+                    amount: "",
+                    description: ""
+                },
+                monpay: {
+                    phoneNumber: sendToMonpayPhone,
+                    userName: receiverNameMonpay,
+                    amount: sendToMonpayAmount,
+                    description: sendToMonpayDescription
+                }
+            });
+            setConfirmation(false);
+        } else if (currentTab === "merchant") {
+            setTransferInfo({
+                type: "merchant",
+                title: "Monpay мерчант данс руу шилжүүлэг",
+                bank: {
+                    sourceAccountNo: "",
+                    accountName: "",
+                    bankName: "",
+                    bankAccount: "",
+                    amount: "",
+                    description: ""
+                },
+                merchant: {
+                    phoneNumber: sendToMerchantPhone,
+                    userName: receiverNameMerchant,
+                    amount: sendToMerchantAmount,
+                    description: sendToMerchantDescription
+                },
+                monpay: {
+                    phoneNumber: "",
+                    userName: "",
+                    amount: "",
+                    description: ""
                 }
             });
             setConfirmation(false);
         }
         setValidated(true);
-    };
+    }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         const { value = '' } = e.target;
         const parsedValue = value.replace(/[^\d.]/gi, '');
-        setAddAmount(parsedValue);
+        setSendToMonpayAmount(parsedValue);
+    };
+
+    const handleChangeMerchant = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const { value = '' } = e.target;
+        const parsedValue = value.replace(/[^\d.]/gi, '');
+        setSendToMerchantAmount(parsedValue);
     };
 
     const handleOnBlurFund = () =>
@@ -105,31 +211,80 @@ const HomeTransaction = () => {
     };
 
     const handleCheck = (value: ChangeEvent<HTMLInputElement>) => {
-        if (value?.target.value) {
-            setForDisabled(true);
-        } else {
-            setForDisabled(false);
+        setSendToMonpayPhone(value?.target.value);
+        if (value?.target.value.length === 8) {
+            getMonpayUserName.run(value?.target.value);
         }
     };
 
-    const checkBankAction = async (val: string) => {
-        if (sendBankAccount?.length === 10 && sendBankAmount?.length > 0 && sendBankDescription?.length > 0 && sendBankUserName?.length > 0) {
-            setForDisabledBank(true)
-        } else {
-            setForDisabledBank(false)
+    const handleCheckMerchant = (value: ChangeEvent<HTMLInputElement>) => {
+        setSendToMerchantPhone(value?.target.value);
+        if (value?.target.value.length === 11) {
+            getMonpayUserName.run(value?.target.value);
         }
     };
+
+    const getMonpayUserName = useRequest(authService.getMonpayUserName, {
+        onBefore: () => {
+            setLoading(true)
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            if (data.result !== "NoName") {
+                if (currentTab === "candy") {
+                    setReceiverNameMonpay(data.result);
+                } else if (currentTab === "merchant") {
+                    setReceiverNameMerchant(data.result);
+                }
+            } else {
+                setReceiverNameMonpay("");
+            }
+        },
+        onError: (e) => {
+            setReceiverNameMonpay("");
+            setAlert({ show: true, message: e.message });
+        },
+        onFinally: () => {
+            setLoading(false)
+        }
+    })
 
     const clickFunction = async (value: string) => {
         setSendBankAccount(value);
     };
 
-
-
     const handleTab = async (key: string) => {
         setCurrentTab(key);
-        if (key == "bank" && banks.length === 0) {
-            getBanks.run();
+        if (key == "bank") {
+            setReceiverNameMerchant("");
+            setReceiverNameMonpay("");
+            setSendToMerchantAmount("");
+            setSendToMerchantDescription("");
+            setSendToMerchantPhone("");
+            setSendToMonpayAmount("");
+            setSendToMonpayDescription("");
+            setSendToMonpayPhone("");
+            if (banks.length === 0) {
+                getBanks.run();
+            }
+        } else if (key === "candy") {
+            setSendBankAmount("");
+            setReceiverNameMerchant("");
+            setSendToMerchantAmount("");
+            setSendToMerchantDescription("");
+            setSendToMerchantPhone("");
+            setSendBankAccount("");
+            setSendBankDescription("");
+            setSendBankUserName("");
+        } else if (key === "merchant") {
+            setSendBankAmount("");
+            setReceiverNameMonpay("");
+            setSendToMonpayAmount("");
+            setSendToMonpayDescription("");
+            setSendToMonpayPhone("");
+            setSendBankAccount("");
+            setSendBankDescription("");
+            setSendBankUserName("");
         }
     };
 
@@ -158,37 +313,30 @@ const HomeTransaction = () => {
         if (selectedBank) setSelectedBank(selectedBank);
     };
 
-    const handleFundSelect = (event: ChangeEvent<HTMLInputElement>) => {
-        const selectedType = event?.currentTarget?.value;
-        setSelectedFundType(selectedType);
+    const handleButtonClick = () => {
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        fileInput.click();
     };
+
 
     const closeNotification = () => {
         setAlert({ show: false, message: "" });
     };
 
-    const checkCamInfo = async (identifier: string) => {
-        // const body = { selectedFundType, identifier };
-        // const camInfo = await getCamInfo(body);
-        // if (camInfo) {
-        //     setCamInfoFound(camInfo.status === 'ACCEPTED');
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        alert(event.target.files)
+        if (event.target.files && event.target.files.length > 0) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
 
-        //     if (camInfo.status === 'ACCEPTED') {
-        //         setCamUserInfo(camInfo);
-        //     } else {
-        //         setCamUserInfo({
-        //             bankName: '',
-        //             username: '',
-        //             accountNo: '',
-        //         });
-        //         setAlert({
-        //             show: true,
-        //             message: camInfo.responseMessage,
-        //         });
-        //     }
-        // } else {
-        //     setCamInfoFound(false);
-        // }
+    const handleUpload = () => {
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            alert(JSON.stringify(formData));
+            console.log('File to upload:', selectedFile);
+        }
     };
 
     return (
@@ -282,9 +430,6 @@ const HomeTransaction = () => {
                                                                         maxLength={10}
                                                                         pattern="[1-9]{1}[0-9]{7}"
                                                                         autoComplete="off"
-                                                                        onBlur={(e) =>
-                                                                            checkBankAction(e.target.value)
-                                                                        }
                                                                         onWheel={(e) => (e.target as HTMLElement).blur()}
                                                                     />
                                                                     <Form.Control.Feedback type="invalid">
@@ -308,9 +453,6 @@ const HomeTransaction = () => {
                                                                         onChange={(e) => {
                                                                             setSendBankUserName(e.target.value);
                                                                         }}
-                                                                        onBlur={(e) =>
-                                                                            checkBankAction(e.target.value)
-                                                                        }
                                                                     />
                                                                     <Form.Control.Feedback type="invalid">
                                                                         Хүлээн авах дансны дугаарыг оруулна уу.
@@ -334,9 +476,6 @@ const HomeTransaction = () => {
                                                                         allowDecimals
                                                                         decimalsLimit={2}
                                                                         disableAbbreviations
-                                                                        onBlur={(e) =>
-                                                                            checkBankAction(e.target.value)
-                                                                        }
                                                                     />
                                                                     <Form.Control.Feedback type="invalid">
                                                                         cvbhdjvbd
@@ -357,9 +496,6 @@ const HomeTransaction = () => {
                                                                         value={sendBankDescription}
                                                                         placeholder=""
                                                                         onChange={(e) => setSendBankDescription(e.target.value)}
-                                                                        onBlur={(e) =>
-                                                                            checkBankAction(e.target.value)
-                                                                        }
                                                                     />
                                                                     <Form.Control.Feedback type="invalid">
                                                                         Гүйлгээний утга
@@ -367,14 +503,16 @@ const HomeTransaction = () => {
                                                                 </InputGroup>
                                                             </div>
                                                         </div>
-                                                        <div className="tw-single-button">
-                                                            <Button
-                                                                disabled={!forDisabledBank}
-                                                                type="submit"
-                                                                name="transferToBank"
-                                                            >
-                                                                Шилжүүлэх
-                                                            </Button>
+                                                        <div className="transfer-buttons mt-10">
+                                                            <div className="tw-single-button">
+                                                                <Button
+                                                                    disabled={!forDisabledBank}
+                                                                    type="submit"
+                                                                    name="transferToBank"
+                                                                >
+                                                                    Шилжүүлэх
+                                                                </Button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </Tab>
@@ -387,11 +525,12 @@ const HomeTransaction = () => {
                                                             <h5>Утасны дугаар</h5>
                                                         </div>
                                                         <div className="input-item">
-                                                            <FormControl
-                                                                onChange={(e) => handleCheck(e as React.ChangeEvent<HTMLInputElement>)}
+                                                            <Form.Control
+                                                                onChange={handleCheck}
                                                                 required={currentTab === 'candy'}
                                                                 name="phoneNumber"
                                                                 type="number"
+                                                                value={sendToMonpayPhone}
                                                                 placeholder=""
                                                                 minLength={8}
                                                                 maxLength={8}
@@ -418,7 +557,7 @@ const HomeTransaction = () => {
                                                             </h5>
                                                         </div>
                                                         <div className="input-item">
-                                                            <FormControl
+                                                            <Form.Control
                                                                 style={{
                                                                     backgroundColor:
                                                                         'rgba(232, 237, 245, 0.32)',
@@ -429,7 +568,7 @@ const HomeTransaction = () => {
                                                                 readOnly
                                                                 disabled
                                                                 placeholder=""
-                                                                value={receiverName}
+                                                                value={receiverNameMonpay}
                                                             />
                                                         </div>
                                                         <div className="transfer-title">
@@ -443,7 +582,7 @@ const HomeTransaction = () => {
                                                                 name="amount"
                                                                 id="amount"
                                                                 data-number-stepfactor="100"
-                                                                value={addAmount}
+                                                                value={sendToMonpayAmount}
                                                                 placeholder=""
                                                                 onChange={handleChange}
                                                                 required={currentTab === 'candy'}
@@ -461,242 +600,138 @@ const HomeTransaction = () => {
                                                             </h5>
                                                         </div>
                                                         <div className="input-item">
-                                                            <FormControl
+                                                            <Form.Control
                                                                 required={currentTab === 'candy'}
                                                                 name="description"
-                                                                // defaultValue={
-                                                                //     transferInfo?.candy?.description
-                                                                // }
+                                                                value={sendToMonpayDescription}
                                                                 type="text"
                                                                 placeholder=""
+                                                                onChange={(e) => setSendToMonpayDescription(e.target.value)}
                                                             />
                                                             <Form.Control.Feedback type="invalid">
                                                                 Гүйлгээний утга оруулна уу!
                                                             </Form.Control.Feedback>
                                                         </div>
-                                                    </div>
-                                                    <div className="transfer-buttons">
-                                                        <div
-                                                            className="buttons-inner"
-                                                            style={{
-                                                                padding: '0 32px 32px',
-                                                            }}
-                                                        >
-                                                            <Button
-                                                                disabled={!forDisabled}
-                                                                type="submit"
-                                                                name="invoice"
-                                                                onClick={(e) => setActionType('invoice')}
-                                                            >
-                                                                Шилжүүлэх
-                                                            </Button>
+                                                        <div className="transfer-buttons mt-10">
+                                                            <div className="tw-single-button">
+                                                                <Button
+                                                                    disabled={!forDisabledMonpay}
+                                                                    type="submit"
+                                                                    name="transferToBank"
+                                                                >
+                                                                    Шилжүүлэх
+                                                                </Button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </Tab>
                                                 <Tab
                                                     style={{ fontSize: "13px" }}
-                                                    eventKey="fund"
+                                                    eventKey="merchant"
                                                     title={<span style={{ fontSize: "12px" }}>Monpay мерчант руу</span>}
                                                 >
                                                     <div className="content">
-                                                        <Row>
-                                                            <Col sm={12} lg={6}>
-                                                                <div className="grid-form">
-                                                                    <div className="transfer-title">
-                                                                        <h5>
-                                                                            cbdjvbdjv
-                                                                        </h5>
-                                                                    </div>
-                                                                    <div className="input-item">
-                                                                        <div className="bank-dropdown">
-                                                                            <InputGroup hasValidation>
-                                                                                <Form.Select
-                                                                                    required={currentTab === 'fund'}
-                                                                                    aria-label="Default select example"
-                                                                                    className="select-bank"
-                                                                                    defaultValue="phone"
-                                                                                    name="fundType"
-                                                                                    onChange={() => handleFundSelect}
-                                                                                >
-                                                                                    <option
-                                                                                        value="phone"
-                                                                                        className="label-item"
-                                                                                    >
-                                                                                        vbjdvbd
-                                                                                    </option>
-                                                                                    <option
-                                                                                        value="mobile"
-                                                                                        className="label-item"
-                                                                                    >
-                                                                                        bcdjvb
-                                                                                    </option>
-                                                                                    <option
-                                                                                        value="email"
-                                                                                        className="label-item"
-                                                                                    >
-                                                                                        cndvid
-                                                                                    </option>
-                                                                                </Form.Select>
-                                                                                <Form.Control.Feedback type="invalid">
-                                                                                    vbdjvbnd
-                                                                                </Form.Control.Feedback>
-                                                                            </InputGroup>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="transfer-title">
-                                                                        <h5>
-                                                                            bvdjvbjnd
-                                                                        </h5>
-                                                                    </div>
-                                                                    <div className="input-item">
-                                                                        <InputGroup hasValidation>
-                                                                            <Form.Control
-                                                                                style={{
-                                                                                    backgroundColor:
-                                                                                        'rgba(232, 237, 245, 0.32)',
-                                                                                }}
-                                                                                required={currentTab === 'fund'}
-                                                                                readOnly
-                                                                                name="fundBank"
-                                                                                placeholder="bvjdbvjd"
-                                                                                value={camUserInfo.bankName}
-                                                                            />
-                                                                            <Form.Control.Feedback type="invalid">
-                                                                                vbduvbjd
-                                                                            </Form.Control.Feedback>
-                                                                        </InputGroup>
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                            <Col sm={12} lg={6}>
-                                                                <div className="grid-form">
-                                                                    <div>
-                                                                        <div className="transfer-title">
-                                                                            <h5>
-                                                                                cbjdvd
-                                                                            </h5>
-                                                                        </div>
-                                                                        <div className="input-item">
-                                                                            <InputGroup hasValidation>
-                                                                                <Form.Control
-                                                                                    required={currentTab === 'fund'}
-                                                                                    type="text"
-                                                                                    maxLength={50}
-                                                                                    placeholder="cnjsvdv"
-                                                                                    name="fundValue"
-                                                                                    onBlur={(e) =>
-                                                                                        checkCamInfo(e.target.value)
-                                                                                    }
-                                                                                />
-                                                                                <Form.Control.Feedback type="invalid">
-                                                                                    bvjdvbd
-                                                                                </Form.Control.Feedback>
-                                                                            </InputGroup>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        <div className="transfer-title">
-                                                                            <h5>
-                                                                                cbhbvd
-                                                                            </h5>
-                                                                        </div>
-                                                                        <div className="input-item">
-                                                                            <InputGroup hasValidation>
-                                                                                <Form.Control
-                                                                                    style={{
-                                                                                        backgroundColor:
-                                                                                            'rgba(232, 237, 245, 0.32)',
-                                                                                    }}
-                                                                                    required={currentTab === 'fund'}
-                                                                                    readOnly
-                                                                                    type="text"
-                                                                                    name="fundAccount"
-                                                                                    placeholder="cbdjvnd"
-                                                                                    value={camUserInfo.accountNo}
-                                                                                />
-                                                                                <Form.Control.Feedback type="invalid">
-                                                                                    cbjvnsd
-                                                                                </Form.Control.Feedback>
-                                                                            </InputGroup>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
                                                         <div className="transfer-title">
-                                                            <h5>
-                                                                chdvjbd
-                                                            </h5>
+                                                            <h5>Мерчантын дансны дугаар</h5>
                                                         </div>
                                                         <div className="input-item">
-                                                            <InputGroup hasValidation>
-                                                                <Form.Control
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            'rgba(232, 237, 245, 0.32)',
-                                                                    }}
-                                                                    required={currentTab === 'fund'}
-                                                                    type="text"
-                                                                    readOnly
-                                                                    name="fundReceiver"
-                                                                    placeholder="bdjvbdv"
-                                                                    value={camUserInfo.username}
-                                                                />
-                                                                <Form.Control.Feedback type="invalid">
-                                                                    bvhdjvbjdv.
-                                                                </Form.Control.Feedback>
-                                                            </InputGroup>
-                                                        </div>
-                                                        <div className="transfer-title">
-                                                            <h5>cbdhjvbdv</h5>
-                                                        </div>
-                                                        <div className="input-item">
-                                                            <InputGroup hasValidation>
-                                                                <CurrencyInput
-                                                                    onWheel={(e) => (e.target as HTMLElement).blur()}
-                                                                    name="fundAmount"
-                                                                    id="fundAmount"
-                                                                    data-number-to-fixed="2"
-                                                                    data-number-stepfactor="100"
-                                                                    value={addAmountFund}
-                                                                    placeholder="cbjdvbjd"
-                                                                    onChange={handleChangeFund}
-                                                                    onBlur={handleOnBlurFund}
-                                                                    required={currentTab === 'fund'}
-                                                                    allowDecimals
-                                                                    decimalsLimit={2}
-                                                                    disableAbbreviations
-                                                                />
-                                                                <Form.Control.Feedback type="invalid">
-                                                                    vchdvbd.
-                                                                </Form.Control.Feedback>
-                                                            </InputGroup>
+                                                            <Form.Control
+                                                                onChange={handleCheckMerchant}
+                                                                required={currentTab === 'merchant'}
+                                                                name="phoneNumber"
+                                                                type="number"
+                                                                value={sendToMerchantPhone}
+                                                                placeholder=""
+                                                                minLength={8}
+                                                                maxLength={8}
+                                                                pattern="[1-9]{1}[0-9]{7}"
+                                                                autoComplete="off"
+                                                                onBlur={(e) =>
+                                                                    checkUsername(e.target.value)
+                                                                }
+                                                                onInput={(e) => {
+                                                                    const input = e.target as HTMLInputElement;
+                                                                    if (input.value.length > 11) {
+                                                                        input.value = input.value.slice(0, 11);
+                                                                    }
+                                                                }}
+                                                                onWheel={(e) => (e.target as HTMLElement).blur()}
+                                                            />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Мерчантын дансны дугаар оруулна уу!
+                                                            </Form.Control.Feedback>
                                                         </div>
                                                         <div className="transfer-title">
                                                             <h5>
-                                                                vbjdvnd
+                                                                Хүлээн авагчийн нэр
                                                             </h5>
                                                         </div>
                                                         <div className="input-item">
-                                                            <InputGroup hasValidation>
-                                                                <Form.Control
-                                                                    required={currentTab === 'fund'}
-                                                                    type="text"
-                                                                    name="fundDescription"
-                                                                    placeholder="cbdjvbdv"
-                                                                />
-                                                                <Form.Control.Feedback type="invalid">
-                                                                    cbdjvnd
-                                                                </Form.Control.Feedback>
-                                                            </InputGroup>
+                                                            <Form.Control
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        'rgba(232, 237, 245, 0.32)',
+                                                                }}
+                                                                required={currentTab === 'merchant'}
+                                                                name="pin"
+                                                                type="text"
+                                                                readOnly
+                                                                disabled
+                                                                placeholder=""
+                                                                value={receiverNameMerchant}
+                                                            />
                                                         </div>
-                                                        <div className="tw-single-button">
-                                                            <Button
-                                                                type="submit"
-                                                                disabled={!camInfoFound}
-                                                            >
-                                                                vdvbndknb
-                                                            </Button>
+                                                        <div className="transfer-title">
+                                                            <h5>
+                                                                Шилжүүлэх дүн
+                                                            </h5>
+                                                        </div>
+                                                        <div className="input-item">
+                                                            <CurrencyInput
+                                                                onWheel={(e) => (e.target as HTMLElement).blur()}
+                                                                name="amount"
+                                                                id="amount"
+                                                                data-number-stepfactor="100"
+                                                                value={sendToMerchantAmount}
+                                                                placeholder=""
+                                                                onChange={handleChangeMerchant}
+                                                                required={currentTab === 'merchant'}
+                                                                allowDecimals
+                                                                decimalsLimit={2}
+                                                                disableAbbreviations
+                                                            />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Шилжүүлэх дүн оруулна уу!
+                                                            </Form.Control.Feedback>
+                                                        </div>
+                                                        <div className="transfer-title">
+                                                            <h5>
+                                                                Гүйлгээний утга
+                                                            </h5>
+                                                        </div>
+                                                        <div className="input-item">
+                                                            <Form.Control
+                                                                required={currentTab === 'merchant'}
+                                                                name="description"
+                                                                value={sendToMerchantDescription}
+                                                                type="text"
+                                                                placeholder=""
+                                                                onChange={(e) => setSendToMerchantDescription(e.target.value)}
+                                                            />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Гүйлгээний утга оруулна уу!
+                                                            </Form.Control.Feedback>
+                                                        </div>
+                                                        <div className="transfer-buttons mt-10">
+                                                            <div className="tw-single-button">
+                                                                <Button
+                                                                    disabled={!forDisabledMerchant}
+                                                                    type="submit"
+                                                                    name="transferToBank"
+                                                                >
+                                                                    Шилжүүлэх
+                                                                </Button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </Tab>
@@ -707,7 +742,7 @@ const HomeTransaction = () => {
                             </div>
                         </Row>
                     </Col> :
-                    <DynamicConfirm />
+                    <DynamicConfirm setConfirmation={setConfirmation} />
                 }
                 <Col style={{ paddingLeft: "20px" }}>
                     <Alert variant="danger" className={`customAlert`}>
@@ -736,7 +771,7 @@ const HomeTransaction = () => {
                         </div>
                         <div className="auto-transfer-buttons">
                             <div className="buttons-inner">
-                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1">
+                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('user')}>
                                     <Image
                                         className="ml-2"
                                         src="/svg/table-cloud-output.svg"
@@ -750,7 +785,7 @@ const HomeTransaction = () => {
                                         <span>Хувь хүнээр</span>
                                     </Col>
                                 </Button>
-                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1">
+                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('company')}>
                                     <Image
                                         className="ml-2"
                                         src="/svg/table-cloud-output.svg"
@@ -765,15 +800,27 @@ const HomeTransaction = () => {
                                     </Col>
                                 </Button>
                             </div>
-                            <Button variant="primary" className="d-flex justify-content-center align-items-center mt-3 gap-2">
-                                <Image
-                                    src="/svg/table-cloud-input.svg"
-                                    alt="Toggle password visibility"
-                                    width={24}
-                                    height={24}
-                                />
-                                Файл оруулах
-                            </Button>
+                            <div>
+                                <Form.Group controlId="formFile" className="mb-3">
+                                    <Button variant="primary" className="d-flex justify-content-center align-items-center mt-3 gap-2"
+                                     onClick={handleButtonClick}
+                                    >
+                                        <Image
+                                            src="/svg/table-cloud-input.svg"
+                                            alt="Toggle password visibility"
+                                            width={24}
+                                            height={24}
+                                        />
+                                        Файл оруулах
+                                    </Button>
+                                    <Form.Control
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        style={{ display: 'none' }}
+                                    />
+                                </Form.Group>
+
+                            </div>
                         </div>
                     </Alert>
                 </Col>

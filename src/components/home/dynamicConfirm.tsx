@@ -1,146 +1,172 @@
 "use client";
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Col,
     Row,
     Button,
     Modal,
     Form,
-    InputGroup,
 } from 'react-bootstrap';
 import { AutoTabProvider } from 'react-auto-tab';
 import IctContext from '@/context/ict-context';
 import { useRouter } from 'next/navigation';
 import FailNotification from '../notification/fail-notif';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useRequest } from 'ahooks';
+import authService from '@/service/api';
+import { useLoading } from '@/context/loading';
 
-const DynamicConfirm = () => {
-    const { transferInfo } = useContext(IctContext);
-    const [password, setPassword] = useState<string>("");
-    const [showOTP, setShowOTP] = useState<boolean>(false);
-    const [passwordShown, setPasswordShown] = useState(false);
+interface DynamicConfirmProps {
+    setConfirmation: (value: boolean) => void;
+}
 
-    const [checked, setChecked] = useState(false);
-    const [response, setResponse] = useState({});
-    const [show, setShow] = useState(false);
-    const router = useRouter();
-    const [alert, setAlert] = useState({ show: false });
+type ReponseProps = {
+    success: boolean;
+    message: string;
+    info: string;
+}
+
+const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const t = useTranslations('account');
-    const formreset = useRef(null);
+    const { partner, cardIndex, partnerBalance, transferInfo } = useContext(IctContext);
+    const [pin1, setPin1] = useState<string>("");
+    const [pin2, setPin2] = useState<string>("");
+    const [pin3, setPin3] = useState<string>("");
+    const [pin4, setPin4] = useState<string>("");
+    const { setLoading } = useLoading();
+    const [checked, setChecked] = useState<number>(0);
+    const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
-    const toggleHandler = (e) => {
-        setChecked(e.target.checked);
-    };
-
-    const togglePasswordVisibility = () => {
-        setPasswordShown(!passwordShown);
-    };
+    const [response, setResponse] = useState<ReponseProps>({ success: false, message: "", info: "" });
+    const [show, setShow] = useState<boolean>(false);
+    const router = useRouter();
 
     const handleBack = () => {
-        // router.back('');
+        setShow(true);
+        setConfirmation(true);
     };
 
     const handleShowOTP = () => {
-        // if (password.length > 0) 
-        setShowOTP(true);
+        if (pin1 && pin2 && pin3 && pin4) {
+            if (transferInfo.type === "bank") {
+                // getOTPCode.run(transferInfo.bank.sourceAccountNo);
+            } else if (transferInfo.type === "candy") {
+                getOTPCode.run();
+            } else if (transferInfo.type === "merchant") {
+                getOTPCode.run();
+            }
+        } else {
+            setAlert({ show: true, message: "Гүйлгээний нууц үг оруулна уу." });
+        }
     }
 
-    const handleSubmit = (event) => {
+    const converHidePhone = (val: string) => {
+        return val.length > 4
+            ? val.substring(0, 2) + '***' + val.substring(5)
+            : val;
+    }
+
+    const getOTPCode = useRequest(authService.getOTPCode, {
+        onBefore: () => {
+            setLoading(true);
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            setChecked(1);
+        },
+        onError: (e) => {
+            setAlert({ show: true, message: e.message });
+        },
+        onFinally: () => {
+            setLoading(false)
+        }
+    })
+
+    const postOTPCode = useRequest(authService.postOTPCode, {
+        manual: true,
+        onSuccess: async (data) => {
+            const body: TransferToMonpayModel = transferInfo.type === "candy" ? {
+                srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
+                dstSrc: transferInfo?.monpay?.phoneNumber,
+                amount: transferInfo?.monpay?.amount,
+                description: transferInfo?.monpay?.description,
+                pin: pin1 + pin2 + pin3 + pin4,
+                passwordToken: data.result.passwordToken,
+            } : transferInfo.type === "merchant" ? {
+                srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
+                dstSrc: transferInfo?.merchant?.phoneNumber,
+                amount: transferInfo?.merchant?.amount,
+                description: transferInfo?.merchant?.description,
+                pin: pin1 + pin2 + pin3 + pin4,
+                passwordToken: data.result.passwordToken,
+            } :
+                {
+                    srcAccountNo: "",
+                    dstSrc: "",
+                    amount: "",
+                    description: "",
+                    pin: pin1 + pin2 + pin3 + pin4,
+                    passwordToken: data.result.passwordToken,
+                }
+            transferToMonpay.run(body);
+        },
+        onError: (e) => {
+            setChecked(0);
+            setAlert({ show: true, message: e.message });
+        },
+    })
+
+    const transferToMonpay = useRequest(authService.transferToMonpay, {
+        onBefore: () => {
+            setLoading(true);
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            setShow(true);
+            setResponse({ message: data.result.message, success: true, info: data.result.info });
+        },
+        onError: (e) => {
+            setChecked(0);
+            setLoading(false);
+            setAlert({ show: true, message: e.message });
+            setResponse({ message: e.message, success: false, info: e.message });
+        },
+        onFinally: () => {
+            setLoading(false);
+        }
+    })
+
+    const retryPin = async () => {
+        getOTPCode.run();
+    };
+
+    const handleSubmit = (event: any) => {
         event.preventDefault();
-        // const form = event.currentTarget;
-        // if (form.checkValidity() === false) {
-        //     setValidated(false);
-        //     event.stopPropagation();
-        // } else {
-        //     setValidated(true);
-        //     const pinRange = [...Array(4).keys()];
-        //     const pin = '';
-        //     pinRange.map((index) => {
-        //         pin = pin.concat(form[`code${index + 1}`]?.value);
-        //     });
-        //     if (!isNaN(pin)) {
-        //         const body = createBody(pin);
-        //         axios.post('/api/account/transfer-to-bank', body).then(
-        //             (resp) => {
-        //                 setShow(true);
-        //                 setResponse({ ...resp.data.result, success: true });
-        //             },
-        //             (error) => {
-        //                 setShow(true);
-        //                 setResponse({
-        //                     ...error.response.data,
-        //                     success: false,
-        //                 });
-        //             }
-        //         );
-        //         if (checked) {
-        //             const template = createTemplate(form.template.value);
-        //             axios.post('/api/account/transfer-template', template).then(
-        //                 (resp) => { },
-        //                 (error) => {
-        //                     setAlert({
-        //                         show: true,
-        //                         message: error.response?.data?.info,
-        //                     });
-        //                     event.stopPropagation();
-        //                 }
-        //             );
-        //         }
-        //     } else {
-        //         //TODO: Handle invalid pin
-        //     }
-        // }
-        // setValidated(true);
-    };
-
-    const createBody = (pin) => {
-        // const body = {};
-        // const reqBody = transferInfo.bank;
-        // body.bankName = reqBody.bankCode;
-        // body.bankAccount = reqBody.bankAccount;
-        // body.bankAccountName = reqBody.bankAccountName;
-        // body.amount = Number(reqBody.amount);
-        // body.decription = reqBody.description;
-        // body.srcAccountNo = reqBody.srcAccountNo;
-        // body.pin = pin;
-        // return body;
-    };
-
-    const createTemplate = (name) => {
-        const body = {};
-        const reqBody = transferInfo.bank;
-        body.destBankCode = reqBody.bankCode;
-        body.destAccountNo = reqBody.bankAccount;
-        body.destCustomerName = reqBody.bankAccountName;
-        body.destBankName = reqBody.bankName;
-        body.decription = reqBody.description;
-        body.templateName = name;
-        return body;
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.stopPropagation();
+        } else {
+            event.preventDefault();
+            const pin: string = `${form.code1.value}${form.code2.value}${form.code3.value}${form.code4.value}`;
+            postOTPCode.run(pin);
+        }
     };
 
     const handleClose = () => {
-        // setShow(false);
-        // formreset.current.reset();
-        // if (response.success) {
-        //     window.location.reload();
-        //     router.push('/app/dashboard');
-        // }
+        setShow(false);
+        // formreset?.current?.reset();
+        window.location.reload();
+        if (response.success) {
+            window.location.reload();
+            router.push('/app/dashboard');
+        }
     };
 
     const closeNotification = () => {
-        // setAlert(false);
+        setAlert({ message: "", show: false });
     };
 
-    const nameArray = transferInfo?.bank?.bankName?.split(' ') || [];
-    const newStr =
-        nameArray.length > 1
-            ? nameArray[0] +
-            ' ' +
-            nameArray[1]?.replace(
-                nameArray[1].substr(1, nameArray[1].length - 0),
-                nameArray[1].substr(1, nameArray[1].length - 3).replace(/./g, '*')
-            )
-            : '';
     return (
         <>
             <Col xl={8}>
@@ -166,182 +192,325 @@ const DynamicConfirm = () => {
                                                         {transferInfo?.title}
                                                     </span>
                                                 </div>
-                                                <div className="content">
-                                                    <div className="content-inner">
-                                                        <div className="content-item">
-                                                            <h5 className="item-title">
-                                                                {t('account-transfer.recipient-bank')}
-                                                            </h5>
-                                                            <span className="number">
-                                                                {transferInfo?.bank?.bankName}
-                                                            </span>
+                                                {transferInfo.type === "bank" ?
+                                                    <div className="content">
+                                                        <div className="content-inner">
+                                                            <div className="content-item">
+                                                                <h5 className="item-title">
+                                                                    {t('account-transfer.recipient-bank')}
+                                                                </h5>
+                                                                <span className="number">
+                                                                    {transferInfo?.bank?.bankName}
+                                                                </span>
+                                                            </div>
+                                                            <div className="content-item">
+                                                                <h5 className="item-title">
+                                                                    {t('account-transfer.recipient-account')}
+                                                                </h5>
+                                                                <span className="number">
+                                                                    {transferInfo?.bank?.bankAccount}
+                                                                </span>
+                                                            </div>
+                                                            <div className="content-item">
+                                                                <h5 className="item-title">
+                                                                    {t('account-transfer.recipient-name')}
+                                                                </h5>
+                                                                <span className="number">{transferInfo?.bank?.accountName}</span>
+                                                            </div>
+                                                            <div className="content-item">
+                                                                <h5 className="item-title">
+                                                                    {t('account-transfer.amount')}
+                                                                </h5>
+                                                                <span className="number">
+                                                                    {transferInfo?.bank?.amount || '0.00'}₮
+                                                                </span>
+                                                            </div>
+                                                            <div className="content-item">
+                                                                <h5 className="item-title">
+                                                                    {t('account-transfer.transaction-value ')}
+                                                                </h5>
+                                                                <span className="number">
+                                                                    {transferInfo?.bank?.description}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div className="content-item">
-                                                            <h5 className="item-title">
-                                                                {t('account-transfer.recipient-account')}
-                                                            </h5>
-                                                            <span className="number">
-                                                                {transferInfo?.bank?.bankAccount}
-                                                            </span>
-                                                        </div>
-                                                        <div className="content-item">
-                                                            <h5 className="item-title">
-                                                                {t('account-transfer.recipient-name')}
-                                                            </h5>
-                                                            <span className="number">{transferInfo?.bank?.accountName}</span>
-                                                        </div>
-                                                        <div className="content-item">
-                                                            <h5 className="item-title">
-                                                                {t('account-transfer.amount')}
-                                                            </h5>
-                                                            <span className="number">
-                                                                {transferInfo?.bank?.amount || '0.00'}₮
-                                                            </span>
-                                                        </div>
-                                                        <div className="content-item">
-                                                            <h5 className="item-title">
-                                                                {t('account-transfer.transaction-value ')}
-                                                            </h5>
-                                                            <span className="number">
-                                                                {transferInfo?.bank?.description}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
+                                                    </div> : transferInfo.type === "candy" ?
+                                                        <div className="content">
+                                                            <div className="content-inner">
+                                                                <div className="content-item">
+                                                                    <h5 className="item-title">
+                                                                        Утасны дугаар
+                                                                    </h5>
+                                                                    <span className="number">
+                                                                        {transferInfo?.monpay?.phoneNumber}
+                                                                        <Image width={16} height={16} className='ml-2' src="/svg/transfer-success-phone.svg" alt="Phone icon" />
+                                                                    </span>
+                                                                </div>
+                                                                <div className="content-item">
+                                                                    <h5 className="item-title">
+                                                                        Хүлээн авагчийн нэр
+                                                                    </h5>
+                                                                    <span className="number">
+                                                                        {transferInfo?.monpay?.userName}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="content-item">
+                                                                    <h5 className="item-title">
+                                                                        Шилжүүлэх дүн
+                                                                    </h5>
+                                                                    <span className="number">{transferInfo?.monpay?.amount || '0.00'}₮</span>
+                                                                </div>
+                                                                <div className="content-item">
+                                                                    <h5 className="item-title">
+                                                                        Гүйлгээний утга
+                                                                    </h5>
+                                                                    <span className="number">
+                                                                        {transferInfo?.monpay?.description || ''}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div> : transferInfo.type === "merchant" ?
+                                                            <div className="content">
+                                                                <div className="content-inner">
+                                                                    <div className="content-item">
+                                                                        <h5 className="item-title">
+                                                                            Утасны дугаар
+                                                                        </h5>
+                                                                        <span className="number">
+                                                                            {transferInfo?.merchant?.phoneNumber}
+                                                                            <Image width={16} height={16} className='ml-2' src="/svg/transfer-success-phone.svg" alt="Phone icon" />
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="content-item">
+                                                                        <h5 className="item-title">
+                                                                            Хүлээн авагчийн нэр
+                                                                        </h5>
+                                                                        <span className="number">
+                                                                            {transferInfo?.merchant?.userName}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="content-item">
+                                                                        <h5 className="item-title">
+                                                                            Шилжүүлэх дүн
+                                                                        </h5>
+                                                                        <span className="number">{transferInfo?.merchant?.amount || '0.00'}₮</span>
+                                                                    </div>
+                                                                    <div className="content-item">
+                                                                        <h5 className="item-title">
+                                                                            Гүйлгээний утга
+                                                                        </h5>
+                                                                        <span className="number">
+                                                                            {transferInfo?.merchant?.description || ''}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            :
+                                                            <></>
+                                                }
                                                 <Form
-                                                    ref={formreset}
                                                     className="email-confirm-code"
                                                     onSubmit={handleSubmit}
                                                 >
                                                     <div className="label-title" style={{ paddingBottom: "10px" }}>
                                                         <h5>Гүйлгээний нууц үг оруулна уу</h5>
                                                     </div>
-                                                    <div className="tw-register input-item">
-                                                        <InputGroup hasValidation>
-                                                            <Form.Control
-                                                                style={{ borderRadius: "10px" }}
-                                                                required
-                                                                name="bankAccount"
-                                                                type={passwordShown ? 'text' : 'password'}
-                                                                value={password}
-                                                                onChange={(e) => setPassword(e.target.value)}
-                                                                autoComplete="off"
-                                                            />
-                                                            <span className="icon-on-off" onClick={togglePasswordVisibility}>
-                                                                <img src={passwordShown ? "/svg/icon-off.svg" : "/svg/icon-on.svg"} alt="Toggle password visibility" />
-                                                            </span>
-                                                            <Form.Control.Feedback type="invalid">
-                                                                Invalid password
-                                                            </Form.Control.Feedback>
-                                                        </InputGroup>
-                                                    </div>
-                                                    {showOTP ? <>
-                                                        <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
-                                                            <h5>Бид таны 99•••275 дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
-                                                        </div>
-                                                        <AutoTabProvider>
-                                                            <ul>
-                                                                <li>
-                                                                    <div className="input-item">
-                                                                        <Form.Control
-                                                                            name="code1"
-                                                                            type="password"
-                                                                            className="confirm-input"
-                                                                            maxLength={1}
-                                                                            tabbable="true"
-                                                                            onKeyPress={(event) => {
-                                                                                if (isNaN(event.key))
-                                                                                    event.preventDefault();
-                                                                            }}
-                                                                            autoComplete="off"
-                                                                            inputMode="numeric"
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </li>
-                                                                <li>
-                                                                    <div className="input-item">
-                                                                        <Form.Control
-                                                                            name="code2"
-                                                                            type="password"
-                                                                            className="confirm-input"
-                                                                            maxLength={1}
-                                                                            tabbable="true"
-                                                                            onKeyPress={(event) => {
-                                                                                if (isNaN(event.key))
-                                                                                    event.preventDefault();
-                                                                            }}
-                                                                            autoComplete="off"
-                                                                            inputMode="numeric"
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </li>
-                                                                <li>
-                                                                    <div className="input-item">
-                                                                        <Form.Control
-                                                                            name="code3"
-                                                                            type="password"
-                                                                            className="confirm-input"
-                                                                            maxLength={1}
-                                                                            tabbable="true"
-                                                                            onKeyPress={(event) => {
-                                                                                if (isNaN(event.key))
-                                                                                    event.preventDefault();
-                                                                            }}
-                                                                            autoComplete="off"
-                                                                            inputMode="numeric"
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </li>
-                                                                <li>
-                                                                    <div className="input-item">
-                                                                        <Form.Control
-                                                                            name="code4"
-                                                                            type="password"
-                                                                            className="confirm-input"
-                                                                            maxLength={1}
-                                                                            tabbable="true"
-                                                                            onKeyPress={(event) => {
-                                                                                if (isNaN(event.key))
-                                                                                    event.preventDefault();
-                                                                            }}
-                                                                            autoComplete="off"
-                                                                            inputMode="numeric"
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </li>
-                                                            </ul>
-                                                        </AutoTabProvider>
-                                                        <div className="confirm-bank">
-                                                            <div className="save-template">
-                                                                <span>Дахин код авах уу?</span>
-                                                            </div>
-                                                        </div>
+                                                    <AutoTabProvider>
+                                                        <ul>
+                                                            <li>
+                                                                <div className="input-item">
+                                                                    <Form.Control
+                                                                        name="c"
+                                                                        type="password"
+                                                                        className="confirm-input"
+                                                                        maxLength={1}
+                                                                        onChange={(e) => { setPin1(e.target.value) }}
+                                                                        tabbable="true"
+                                                                        onKeyPress={(event) => {
+                                                                            if (isNaN(Number(event.key))) {
+                                                                                event.preventDefault();
+                                                                            }
+                                                                        }}
+                                                                        autoComplete="off"
+                                                                        inputMode="numeric"
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div className="input-item">
+                                                                    <Form.Control
+                                                                        name="c"
+                                                                        type="password"
+                                                                        className="confirm-input"
+                                                                        maxLength={1}
+                                                                        onChange={(e) => { setPin2(e.target.value) }}
+                                                                        tabbable="true"
+                                                                        onKeyPress={(event) => {
+                                                                            if (isNaN(Number(event.key))) {
+                                                                                event.preventDefault();
+                                                                            }
+                                                                        }}
+                                                                        autoComplete="off"
+                                                                        inputMode="numeric"
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div className="input-item">
+                                                                    <Form.Control
+                                                                        name="c"
+                                                                        onChange={(e) => { setPin3(e.target.value) }}
+                                                                        type="password"
+                                                                        className="confirm-input"
+                                                                        maxLength={1}
+                                                                        tabbable="true"
+                                                                        onKeyPress={(event) => {
+                                                                            if (isNaN(Number(event.key))) {
+                                                                                event.preventDefault();
+                                                                            }
+                                                                        }}
+                                                                        autoComplete="off"
+                                                                        inputMode="numeric"
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div className="input-item">
+                                                                    <Form.Control
+                                                                        name="c"
+                                                                        onChange={(e) => { setPin4(e.target.value) }}
+                                                                        type="password"
+                                                                        className="confirm-input"
+                                                                        maxLength={1}
+                                                                        tabbable="true"
+                                                                        onKeyPress={(event) => {
+                                                                            if (isNaN(Number(event.key))) {
+                                                                                event.preventDefault();
+                                                                            }
+                                                                        }}
+                                                                        autoComplete="off"
+                                                                        inputMode="numeric"
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </AutoTabProvider>
+                                                    {checked === 0 ?
                                                         <div className="transfer-buttons">
                                                             <div className="buttons-inner">
-                                                                <Button onClick={(e) => setShowOTP(false)}>
-                                                                    Буцах
-                                                                </Button>
-                                                                <Button variant="primary" type="submit">
-                                                                    Баталгаажуулах код авах
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                        :
-
-                                                        <div className="transfer-buttons">
-                                                            <div className="buttons-inner">
-                                                                <Button onClick={handleBack}>Буцах</Button>
+                                                                <Button onClick={() => handleBack()}>Буцах</Button>
                                                                 <Button variant="primary" onClick={handleShowOTP}>
                                                                     Баталгаажуулах код авах
                                                                 </Button>
                                                             </div>
                                                         </div>
+                                                        :
+                                                        <>
+                                                            <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
+                                                                <h5>Бид таны {converHidePhone(partner.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
+                                                            </div>
+                                                            <AutoTabProvider>
+                                                                <ul>
+                                                                    <li>
+                                                                        <div className="input-item">
+                                                                            <Form.Control
+                                                                                name="code1"
+                                                                                type="password"
+                                                                                className="confirm-input"
+                                                                                maxLength={1}
+                                                                                tabbable="true"
+                                                                                onKeyPress={(event) => {
+                                                                                    if (isNaN(Number(event.key))) {
+                                                                                        event.preventDefault();
+                                                                                    }
+                                                                                }}
+                                                                                autoComplete="off"
+                                                                                inputMode="numeric"
+                                                                                required
+                                                                            />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div className="input-item">
+                                                                            <Form.Control
+                                                                                name="code2"
+                                                                                type="password"
+                                                                                className="confirm-input"
+                                                                                maxLength={1}
+                                                                                tabbable="true"
+                                                                                onKeyPress={(event) => {
+                                                                                    if (isNaN(Number(event.key))) {
+                                                                                        event.preventDefault();
+                                                                                    }
+                                                                                }}
+                                                                                autoComplete="off"
+                                                                                inputMode="numeric"
+                                                                                required
+                                                                            />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div className="input-item">
+                                                                            <Form.Control
+                                                                                name="code3"
+                                                                                type="password"
+                                                                                className="confirm-input"
+                                                                                maxLength={1}
+                                                                                tabbable="true"
+                                                                                onKeyPress={(event) => {
+                                                                                    if (isNaN(Number(event.key))) {
+                                                                                        event.preventDefault();
+                                                                                    }
+                                                                                }}
+                                                                                autoComplete="off"
+                                                                                inputMode="numeric"
+                                                                                required
+                                                                            />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div className="input-item">
+                                                                            <Form.Control
+                                                                                name="code4"
+                                                                                type="password"
+                                                                                className="confirm-input"
+                                                                                maxLength={1}
+                                                                                tabbable="true"
+                                                                                onKeyPress={(event) => {
+                                                                                    if (isNaN(Number(event.key))) {
+                                                                                        event.preventDefault();
+                                                                                    }
+                                                                                }}
+                                                                                autoComplete="off"
+                                                                                inputMode="numeric"
+                                                                                required
+                                                                            />
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </AutoTabProvider>
+                                                            <div className="confirm-bank">
+                                                                <div className="save-template">
+                                                                    <span onClick={retryPin}>
+                                                                        Дахин код авах уу?
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="transfer-buttons">
+                                                                <div className="buttons-inner">
+                                                                    <Button onClick={(e) => setChecked(0)}>
+                                                                        Буцах
+                                                                    </Button>
+                                                                    <Button variant="primary" type="submit">
+                                                                        Шилжүүлэх
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </>
                                                     }
                                                 </Form>
                                             </div>
@@ -376,21 +545,19 @@ const DynamicConfirm = () => {
                     <Modal.Body>
                         <div className="body-content">
                             <div className="title">
-                                <h5>{t('transfer')}</h5>
-                                <h5>{response.success ? 'амжилттай' : 'амжилтгүй'}</h5>
+                                <h5>{t('transfer')} {response.success ? 'амжилттай' : 'амжилтгүй'}</h5>
                             </div>
                             <div className="desc">
                                 {response.success ? (
                                     <p>
-                                        {t('your')}
                                         <strong
                                             style={{
                                                 padding: '0 3px',
+                                                color: "#5B698E"
                                             }}
                                         >
-                                            {response.transactionId}
+                                            Таны шилжүүлэг амжилттай хийгдлээ.
                                         </strong>
-                                        {t('successfully')}
                                     </p>
                                 ) : (
                                     <p>
@@ -407,10 +574,10 @@ const DynamicConfirm = () => {
                     </Modal.Footer>
                 </div>
             </Modal>
-            {alert?.show && (
+            {alerts?.show && (
                 <FailNotification
-                    show={alert.show}
-                    infos={alert.message}
+                    show={alerts.show}
+                    infos={alerts.message}
                     close={closeNotification}
                 ></FailNotification>
             )}

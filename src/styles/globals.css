@@ -4295,12 +4295,12 @@ input[type='number']::-webkit-inner-spin-button {
 /* dashboard featured css starts here */
 
 .dashboard-features .mp-wallet.background {
-  background-image: url(/dashboard-masked.png);
+  background-image: url(/dashboard/card.png);
   /* background-repeat: no-repeat; */
   /* background-position: center center; */
   background-size: cover;
   border-radius: 8px;
-  background-color: #8f41cc;
+  background-color: #4341cc;
   padding-right: "100px";
 }
 
@@ -6172,6 +6172,48 @@ input[type='number']::-webkit-inner-spin-button {
   color: #4341cc;
 }
 
+
+
+
+.settings-buttons {
+  box-sizing: border-box;
+}
+
+.settings-buttons .buttons-inner {
+  margin-top: 20px;
+  /* margin-bottom: 14px; */
+  display: flex;
+  /* justify-content: center; */
+}
+
+.settings-buttons .buttons-inner button {
+  height: 48px;
+  padding: 12px 0;
+  width: 135px;
+  border-color: #4341CC;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.024em;
+}
+
+.settings-buttons .buttons-inner :hover {
+  background-color: #4341CC !important;
+}
+
+.settings-buttons .buttons-inner button:first-child {
+  margin-right: 10px;
+}
+
+
+
+
 .card-buttons {
   box-sizing: border-box;
 }
@@ -7553,6 +7595,7 @@ input[type='number']::-webkit-inner-spin-button {
   transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
 }
 
+/* 
 .date-graphic .item span {
   font-family: 'Code Next';
   font-style: normal;
@@ -7562,22 +7605,22 @@ input[type='number']::-webkit-inner-spin-button {
   letter-spacing: -0.024em;
   color: #161e34;
   margin-right: 32px;
-}
+} */
 
-.date-graphic .item:last-child {
+/* .date-graphic .item:last-child {
   background: #ffffff;
   border: 1px solid #e8edf5;
   box-sizing: border-box;
   border-radius: 8px;
   padding: 12px 24px;
-}
+} */
 
-.date-graphic .item:last-child .switch {
+/* .date-graphic .item:last-child .switch {
   align-items: center;
   justify-content: center;
-}
+} */
 
-.date-graphic .item:first-child .form-control {
+/* .date-graphic .item:first-child .form-control {
   padding: 12px 24px;
   font-family: 'Code Next';
   font-style: normal;
@@ -7590,7 +7633,7 @@ input[type='number']::-webkit-inner-spin-button {
   border: 1px solid #e8edf5;
   box-sizing: border-box;
   border-radius: 8px;
-}
+} */
 
 .credit-container-bottom .form-check-radio {
   display: flex;
@@ -7736,9 +7779,9 @@ input[type='number']::-webkit-inner-spin-button {
   box-sizing: border-box;
   border-radius: 8px;
   padding: 0;
-  width: 40px;
+  width: 22px;
   color: #4B5563;
-  height: 40px;
+  height: 36px;
   position: relative;
   display: flex;
   align-items: center;
@@ -7746,16 +7789,16 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .transaction-pagination .pagination .page-item.active .page-link {
-  background-color: red;
-  border-color: #007bff;
-  /* Custom border color */
-  color: white;
+  /* background-color: white;
+  border-color: #007bff; */
+  /* color: white; */
 }
+
 /* Custom styles for active pagination item */
 .custom-pagination .page-item.active .page-link {
-  background-color: #4341cc; /* Custom background color */
-  border-color: #4341cc; /* Custom border color */
-  color: white; /* Custom text color */
+  /* background-color: #4341cc; */
+  border-color: #4341cc;
+  color: #4341cc;
 }
 
 .transaction-pagination .pagination .prev .page-link {
@@ -8177,7 +8220,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 /* range date picker */
-
+/* 
 .date-graphic .content {
   padding: 12px 24px;
   background: #ffffff;
@@ -8187,22 +8230,22 @@ input[type='number']::-webkit-inner-spin-button {
   cursor: pointer;
   max-width: 245px;
   margin-right: 12px;
-}
+} */
 
-.date-graphic .content:hover .date-item {
+/* .date-graphic .content:hover .date-item {
   cursor: pointer;
-}
+} */
 
-.date-graphic .content .date-item {
+/* .date-graphic .content .date-item {
   border: unset;
   padding: 0;
   width: 95px;
-}
-
+} */
+/* 
 .date-graphic .content .date-item:focus-visible {
   outline: unset;
   border: unset;
-}
+} */
 
 .tw-user-form .person-name {
   background: rgba(209, 213, 228, 0.32);
@@ -11540,11 +11583,11 @@ hr {
   border-radius: 8px;
 }
 
-.tw-tab-items .tw-date-switch .date-graphic.tw-graphic-switch {
+/* .tw-tab-items .tw-date-switch .date-graphic.tw-graphic-switch {
   display: flex;
   flex-direction: row;
   position: absolute;
-}
+} */
 
 /*payment add page css starting*/
 .tw-payment-add {
@@ -12677,3 +12720,6 @@ header .mp-header-button ul li {
   margin-right: -3rem;
 }
 
+.custom-date-range-picker {
+  font-family: Code Next, sans-serif;
+}

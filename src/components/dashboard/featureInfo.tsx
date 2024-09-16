@@ -63,7 +63,7 @@ const FeaturedInfo = () => {
             <div className="content">
               <div className="content-inner">
                 <div className="logo">
-                  <img src="/features-icon-monpay.svg" />
+                  <img src="/dashboard/monpay-logo-white.svg" />
                 </div>
                 <div className="mp-current-wallet">
                   <div className="content-item">

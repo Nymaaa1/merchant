@@ -1,21 +1,45 @@
 "use client";
-import React, { useState } from "react";
-import Chart from "react-apexcharts";
+import React, { useEffect, useState } from "react";
 import { ApexOptions } from "apexcharts";
+import dynamic from "next/dynamic";
+import { GenderGraphicResponse } from "@/types/demo";
 
-const SalesByGenderChart: React.FC = () => {
-  const [chartData, setChartData] = useState({
-    series: [
-      {
-        name: "Эрэгтэй",
-        data: [40, 80, 60, 90, 50], // Male sales data
-      },
-      {
-        name: "Эмэгтэй",
-        data: [20, 60, 50, 70, 40], // Female sales data
-      },
-    ],
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+type SalesByGenderChartProps = {
+  genderList: GenderGraphicResponse;
+};
+
+const SalesByGenderChart: React.FC<SalesByGenderChartProps> = ({ genderList }) => {
+  const [chartData, setChartData] = useState<{ series: ApexAxisChartSeries; categories: string[] }>({
+    series: [],
+    categories: []
   });
+
+  useEffect(() => {
+    if (genderList && genderList.result) {
+      const formattedDates = genderList.result.map((item) => {
+        const month = item.date.split("-")[1];
+        return parseInt(month, 10).toString();
+      });
+      const maleSales = genderList.result.map((item) => item.saleMale);
+      const femaleSales = genderList.result.map((item) => item.saleFemale);
+
+      setChartData({
+        series: [
+          {
+            name: "Эрэгтэй",
+            data: maleSales
+          },
+          {
+            name: "Эмэгтэй",
+            data: femaleSales
+          }
+        ],
+        categories: formattedDates
+      });
+    }
+  }, [genderList]);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -28,10 +52,9 @@ const SalesByGenderChart: React.FC = () => {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "13px", // Adjust for width of bars
-        borderRadius: 2.76, // Apply the rounding
+        columnWidth: "12px",
+        borderRadius: 2.76,
         borderRadiusApplication: 'end',
-        // endingShape: true 
       },
     },
     dataLabels: {
@@ -43,7 +66,7 @@ const SalesByGenderChart: React.FC = () => {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: ["10", "11", "12", "1", "2"], // Month labels
+      categories: chartData.categories,
       axisBorder: {
         show: true,
         color: "#ccc",
@@ -54,7 +77,7 @@ const SalesByGenderChart: React.FC = () => {
       },
       labels: {
         style: {
-          fontSize: "14px",
+          fontSize: "12px",
           colors: ["#666"],
         },
       },
@@ -62,13 +85,13 @@ const SalesByGenderChart: React.FC = () => {
     yaxis: {
       title: {
         style: {
-          fontSize: "14px",
+          fontSize: "12px",
           color: "#333",
         },
       },
       labels: {
         style: {
-          fontSize: "14px",
+          fontSize: "12px",
           colors: ["#666"],
         },
       },
@@ -102,7 +125,7 @@ const SalesByGenderChart: React.FC = () => {
     <div className="bg-white rounded-lg p-4 md:p-6" style={{ height: "351px", boxShadow: "0px 0px 8px 8px #F8F9FA" }}>
       <div className="flex justify-between mb-3">
         <div className="flex justify-center items-center">
-          <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
+          <h5 className="text-md font-bold leading-none text-gray-900 dark:text-white">
             Борлуулалт хүйсээр
           </h5>
         </div>

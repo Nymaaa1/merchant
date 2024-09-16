@@ -4,11 +4,13 @@ export interface Bank {
     nameMn: string;
     nameEn: string;
     fee: number;
-    ibankCode: string;
+    bic: string;
 }
 
 export interface BanksResponse {
     banks: Bank[];
+    responseMessage: string;
+    responseCode: string;
 }
 
 

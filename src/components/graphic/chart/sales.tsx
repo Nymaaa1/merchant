@@ -1,3 +1,4 @@
+import { SalesGraphic } from '@/types/demo';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -12,28 +13,32 @@ type HelpPartnerdata = {
     video: string
 };
 
-const TodeySales = () => {
+type SalesDataProps = {
+    briefinfo: SalesGraphic,
+}
+
+const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
     const partnerHelpdata: HelpPartnerdata[] = [{
         image: "/dashboard/demo1.png",
-        name: "200",
+        name: briefinfo.txnToday.toString(),
         url: "Гүйлгээний тоо",
         phone: "+8% from yesterday",
         video: "#FFE2E5"
     }, {
         image: "/dashboard/demo2.png",
-        name: "300",
+        name: briefinfo.customerToday.toString(),
         url: "Хэрэглэгчийн тоо",
         phone: "+5% from yesterday",
         video: "#FFF4DE"
     }, {
         image: "/dashboard/demo3.png",
-        name: "15сая",
+        name: `${briefinfo.sellToday ?? 0} сая`,
         url: "Борлуулалтын дүн",
         phone: "+1,2% from yesterday",
         video: "#DCFCE7"
     }, {
         image: "/dashboard/demo4.png",
-        name: "8",
+        name: "0",
         url: "Шинэ хэрэглэгч",
         phone: "0,5% from yesterday",
         video: "#F3E8FF"
@@ -43,7 +48,7 @@ const TodeySales = () => {
             <div
                 className="control"
                 style={{
-                    height:"302px",
+                    height: "302px",
                     margin: 'auto',
                 }}>
                 <Col>
