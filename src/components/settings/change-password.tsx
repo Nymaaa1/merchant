@@ -17,11 +17,14 @@ import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import IctContext from '@/context/ict-context';
 import authBranchService from '@/service/branch';
+import { useLoading } from '@/context/loading';
+import { set } from 'rsuite/esm/internals/utils/date';
 
 type CheckValidation = [string, boolean][];
 
 const ProfileChangePass = () => {
     const t = useTranslations('profile');
+    const { setLoading } = useLoading();
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [notification, setNotification] = useState<Alert>({ show: false, message: "" });
     const [oldPassword, setOldPassword] = useState<string>("");
@@ -64,7 +67,11 @@ const ProfileChangePass = () => {
 
     const balanceAction = useRequest(authService.profileChangePassword, {
         manual: true,
+        onBefore: () => {
+            setLoading(true);
+        },
         onSuccess: async (data) => {
+            setLoading(false);
             setResponse({ info: data.info, code: data.code, result: data.result });
             setShowModal(true);
             setPassword2('');
@@ -82,7 +89,11 @@ const ProfileChangePass = () => {
 
     const changePasswordBranch = useRequest(authBranchService.changePasswordSettingsBranch, {
         manual: true,
+        onBefore: () => {
+            setLoading(true);
+        },
         onSuccess: async (data) => {
+            setLoading(false);
             setResponse({ info: data.info, code: data.code, result: data.result });
             setShowModal(true);
             setPassword2('');

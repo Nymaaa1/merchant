@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
-import { Col, Nav, Tab, Table, Alert, Form, Pagination } from "react-bootstrap";
+import { Col, Nav, Tab, Table, Alert, Form, Pagination, Button } from "react-bootstrap";
 import { useRequest } from "ahooks";
 import FailNotification from "../notification/fail-notif";
 import authBranchService from "@/service/branch";
@@ -13,9 +13,10 @@ import { DateRangePicker } from "rsuite";
 import 'rsuite/DateRangePicker/styles/index.css';
 import { format } from 'date-fns';
 import { useLoading } from "@/context/loading";
+import { excelDownload } from "@/utils/excel";
 
 const BranchTable = () => {
-    const { setLoading, setColor } = useLoading();
+    const { setLoading } = useLoading();
     let dayjs = require('dayjs');
     const [recent, setRecent] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
@@ -91,6 +92,22 @@ const BranchTable = () => {
 
     const beginDate = params.beginDate ? new Date(params.beginDate) : new Date();
     const endDate = params.endDate ? new Date(params.endDate) : new Date();
+
+    const handleExcelDownload = () => {
+        excelDownload(
+            recent?.result.map((item, i) => {
+                return {
+                    "№": i + 1,
+                    "ГҮЙЛГЭЭНИЙ НЭР": item.description,
+                    "ТӨЛӨВ": item.transactionType === "FEE" ? "Буцаагдсан" : "Амжилттай",
+                    "ДҮН": item.amount,
+                    "ХАРИЛЦСАН ДАНС": item.accountNo,
+                    "ОН, САР, ӨДӨР": formatDate(item.date),
+                } as ContractsExcel;
+            }),
+            "Contract report"
+        );
+    };
 
     return (
         <Col xs={6} className="flex-grow-1" xl={2} lg={2}>
@@ -380,6 +397,22 @@ const BranchTable = () => {
                                             </Pagination.Item>
                                         ))}
                                     </Pagination>
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={() => { recent?.result?.length > 0 ? handleExcelDownload() : setAlert({ show: true, message: "Өгөгдөл байхгүй байна" }) }}
+                                        className="flex items-center space-x-2 border rounded-xl hover:bg-gray-200 hover:border-gray-400"
+                                    >
+                                        <Image
+                                            className=""
+                                            src="/svg/table-cloud-output.svg"
+                                            alt="Toggle password visibility"
+                                            width={20}
+                                            height={20}
+                                        />
+                                        <h5 style={{ fontSize: "12px", color: "#4B5563" }}>
+                                            Excel файл татах
+                                        </h5>
+                                    </Button>
                                 </div>
                             </div>
                         </Tab.Container>

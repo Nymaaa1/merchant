@@ -7,7 +7,6 @@ import {
     Modal,
     Form,
 } from 'react-bootstrap';
-import { AutoTabProvider } from 'react-auto-tab';
 import IctContext from '@/context/ict-context';
 import { useRouter } from 'next/navigation';
 import FailNotification from '../notification/fail-notif';
@@ -16,6 +15,7 @@ import Image from 'next/image';
 import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import { useLoading } from '@/context/loading';
+import OtpInput from '../widget/pinput';
 
 interface DynamicConfirmProps {
     setConfirmation: (value: boolean) => void;
@@ -30,10 +30,7 @@ type ReponseProps = {
 const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const t = useTranslations('account');
     const { partner, cardIndex, partnerBalance, transferInfo } = useContext(IctContext);
-    const [pin1, setPin1] = useState<string>("");
-    const [pin2, setPin2] = useState<string>("");
-    const [pin3, setPin3] = useState<string>("");
-    const [pin4, setPin4] = useState<string>("");
+    const [otp1, setOtp1] = useState(new Array(4).fill(""));
     const { setLoading } = useLoading();
     const [checked, setChecked] = useState<number>(0);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
@@ -48,7 +45,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     };
 
     const handleShowOTP = () => {
-        if (pin1 && pin2 && pin3 && pin4) {
+        if (otp1.join("").length === 4) {
             if (transferInfo.type === "bank") {
                 // getOTPCode.run(transferInfo.bank.sourceAccountNo);
             } else if (transferInfo.type === "candy") {
@@ -91,14 +88,14 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                 dstSrc: transferInfo?.monpay?.phoneNumber,
                 amount: transferInfo?.monpay?.amount,
                 description: transferInfo?.monpay?.description,
-                pin: pin1 + pin2 + pin3 + pin4,
+                pin: otp1.join(""),
                 passwordToken: data.result.passwordToken,
             } : transferInfo.type === "merchant" ? {
                 srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
                 dstSrc: transferInfo?.merchant?.phoneNumber,
                 amount: transferInfo?.merchant?.amount,
                 description: transferInfo?.merchant?.description,
-                pin: pin1 + pin2 + pin3 + pin4,
+                pin: otp1.join(""),
                 passwordToken: data.result.passwordToken,
             } :
                 {
@@ -106,7 +103,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                     dstSrc: "",
                     amount: "",
                     description: "",
-                    pin: pin1 + pin2 + pin3 + pin4,
+                    pin: otp1.join(""),
                     passwordToken: data.result.passwordToken,
                 }
             transferToMonpay.run(body);
@@ -315,90 +312,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                     <div className="label-title" style={{ paddingBottom: "10px" }}>
                                                         <h5>Гүйлгээний нууц үг оруулна уу</h5>
                                                     </div>
-                                                    <AutoTabProvider>
-                                                        <ul>
-                                                            <li>
-                                                                <div className="input-item">
-                                                                    <Form.Control
-                                                                        name="c"
-                                                                        type="password"
-                                                                        className="confirm-input"
-                                                                        maxLength={1}
-                                                                        onChange={(e) => { setPin1(e.target.value) }}
-                                                                        tabbable="true"
-                                                                        onKeyPress={(event) => {
-                                                                            if (isNaN(Number(event.key))) {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        }}
-                                                                        autoComplete="off"
-                                                                        inputMode="numeric"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div className="input-item">
-                                                                    <Form.Control
-                                                                        name="c"
-                                                                        type="password"
-                                                                        className="confirm-input"
-                                                                        maxLength={1}
-                                                                        onChange={(e) => { setPin2(e.target.value) }}
-                                                                        tabbable="true"
-                                                                        onKeyPress={(event) => {
-                                                                            if (isNaN(Number(event.key))) {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        }}
-                                                                        autoComplete="off"
-                                                                        inputMode="numeric"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div className="input-item">
-                                                                    <Form.Control
-                                                                        name="c"
-                                                                        onChange={(e) => { setPin3(e.target.value) }}
-                                                                        type="password"
-                                                                        className="confirm-input"
-                                                                        maxLength={1}
-                                                                        tabbable="true"
-                                                                        onKeyPress={(event) => {
-                                                                            if (isNaN(Number(event.key))) {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        }}
-                                                                        autoComplete="off"
-                                                                        inputMode="numeric"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div className="input-item">
-                                                                    <Form.Control
-                                                                        name="c"
-                                                                        onChange={(e) => { setPin4(e.target.value) }}
-                                                                        type="password"
-                                                                        className="confirm-input"
-                                                                        maxLength={1}
-                                                                        tabbable="true"
-                                                                        onKeyPress={(event) => {
-                                                                            if (isNaN(Number(event.key))) {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        }}
-                                                                        autoComplete="off"
-                                                                        inputMode="numeric"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </AutoTabProvider>
+                                                    <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
                                                     {checked === 0 ?
                                                         <div className="transfer-buttons">
                                                             <div className="buttons-inner">
@@ -413,86 +327,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                             <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
                                                                 <h5>Бид таны {converHidePhone(partner.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
                                                             </div>
-                                                            <AutoTabProvider>
-                                                                <ul>
-                                                                    <li>
-                                                                        <div className="input-item">
-                                                                            <Form.Control
-                                                                                name="code1"
-                                                                                type="password"
-                                                                                className="confirm-input"
-                                                                                maxLength={1}
-                                                                                tabbable="true"
-                                                                                onKeyPress={(event) => {
-                                                                                    if (isNaN(Number(event.key))) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                }}
-                                                                                autoComplete="off"
-                                                                                inputMode="numeric"
-                                                                                required
-                                                                            />
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="input-item">
-                                                                            <Form.Control
-                                                                                name="code2"
-                                                                                type="password"
-                                                                                className="confirm-input"
-                                                                                maxLength={1}
-                                                                                tabbable="true"
-                                                                                onKeyPress={(event) => {
-                                                                                    if (isNaN(Number(event.key))) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                }}
-                                                                                autoComplete="off"
-                                                                                inputMode="numeric"
-                                                                                required
-                                                                            />
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="input-item">
-                                                                            <Form.Control
-                                                                                name="code3"
-                                                                                type="password"
-                                                                                className="confirm-input"
-                                                                                maxLength={1}
-                                                                                tabbable="true"
-                                                                                onKeyPress={(event) => {
-                                                                                    if (isNaN(Number(event.key))) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                }}
-                                                                                autoComplete="off"
-                                                                                inputMode="numeric"
-                                                                                required
-                                                                            />
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="input-item">
-                                                                            <Form.Control
-                                                                                name="code4"
-                                                                                type="password"
-                                                                                className="confirm-input"
-                                                                                maxLength={1}
-                                                                                tabbable="true"
-                                                                                onKeyPress={(event) => {
-                                                                                    if (isNaN(Number(event.key))) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                }}
-                                                                                autoComplete="off"
-                                                                                inputMode="numeric"
-                                                                                required
-                                                                            />
-                                                                        </div>
-                                                                    </li>
-                                                                </ul>
-                                                            </AutoTabProvider>
+                                                            <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
                                                             <div className="confirm-bank">
                                                                 <div className="save-template">
                                                                     <span onClick={retryPin}>

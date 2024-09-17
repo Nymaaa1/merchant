@@ -2,7 +2,7 @@
 
 import { LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseListResponse, BaseResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
+import { BaseResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
 import { DistrictGraphicResponse, GenderGraphicResponse, SalesGraphic, SalesPartnerGraphic } from "@/types/demo";
@@ -559,6 +559,31 @@ namespace authService {
                     method: 'PUT',
                     headers: { Authorization: `Bearer ${getToken()}`, },
                     body: JSON.stringify(body)
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const autoFileUpload = async (file: FormData): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/file', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: file
                 });
                 const data: DefaultResponse = await response.json();
                 if (!response.ok) {

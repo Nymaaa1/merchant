@@ -14,7 +14,6 @@ import { useLoading } from "@/context/loading";
 const HomeTransaction = () => {
     const { setTransferInfo } = useContext(IctContext);
     const { setLoading, setColor } = useLoading();
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     //Bank to transfer
     const [sendBankAccount, setSendBankAccount] = useState<string>("");
@@ -51,7 +50,7 @@ const HomeTransaction = () => {
     const [currentTab, setCurrentTab] = useState<string>('candy');
     const [lastChecked, setLastChecked] = useState<string>('');
     const [addAmountFund, setAddAmountFund] = useState<string>('');
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<FormData | null>(null);
 
     const handleDownload = (type: string) => {
         const fileUrl = `/auto-transfer/${type}.pdf`;
@@ -85,12 +84,6 @@ const HomeTransaction = () => {
             }
         }
     }, [currentTab, sendBankAccount, sendBankAmount, sendBankDescription, sendBankUserName, sendToMonpayPhone, sendToMonpayAmount, sendToMonpayDescription, receiverNameMonpay, receiverNameMerchant, sendToMerchantAmount, sendToMerchantDescription, sendToMerchantPhone]);
-
-    useEffect(() => {
-        if (selectedFile) {
-            handleUpload();
-        }
-    }, [selectedFile]);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -313,31 +306,50 @@ const HomeTransaction = () => {
         if (selectedBank) setSelectedBank(selectedBank);
     };
 
-    const handleButtonClick = () => {
-        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-        fileInput.click();
-    };
-
-
     const closeNotification = () => {
         setAlert({ show: false, message: "" });
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        alert(event.target.files)
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
-            setSelectedFile(event.target.files[0]);
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            uploadFile.run(formData);
+            // const apiRes = await fetch(`${process.env.MONPAY_API_URL}/partner/images/upload/partner`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Accept': 'application/json',
+            //         'Content-Type': 'multipart/form-data;boundary=None',
+            //         'Authorization': `Bearer 4c6db2ab-6261-4e9a-8e9c-756f3526fc25`
+            //     },
+            //     body: file
+            // });
+
+            // const data = await apiRes.json();
+            // alert(JSON.stringify(data))
+            // console.log(data)
         }
     };
 
-    const handleUpload = () => {
-        if (selectedFile) {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            alert(JSON.stringify(formData));
-            console.log('File to upload:', selectedFile);
+    const uploadFile = useRequest(authService.autoFileUpload, {
+        onBefore: () => {
+            setLoading(true)
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            alert("success");
+        },
+        onError: (e) => {
+            alert(JSON.stringify(e));
+            setAlert({ show: true, message: e.message });
+        },
+        onFinally: () => {
+            setLoading(false)
         }
-    };
+    });
+
+
 
     return (
         <Col xs={6} className="flex-grow-1" xl={2} lg={2} style={{ paddingLeft: "20px" }} >
@@ -800,27 +812,24 @@ const HomeTransaction = () => {
                                     </Col>
                                 </Button>
                             </div>
-                            <div>
-                                <Form.Group controlId="formFile" className="mb-3">
-                                    <Button variant="primary" className="d-flex justify-content-center align-items-center mt-3 gap-2"
-                                     onClick={handleButtonClick}
-                                    >
-                                        <Image
-                                            src="/svg/table-cloud-input.svg"
-                                            alt="Toggle password visibility"
-                                            width={24}
-                                            height={24}
-                                        />
-                                        Файл оруулах
-                                    </Button>
-                                    <Form.Control
-                                        type="file"
-                                        onChange={handleFileChange}
-                                        style={{ display: 'none' }}
+                            <Form.Group controlId="formFile">
+                                <Form.Label className="d-flex justify-content-center align-items-center mt-3 gap-2"
+                                    style={{ fontSize: "12px", color: "#ffff", backgroundColor: "#4341CC", borderRadius: "8px", height: "48px" }}
+                                >
+                                    <Image
+                                        src="/svg/table-cloud-input.svg"
+                                        alt="Upload file"
+                                        width={24}
+                                        height={24}
                                     />
-                                </Form.Group>
-
-                            </div>
+                                    Файл оруулах
+                                </Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
+                                />
+                            </Form.Group>
                         </div>
                     </Alert>
                 </Col>

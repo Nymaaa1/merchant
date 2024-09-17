@@ -12,6 +12,7 @@ import authService from '@/service/api';
 import IctContext from '@/context/ict-context';
 import { phoneRegex } from '@/utils/utils';
 import authBranchService from '@/service/branch';
+import { useLoading } from '@/context/loading';
 
 type CheckValidation = [string, boolean][];
 
@@ -20,6 +21,7 @@ const ForgotNewPassword = () => {
     const [passwordShown, setPasswordShown] = useState<boolean>(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const t = useTranslations('forgot-password');
+    const { setLoading } = useLoading();
     const togglePasswordVisiblity = () => {
         setPasswordShown(passwordShown ? false : true);
     };
@@ -91,27 +93,37 @@ const ForgotNewPassword = () => {
     ]);
 
     const otpAction = useRequest(authService.changePassword, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
+            setLoading(false);
             setPasswordRecoverOTP("");
             jsCookie.remove('passwordToken');
             jsCookie.remove('phoneAndEmail');
             router.push('/auth/success');
         },
         onError: (e) => {
+            setLoading(false);
             setAlert({ show: true, message: e.message });
         }
     })
 
     const branchOTPAction = useRequest(authBranchService.changePassword, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
+            setLoading(false);
             setPasswordRecoverOTP("");
             jsCookie.remove('passwordToken');
             jsCookie.remove('phoneAndEmail');
             router.push('/auth/success');
         },
         onError: (e) => {
+            setLoading(false);
             setAlert({ show: true, message: e.message });
         }
     })

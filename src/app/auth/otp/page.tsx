@@ -4,7 +4,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import jsCookie from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { AutoTabProvider } from 'react-auto-tab';
 import FailNotification from '@/components/notification/fail-notif';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -14,15 +13,20 @@ import IctContext from '@/context/ict-context';
 import { phoneRegex } from '@/utils/utils';
 import authBranchService from '@/service/branch';
 import Notification from '@/components/notification/notification';
+import OtpInput from '@/components/widget/pinput';
+import { useLoading } from '@/context/loading';
 
 const ForgotPasswordConfirm = () => {
     const { setPasswordRecoverOTP, loginType } = useContext(IctContext);
     const t = useTranslations('forgot-password');
+    const { setLoading } = useLoading();
     const [counter, setCounter] = useState<number>(60);
     const [phoneMasked, setPhoneMasked] = useState<string>("");
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [phoneEmail, setPhoneEmail] = useState<string>("");
     const [notification, setNotification] = useState<Alert>({ show: false, message: "" });
+    const [otp1, setOtp1] = useState(new Array(4).fill(""));
+    const [forDisabled, setForDisabled] = useState<boolean>(true);
     const router = useRouter();
 
     useEffect(() => {
@@ -35,6 +39,14 @@ const ForgotPasswordConfirm = () => {
         setPhoneMasked(masked);
         setPhoneEmail(phoneNumber);
     }, []);
+
+    useEffect(() => {
+        if (otp1.join("").length === 4) {
+            setForDisabled(false);
+        } else {
+            setForDisabled(true);
+        }
+    }, [otp1]);
 
     useEffect(() => {
         const timer: NodeJS.Timeout | undefined = counter > 0
@@ -79,9 +91,8 @@ const ForgotPasswordConfirm = () => {
             event.preventDefault();
         } else {
             event.preventDefault();
-            const pin = `${form.code1.value}${form.code2.value}${form.code3.value}${form.code4.value}`;
             const body = {
-                otpValue: pin,
+                otpValue: otp1.join(""),
                 accessValue: phoneEmail,
                 accessType: phoneRegex.test(phoneEmail) ? "PHONE" : "EMAIL"
             };
@@ -94,35 +105,36 @@ const ForgotPasswordConfirm = () => {
     };
 
     const postOTPAction = useRequest(authService.postPasswordOtp, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
+            setLoading(false);
             jsCookie.set('passwordToken', data.result.passwordToken);
             router.push('/auth/new');
         },
         onError: (e) => {
+            setLoading(false);
             setAlert({ show: true, message: e.message });
         }
     })
 
     const postOTPBranchAction = useRequest(authBranchService.postPasswordOtp, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
+            setLoading(false);
             jsCookie.set('passwordToken', data.result.passwordToken);
             router.push('/auth/new');
         },
         onError: (e) => {
+            setLoading(false);
             setAlert({ show: true, message: e.message });
         }
     })
-
-    const handleEnter = (event: any) => {
-        if (event.key.toLowerCase() === 'enter') {
-            const form = event.target.form;
-            const index = [...form].indexOf(event.target);
-            form.elements[index + 1].focus();
-            event.preventDefault();
-        }
-    };
 
     const closeFailNotification = () => {
         setAlert({ message: "", show: false });
@@ -169,84 +181,7 @@ const ForgotPasswordConfirm = () => {
                         </div>
                     </div>
                     <Form className="tw-register" onSubmit={handleSubmit}>
-                        <AutoTabProvider>
-                            <div>
-                                <ul>
-                                    <li>
-                                        <div className="input-item">
-                                            <Form.Control
-                                                name="code1"
-                                                type="password"
-                                                className="confirm-input"
-                                                maxLength={1}
-                                                required
-                                                tabbable="true"
-                                                onKeyDown={handleEnter}
-                                                onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                    if (isNaN(Number(event.key))) event.preventDefault();
-                                                }}
-                                                autoComplete="off"
-                                                inputMode="numeric"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="input-item">
-                                            <Form.Control
-                                                name="code2"
-                                                type="password"
-                                                className="confirm-input"
-                                                maxLength={1}
-                                                required
-                                                tabbable="true"
-                                                onKeyDown={handleEnter}
-                                                onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                    if (isNaN(Number(event.key))) event.preventDefault();
-                                                }}
-                                                autoComplete="off"
-                                                inputMode="numeric"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="input-item">
-                                            <Form.Control
-                                                name="code3"
-                                                type="password"
-                                                className="confirm-input"
-                                                maxLength={1}
-                                                required
-                                                tabbable="true"
-                                                onKeyDown={handleEnter}
-                                                onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                    if (isNaN(Number(event.key))) event.preventDefault();
-                                                }}
-                                                autoComplete="off"
-                                                inputMode="numeric"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="input-item">
-                                            <Form.Control
-                                                name="code4"
-                                                type="password"
-                                                className="confirm-input"
-                                                maxLength={1}
-                                                required
-                                                tabbable="true"
-                                                onKeyDown={handleEnter}
-                                                onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                    if (isNaN(Number(event.key))) event.preventDefault();
-                                                }}
-                                                autoComplete="off"
-                                                inputMode="numeric"
-                                            />
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </AutoTabProvider>
+                        <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
                         <div className="timer">
                             {counter > 0 ? (
                                 <span className="timer-text" onClick={retryPin}>
@@ -263,7 +198,7 @@ const ForgotPasswordConfirm = () => {
                             <Col>
                                 <div className="tw-form-buttons">
                                     <div className="tw-top-button">
-                                        <Button type="submit">{t('confirm')}</Button>
+                                        <Button disabled={forDisabled} type="submit">{t('confirm')}</Button>
                                     </div>
                                     <div className="tw-bottom-button">
                                         <Link href="/auth/forgot-password">
