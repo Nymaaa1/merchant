@@ -180,7 +180,7 @@ const Login: React.FC = () => {
                         </div>
                         <div className="tw-form-buttons">
                             <div className="tw-top-button">
-                                <Button type="submit">{t('login')}</Button>
+                                <Button style={{ border: "unset" }} type="submit">{t('login')}</Button>
                             </div>
                             <div className="tw-request">
                                 <Button>Монпэй хамтрагч болох бол <Link href="/auth/request"><span>ЭНД ДАРНА</span></Link> уу!</Button>

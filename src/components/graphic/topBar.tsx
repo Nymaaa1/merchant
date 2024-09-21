@@ -52,18 +52,13 @@ const BranchTopbar: React.FC<BranchTopbarProps> = ({ name, logo }) => {
                                     </div>
                                 </div>
                             </Dropdown.Toggle>
-                            <Dropdown.Menu className="information">
+                            <Dropdown.Menu className="anydecoration information" style={{width: "200px"}}>
                                 <li className="text-muted mb-2">Тохиргоо</li>
+                                <Dropdown.Divider style={{ color: "#5B698E" }} />
                                 <Dropdown.Item className="d-flex align-items-center" style={{ padding: "0px", margin: "0px" }}
                                     href="/branch/settings">
-                                    <Button variant="primary" style={{ borderRadius: "8px", width: "150px" }}>
-                                        <Row className="align-items-center g-0">
-                                            <Col xs="auto" className='ml-3'>
-                                                <img src="/svg/icon-password.svg" alt="User Icon" />
-                                            </Col>
-                                            <Col className='mr-3 ml-3'>Нууц үг солих</Col>
-                                        </Row>
-                                    </Button>
+                                    <img src="/svg/app-icon-password.svg" alt="User Icon" />
+                                    <span className='ml-3' style={{ color: "#5B698E" }}>Нууц үг солих</span>
                                 </Dropdown.Item >
                             </Dropdown.Menu>
                         </Dropdown>

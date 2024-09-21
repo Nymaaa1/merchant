@@ -4176,21 +4176,29 @@ input[type='number']::-webkit-inner-spin-button {
   border-top: 1px solid rgba(91, 105, 142, 0.16);
   padding: 40px 0 0 0;
 }
+
 .sidebar-top-menu a,
 .sidebar-top-menu a:active,
 .sidebar-top-menu a:focus,
-.sidebar-control .sidebar-bottom-menu ,
+.sidebar-control .sidebar-bottom-menu,
 .sidebar-control .sidebar-bottom-menu a,
 .sidebar-control .sidebar-bottom-menu a:active,
 .sidebar-control .sidebar-bottom-menu a:focus,
 .sidebar-control .sidebar-bottom-menu a:hover,
 .sidebar-top-menu a:hover,
 .sidebar-top-menu span {
-    text-decoration: none;
+  text-decoration: none;
+}
+
+.anydecoration .anydecoration a,
+.anydecoration a:active,
+.anydecoration a:focus,
+.anydecoration a:hover .anydecoration span {
+  text-decoration: none;
 }
 
 .sidebar-top-menu .active span {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .sidebar-control .sidebar-top-menu {
@@ -6266,6 +6274,10 @@ input[type='number']::-webkit-inner-spin-button {
   letter-spacing: -0.024em;
 }
 
+.card-buttons .buttons-inner button:last-child:hover {
+  /* background-color: #ffff !important; */
+}
+
 .card-buttons .buttons-inner :hover {
   background-color: #4341CC !important;
 }
@@ -6276,7 +6288,6 @@ input[type='number']::-webkit-inner-spin-button {
   padding: 0px 0;
   cursor: pointer;
 }
-
 
 .card-buttons .buttons-inner button:first-child {
   margin-right: 10px;

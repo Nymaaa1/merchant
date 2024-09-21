@@ -1,6 +1,5 @@
 import { SalesGraphic } from '@/types/demo';
 import Image from 'next/image';
-import Link from 'next/link';
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 
@@ -9,7 +8,6 @@ type HelpPartnerdata = {
     image: string,
     name: string,
     url: string,
-    phone: string,
     video: string
 };
 
@@ -20,27 +18,35 @@ type SalesDataProps = {
 const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
     const partnerHelpdata: HelpPartnerdata[] = [{
         image: "/dashboard/demo1.png",
-        name: briefinfo.txnToday.toString(),
+        name: (briefinfo?.txnToday ?? 0).toString()
+            .replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ','
+            ),
         url: "Гүйлгээний тоо",
-        phone: "+8% from yesterday",
         video: "#FFE2E5"
     }, {
         image: "/dashboard/demo2.png",
-        name: briefinfo.customerToday.toString(),
+        name: (briefinfo?.customerToday ?? 0).toString()
+            .replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ','
+            ),
         url: "Хэрэглэгчийн тоо",
-        phone: "+5% from yesterday",
         video: "#FFF4DE"
     }, {
         image: "/dashboard/demo3.png",
-        name: `${briefinfo.sellToday ?? 0} сая`,
+        name: `${(briefinfo?.sellToday ?? 0).toString()
+            .replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ','
+            )} сая`,
         url: "Борлуулалтын дүн",
-        phone: "+1,2% from yesterday",
         video: "#DCFCE7"
     }, {
         image: "/dashboard/demo4.png",
         name: "0",
         url: "Шинэ хэрэглэгч",
-        phone: "0,5% from yesterday",
         video: "#F3E8FF"
     }];
     return (
@@ -55,10 +61,10 @@ const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
                     <Col>
                         <div>
                             <h4 style={{ fontSize: "20px" }}>Today’s Sales</h4>
-                            <h5 className='mt-2' style={{ fontWeight: "600", fontSize: "16px", color: "#737791" }}>Sales Summery </h5>
+                            <h5 className='mt-3' style={{ fontWeight: "600", fontSize: "16px", color: "#737791" }}>Sales Summery </h5>
                         </div>
                     </Col>
-                    <Col className='mt-10'>
+                    <Col className='mt-4'>
                         <div
                             style={{
                                 overflowX: 'auto',
@@ -81,11 +87,8 @@ const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
                                             <h5 style={{ color: '#151D48', fontSize: '24px' }} className="mt-4">
                                                 {partner.name}
                                             </h5>
-                                            <h5 style={{ color: '#425166', fontSize: '14px' }} className="mt-2">
+                                            <h5 style={{ color: '#425166', fontSize: '14px' }} className="mt-4">
                                                 {partner.url}
-                                            </h5>
-                                            <h5 style={{ color: '#4079ED', fontSize: '12px' }} className="mt-1">
-                                                {partner.phone}
                                             </h5>
                                         </div>
                                     </Col>

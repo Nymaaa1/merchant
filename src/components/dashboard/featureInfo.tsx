@@ -17,6 +17,7 @@ const FeaturedInfo = () => {
   const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance } = useContext(IctContext);
   const [show, setShow] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<number>(0);
+  const [accountSettings, setAccountSettings] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
@@ -99,8 +100,8 @@ const FeaturedInfo = () => {
                   <Button style={{ backgroundColor: transactionType !== 1 ? "#ffff" : "", border: "unset" }} variant={transactionType === 1 ? "primary" : "outline-primary"} onClick={() => setTransactionType(1)}>
                     Шилжүүлэх
                   </Button>
-                  <Button style={{ backgroundColor: transactionType !== 2 ? "#ffff" : "", border: "unset" }} variant={transactionType === 2 ? "primary" : "outline-primary"} onClick={() => setTransactionType(2)} className="d-flex justify-content-center align-items-center">
-                    <img src={transactionType === 2 ? "/svg/settings-active.svg" : "/svg/settings.svg"} alt="Toggle password visibility" />
+                  <Button style={{ backgroundColor: !accountSettings ? "#ffff" : "", border: "unset" }} variant={accountSettings ? "primary" : "outline-primary"} onClick={() => setAccountSettings(!accountSettings)} className="dontchangedcolor d-flex justify-content-center align-items-center">
+                    <img src={accountSettings ? "/svg/settings-active.svg" : "/svg/settings.svg"} alt="Toggle password visibility" />
                   </Button>
                 </div>
               </div>
@@ -149,7 +150,7 @@ const FeaturedInfo = () => {
           }
           <Col >
             {
-              transactionType === 2 && cardIndex === 0 ?
+              cardIndex === 0 && accountSettings ?
                 <AccountInfo index={0} />
                 :
                 <></>
@@ -206,13 +207,13 @@ const FeaturedInfo = () => {
                               <Button style={{ backgroundColor: transactionType !== 1 ? "#ffff" : "", border: "unset" }} variant={transactionType === 1 ? "primary" : "outline-primary"} onClick={() => setTransactionType(1)}>
                                 Шилжүүлэх
                               </Button>
-                              <Button style={{ backgroundColor: transactionType !== 2 ? "#ffff" : "", border: "unset" }} variant={transactionType === 2 ? "primary" : "outline-primary"} onClick={() => setTransactionType(2)} className="d-flex justify-content-center align-items-center">
-                                <img src={transactionType === 2 ? "/svg/settings-active.svg" : "/svg/settings.svg"} alt="Toggle password visibility" />
+                              <Button style={{ backgroundColor: accountSettings ? "#ffff" : "", border: "unset" }} variant={!accountSettings ? "primary" : "outline-primary"} onClick={() => setAccountSettings(!accountSettings)} className="d-flex justify-content-center align-items-center">
+                                <img src={!accountSettings ? "/svg/settings-active.svg" : "/svg/settings.svg"} alt="Toggle password visibility" />
                               </Button>
                             </div>
                           </div>
                         </div>
-                        {transactionType === 2 ?
+                        {accountSettings && cardIndex !== 0 ?
                           <AccountInfo index={index} />
                           :
                           <></>
@@ -264,7 +265,7 @@ const FeaturedInfo = () => {
             </Row>
           </Col>
         </Col>
-        {transactionType === 0 || transactionType === 2 ?
+        {transactionType === 0 ?
           <HomeTable /> : <HomeTransaction />}
       </Row>
       {alerts.show && (

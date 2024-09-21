@@ -53,10 +53,10 @@ export default function RootLayout({
                                                                 </div>
                                                             </div>
                                                         </Link>
-                                                        <Link href="/branch/service">
+                                                        <Link href="/branch/act">
                                                             <div
                                                                 className={
-                                                                    pathName === '/branch/dashboard/s'
+                                                                    pathName === '/branch/act'
                                                                         ? 'active'
                                                                         : ''
                                                                 }
@@ -162,7 +162,7 @@ export default function RootLayout({
                                     padding: '0',
                                 }}
                             >
-                                <BranchTopbar name={pathName === "/branch/dashboard" ? branch.name : pathName === "/branch/faq" ? "FAQ" : pathName === "/branch/settings" ? "Хэрэглэгчийн тохиргоо" : pathName === "/app/service" ? "Нэмэлт үйлчилгээ" : pathName === "/branch/help" ? "Тусламж" : pathName === "/branch/graphic" ? "Дашбоард, Демограф" : ""}
+                                <BranchTopbar name={pathName === "/branch/dashboard" ? branch.name : pathName === "/branch/faq" ? "FAQ" : pathName === "/branch/settings" ? "Хэрэглэгчийн тохиргоо" : pathName === "/branch/service" ? "Нэмэлт үйлчилгээ" : pathName === "/branch/help" ? "Тусламж" : pathName === "/branch/graphic" ? "Дашбоард, Демограф" : pathName === "/branch/act" ? "Тооцоо нийлэх акт" : ""}
                                     logo={pathName === "/branch/settings" || pathName === "/branch/help" ? "/svg/icon-setting.svg" : pathName === "/branch/faq" ? "/svg/icon-question.svg" : "/svg/icon-wallet.svg"} />
                             </Col>
                         </Row>

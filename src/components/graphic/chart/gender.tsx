@@ -88,12 +88,18 @@ const SalesByGenderChart: React.FC<SalesByGenderChartProps> = ({ genderList }) =
           fontSize: "12px",
           color: "#333",
         },
+
       },
       labels: {
         style: {
           fontSize: "12px",
           colors: ["#666"],
         },
+        formatter: (val: number) => `${val.toString()
+          .replace(
+            /\B(?=(\d{3})+(?!\d))/g,
+            ','
+          )}`,
       },
     },
     grid: {
@@ -115,7 +121,11 @@ const SalesByGenderChart: React.FC<SalesByGenderChartProps> = ({ genderList }) =
     },
     tooltip: {
       y: {
-        formatter: (val) => `${val} sales`,
+        formatter: (val: number) => `${val.toString()
+          .replace(
+            /\B(?=(\d{3})+(?!\d))/g,
+            ','
+          )}`,
       },
       theme: "light",
     },

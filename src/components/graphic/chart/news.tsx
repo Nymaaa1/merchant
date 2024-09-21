@@ -37,7 +37,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
   const [chartData, setChartData] = useState<ChartData>({
     series: [
       {
-        name: "New Customers",
+        name: "Борлуулалтын мэдээ",
         data: [],
       },
     ],
@@ -50,7 +50,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
     setChartData({
       series: [
         {
-          name: "New Customers",
+          name: "Борлуулалтын мэдээ",
           data: data,
         },
       ],
@@ -69,7 +69,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
       setChartData({
         series: [
           {
-            name: "New Customers",
+            name: "Борлуулалтын мэдээ",
             data: data,
           },
         ],
@@ -105,13 +105,17 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
       curve: 'smooth'
     },
     grid: {
-      strokeDashArray: 0, // Dashed grid lines
-      borderColor: "#E9ECEF", // Grid line color
+      strokeDashArray: 3, // Dashed grid lines
+      borderColor: "#E9ECEF", // Grid liner
     },
     tooltip: {
       enabled: true,
       y: {
-        formatter: (val: number) => `${val} new customers`, // Tooltip format
+        formatter: (val: number) => `${val.toString()
+          .replace(
+            /\B(?=(\d{3})+(?!\d))/g,
+            ','
+          )}`,
       },
     },
     xaxis: {
@@ -132,6 +136,11 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
           fontSize: "12px", // Font size for Y-axis labels
           colors: ["#A0AEC0"], // Y-axis label color
         },
+        formatter: (val: number) => `${val.toString()
+          .replace(
+            /\B(?=(\d{3})+(?!\d))/g,
+            ','
+          )}`,
       },
     },
     legend: {

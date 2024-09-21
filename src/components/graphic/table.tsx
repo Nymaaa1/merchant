@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
-import { Col, Nav, Tab, Table, Alert, Form, Pagination, Button } from "react-bootstrap";
+import { Col, Nav, Tab, Table, Alert, Form, Pagination, Button, Row } from "react-bootstrap";
 import { useRequest } from "ahooks";
 import FailNotification from "../notification/fail-notif";
 import authBranchService from "@/service/branch";
@@ -14,14 +14,15 @@ import 'rsuite/DateRangePicker/styles/index.css';
 import { format } from 'date-fns';
 import { useLoading } from "@/context/loading";
 import { excelDownload } from "@/utils/excel";
+import Switch from "../widget/switch";
 
 const BranchTable = () => {
-    const { setLoading } = useLoading();
+    const { setLoading ,setColor} = useLoading();
     let dayjs = require('dayjs');
     const [recent, setRecent] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const tra = useTranslations('transaction');
-    const { branch } = useContext(IctContext);
+    const { branch, tableHideAbout, setTableHideAbout } = useContext(IctContext);
     const [params, setParams] = useState<DatePickerModel>({
         offset: 0,
         limit: 20,
@@ -30,12 +31,6 @@ const BranchTable = () => {
         beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
         endDate: dayjs().format('YYYY-MM-DD'),
     });
-
-    const converHidePhone = (val: string) => {
-        return val.length > 8
-            ? val.substring(0, 4) + '****' + val.substring(7)
-            : val;
-    }
 
     const changeDateRange = (value: [Date, Date] | null) => {
         if (value && value[0] && value[1]) {
@@ -50,6 +45,7 @@ const BranchTable = () => {
     };
 
     useEffect(() => {
+        setColor("#4341CC");
         recentAction.run(branch?.accountIdMerch, params);
     }, []);
 
@@ -88,6 +84,10 @@ const BranchTable = () => {
             pagingStart: value
         }));
         recentAction.run(branch?.accountIdMerch, params);
+    };
+
+    const toggleHandler = () => {
+        setTableHideAbout(!tableHideAbout);
     };
 
     const beginDate = params.beginDate ? new Date(params.beginDate) : new Date();
@@ -145,13 +145,29 @@ const BranchTable = () => {
                                         </Nav.Link>
                                     </Nav.Item>
                                     <div className="date-graphic">
-                                        <DateRangePicker
-                                            className="custom-date-range-picker"
-                                            value={[beginDate, endDate]}
-                                            disabled={false}
-                                            placement="autoVerticalEnd"
-                                            onChange={changeDateRange}
-                                        />
+                                        <div className="content" style={{ height: "48px" }}>
+                                            <DateRangePicker
+                                                className="custom-date-range-picker"
+                                                value={[beginDate, endDate]}
+                                                disabled={false}
+                                                placement="autoVerticalEnd"
+                                                onChange={changeDateRange}
+                                            />
+                                        </div>
+                                        <div className="item d-flex justify-content-center align-items-center" style={{ width: "155px", height: "48px", }}>
+                                            <Row className="d-flex justify-content-between align-items-center g-0 m-0 p-0">
+                                                <Col className="text-nowrap mr-6" style={{ fontSize: "13px", fontWeight: "600", fontFamily: 'Code Next' }}>
+                                                    Харах
+                                                </Col>
+                                                <Col className="d-flex justify-content-end align-items-center">
+                                                    <Switch
+                                                        isOn={tableHideAbout}
+                                                        handleToggle={toggleHandler}
+                                                        onColor={!tableHideAbout ? "#4341CC" : ""}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </div>
                                     </div>
                                 </Nav>
                             </div>
@@ -185,12 +201,12 @@ const BranchTable = () => {
                                                                 </td>
                                                                 <td>
                                                                     <span>
-                                                                        {cat.amount
+                                                                        {tableHideAbout ? cat.amount
                                                                             .toString()
                                                                             .replace(
                                                                                 /\B(?=(\d{3})+(?!\d))/g,
                                                                                 ','
-                                                                            )} ₮
+                                                                            ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -202,7 +218,7 @@ const BranchTable = () => {
                                                                         height: "24px",
                                                                     }}>
                                                                         <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
-                                                                        {converHidePhone(cat.coopAccountNo)}
+                                                                        {tableHideAbout ? (cat.coopAccountNo) : "********"}
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -259,12 +275,12 @@ const BranchTable = () => {
                                                                     </td>
                                                                     <td>
                                                                         <span>
-                                                                            {cat.amount
+                                                                            {tableHideAbout ? cat.amount
                                                                                 .toString()
                                                                                 .replace(
                                                                                     /\B(?=(\d{3})+(?!\d))/g,
                                                                                     ','
-                                                                                )} ₮
+                                                                                ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                         </span>
                                                                     </td>
                                                                     <td>
@@ -276,7 +292,7 @@ const BranchTable = () => {
                                                                             height: "24px",
                                                                         }}>
                                                                             <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
-                                                                            {converHidePhone(cat.coopAccountNo)}
+                                                                            {tableHideAbout ? (cat.coopAccountNo) : "********"}
                                                                         </span>
                                                                     </td>
                                                                     <td>
@@ -333,12 +349,12 @@ const BranchTable = () => {
                                                                     </td>
                                                                     <td>
                                                                         <span>
-                                                                            {cat.amount
+                                                                            {tableHideAbout ? cat.amount
                                                                                 .toString()
                                                                                 .replace(
                                                                                     /\B(?=(\d{3})+(?!\d))/g,
                                                                                     ','
-                                                                                )} ₮
+                                                                                ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                         </span>
                                                                     </td>
                                                                     <td>
@@ -350,7 +366,7 @@ const BranchTable = () => {
                                                                             height: "24px",
                                                                         }}>
                                                                             <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
-                                                                            {converHidePhone(cat.coopAccountNo)}
+                                                                            {tableHideAbout ? (cat.coopAccountNo) : "********"}
                                                                         </span>
                                                                     </td>
                                                                     <td>

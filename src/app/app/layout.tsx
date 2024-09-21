@@ -26,7 +26,7 @@ export default function RootLayout({
                                 padding: '0',
                             }}
                         >
-                            <Topbar name={pathName === "/app/dashboard" ? "Үндсэн данс" : pathName === "/app/faq" ? "FAQ" : pathName === "/app/settings" ? "Хэрэглэгчийн тохиргоо" : pathName === "/app/service" ? "Нэмэлт үйлчилгээ" : pathName === "/app/help" ? "Тусламж" : pathName === "/app/graphic" ? "Дашбоард, Демограф" : ""}
+                            <Topbar name={pathName === "/app/dashboard" ? "Үндсэн данс" : pathName === "/app/faq" ? "FAQ" : pathName === "/app/settings" ? "Хэрэглэгчийн тохиргоо" : pathName === "/app/service" ? "Нэмэлт үйлчилгээ" : pathName === "/app/help" ? "Тусламж" : pathName === "/app/graphic" ? "Дашбоард, Демограф" :pathName === "/app/act" ? "Тооцоо нийлэх акт" : ""}
                                 logo={pathName === "/app/settings" || pathName === "/app/help" ? "/svg/icon-setting.svg" : pathName === "/app/faq" ? "/svg/icon-question.svg" : "/svg/icon-wallet.svg"} />
                         </Col>
                     </Row>

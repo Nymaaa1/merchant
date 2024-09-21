@@ -208,6 +208,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
         setBranch({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
         // setCardIndex(0);
+        setTableHideAbout(false);
         setLoginType("creater");
         clear();
         setUserRole("");

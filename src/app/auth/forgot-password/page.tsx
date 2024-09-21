@@ -29,8 +29,8 @@ const ForgotPassword: React.FC = () => {
         event.preventDefault();
         const form = event.currentTarget as HTMLFormElement;
         setValidated(true);
-        if (!emailRegex.test(form.number.value) && !phoneRegex.test(form.number.value)) {
-            setAlert({ message: "Утасны дугаар эсвэл и-мэйл хаягаа зөв оруулна уу.", show: true });
+        if (!phoneRegex.test(form.number.value)) {
+            setAlert({ message: "Утасны дугаар зөв оруулна уу.", show: true });
             return setValidated(true);
         }
         if (form.checkValidity() === false) {
@@ -39,7 +39,7 @@ const ForgotPassword: React.FC = () => {
             const phoneNumber = form.number.value;
             setPhoneEmail(phoneNumber);
             const values = {
-                accessType: phoneRegex.test(phoneNumber) ? "PHONE" : "EMAIL",
+                accessType: "PHONE",
                 accessValue: phoneNumber,
             };
             if (loginType === "creater") {
@@ -107,19 +107,26 @@ const ForgotPassword: React.FC = () => {
                                 <Form.Control
                                     required
                                     name="number"
-                                    type="text"
+                                    type="number"
+                                    pattern="[1-9]{1}[0-9]{7}"
                                     className="tw-input"
-                                    placeholder={t('phone-number-or-email')}
+                                    placeholder="Утасны дугаар"
                                     autoComplete="off"
+                                    maxLength={8}
+                                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (e.target.value.length > 8) {
+                                            e.target.value = e.target.value.slice(0, 8);
+                                        }
+                                    }}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t('phone-number-or-email-validation')}.
+                                    Утасны дугаар зөв оруулна уу.
                                 </Form.Control.Feedback>
                             </InputGroup>
                         </Form.Group>
                         <div className="tw-form-buttons" style={{ marginTop: "30px" }}>
                             <div className="tw-top-button">
-                                <Button type="submit">{t('send-code')}</Button>
+                                <Button type="submit" style={{ border: "unset" }}>{t('send-code')}</Button>
                             </div>
                             <div className="tw-bottom-button">
                                 <Link href="/auth/login">

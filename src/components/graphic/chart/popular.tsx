@@ -73,7 +73,7 @@ const PercentageDisplay: React.FC<PercentageDisplayProps> = ({ count, districtLi
 };
 
 const PopularityTable: React.FC<PopularityTableProps> = ({ districtList }) => {
-    const maxCount = Math.max(...districtList.result.map(cat => cat.count ?? 0));
+    const maxCount = Math.max(0, ...districtList?.result?.map(cat => cat.count ?? 0) || []);
     return (
         <div className="bg-white rounded-lg p-4 md:p-6" style={{ height: "351px", boxShadow: "0px 0px 8px 8px #F8F9FA" }}>
             <div className="flex justify-between mb-3">

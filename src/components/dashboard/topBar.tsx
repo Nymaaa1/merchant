@@ -53,21 +53,15 @@ const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
 
                             <Dropdown.Menu className="information">
                                 <li className="text-muted mb-2">Тохиргоо</li>
-                                <Dropdown.Item className="d-flex align-items-center mb-8 mr-8" href='/app/settings'>
+                                <Dropdown.Item className="d-flex align-items-center mr-8" href='/app/settings'>
                                     <img src="/icon-user.svg" alt="User Icon" />
                                     <span className='ml-3' style={{ color: "#5B698E" }}>Мерчант мэдээлэл</span>
                                 </Dropdown.Item>
                                 <Dropdown.Divider style={{ color: "#5B698E" }} />
-                                <Dropdown.Item className="d-flex align-items-center p-0 mt-3"
+                                <Dropdown.Item className="d-flex align-items-center"
                                     href="/app/settings">
-                                    <Button variant="primary" className="w-100" style={{ borderRadius: "8px" }}>
-                                        <Row className="align-items-center g-0">
-                                            <Col xs="auto" className='ml-3'>
-                                                <img src="/svg/icon-password.svg" alt="User Icon" />
-                                            </Col>
-                                            <Col className='mr-3'>Нууц үг солих</Col>
-                                        </Row>
-                                    </Button>
+                                    <img src="/svg/app-icon-password.svg" alt="User Icon" />
+                                    <span className='ml-3' style={{ color: "#5B698E" }}>Нууц үг солих</span>
                                 </Dropdown.Item >
                             </Dropdown.Menu>
                         </Dropdown>

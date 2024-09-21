@@ -43,10 +43,10 @@ const SidebarControl = () => {
                                                 </div>
                                             </div>
                                         </Link>
-                                        <Link href="/app/service">
+                                        <Link href="/app/act">
                                             <div
                                                 className={
-                                                    pathName === '/app/dashboard/s'
+                                                    pathName === '/app/act'
                                                         ? 'active'
                                                         : ''
                                                 }
