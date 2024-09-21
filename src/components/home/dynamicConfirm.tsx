@@ -31,12 +31,14 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const t = useTranslations('account');
     const { partner, cardIndex, partnerBalance, transferInfo } = useContext(IctContext);
     const [otp1, setOtp1] = useState(new Array(4).fill(""));
+    const [otp2, setOtp2] = useState(new Array(4).fill(""));
     const { setLoading } = useLoading();
     const [checked, setChecked] = useState<number>(0);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
     const [response, setResponse] = useState<ReponseProps>({ success: false, message: "", info: "" });
     const [show, setShow] = useState<boolean>(false);
+    const [counter, setCounter] = useState<number>(60);
     const router = useRouter();
 
     const handleBack = () => {
@@ -46,12 +48,37 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
 
     const handleShowOTP = () => {
         if (otp1.join("").length === 4) {
+
             if (transferInfo.type === "bank") {
                 // getOTPCode.run(transferInfo.bank.sourceAccountNo);
             } else if (transferInfo.type === "candy") {
                 getOTPCode.run();
+                const timer: NodeJS.Timeout = setInterval(() => {
+                    setCounter(prevCounter => {
+                        if (prevCounter <= 1) {
+                            clearInterval(timer); // Clear the interval when counter reaches 0
+                            return 0; // Ensure it doesn't go negative
+                        }
+                        return prevCounter - 1;
+                    });
+                }, 1000);
+                return () => {
+                    clearInterval(timer);
+                };
             } else if (transferInfo.type === "merchant") {
                 getOTPCode.run();
+                const timer: NodeJS.Timeout = setInterval(() => {
+                    setCounter(prevCounter => {
+                        if (prevCounter <= 1) {
+                            clearInterval(timer); // Clear the interval when counter reaches 0
+                            return 0; // Ensure it doesn't go negative
+                        }
+                        return prevCounter - 1;
+                    });
+                }, 1000);
+                return () => {
+                    clearInterval(timer);
+                };
             }
         } else {
             setAlert({ show: true, message: "Гүйлгээний нууц үг оруулна уу." });
@@ -71,6 +98,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
         manual: true,
         onSuccess: async (data) => {
             setChecked(1);
+            setCounter(60);
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
@@ -136,6 +164,19 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
 
     const retryPin = async () => {
         getOTPCode.run();
+        const timer: NodeJS.Timeout = setInterval(() => {
+            setCounter(prevCounter => {
+                if (prevCounter <= 1) {
+                    clearInterval(timer); // Clear the interval when counter reaches 0
+                    return 0; // Ensure it doesn't go negative
+                }
+                return prevCounter - 1;
+            });
+        }, 1000);
+
+        return () => {
+            clearInterval(timer);
+        };
     };
 
     const handleSubmit = (event: any) => {
@@ -145,8 +186,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
             event.stopPropagation();
         } else {
             event.preventDefault();
-            const pin: string = `${form.code1.value}${form.code2.value}${form.code3.value}${form.code4.value}`;
-            postOTPCode.run(pin);
+            postOTPCode.run(otp2.join(""));
         }
     };
 
@@ -327,13 +367,18 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                             <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
                                                                 <h5>Бид таны {converHidePhone(partner.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
                                                             </div>
-                                                            <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
-                                                            <div className="confirm-bank">
-                                                                <div className="save-template">
-                                                                    <span onClick={retryPin}>
-                                                                        Дахин код авах уу?
+                                                            <OtpInput otp={otp2} setOtp={setOtp2} type="number" />
+                                                            <div className="timer mt-3">
+                                                                {counter === 0 ? (
+                                                                    <span className="timer-text" onClick={retryPin}>
+                                                                        Дахин код авах
                                                                     </span>
-                                                                </div>
+                                                                ) : (
+                                                                    <span className="timer-number" style={{ color: "#161E34", fontSize: "13px" }}>
+                                                                        <span style={{ color: "#5B698E" }}>Дахин код авах уу?</span> 00:{counter < 10 ? '0' : ''}
+                                                                        {counter}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div className="transfer-buttons">
                                                                 <div className="buttons-inner">
