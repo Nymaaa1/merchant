@@ -4176,8 +4176,25 @@ input[type='number']::-webkit-inner-spin-button {
   border-top: 1px solid rgba(91, 105, 142, 0.16);
   padding: 40px 0 0 0;
 }
+.sidebar-top-menu a,
+.sidebar-top-menu a:active,
+.sidebar-top-menu a:focus,
+.sidebar-control .sidebar-bottom-menu ,
+.sidebar-control .sidebar-bottom-menu a,
+.sidebar-control .sidebar-bottom-menu a:active,
+.sidebar-control .sidebar-bottom-menu a:focus,
+.sidebar-control .sidebar-bottom-menu a:hover,
+.sidebar-top-menu a:hover,
+.sidebar-top-menu span {
+    text-decoration: none;
+}
+
+.sidebar-top-menu .active span {
+    text-decoration: none;
+}
 
 .sidebar-control .sidebar-top-menu {
+  text-decoration: none;
   margin-top: 40px;
 }
 
@@ -4294,18 +4311,23 @@ input[type='number']::-webkit-inner-spin-button {
 
 /* dashboard featured css starts here */
 
+
 .dashboard-features .mp-wallet.background {
   background-image: url(/dashboard/card.png);
-  /* background-repeat: no-repeat; */
-  /* background-position: center center; */
+  background-repeat: no-repeat;
+  background-position: center center;
   background-size: cover;
   border-radius: 8px;
   background-color: #4341cc;
   padding-right: "100px";
+  height: 164px;
 }
 
 .dashboard-features .mp-wallet .content {
-  padding: 24px 32px;
+  padding-right: 24px !important;
+  padding-left: 24px !important;
+  padding-top: 18px !important;
+  padding-bottom: 14px !important;
 }
 
 .dashboard-features .mp-wallet .contents {
@@ -6216,6 +6238,9 @@ input[type='number']::-webkit-inner-spin-button {
 
 .card-buttons {
   box-sizing: border-box;
+  padding-bottom: 1mm;
+  padding-right: 12px;
+  padding-left: 12px;
 }
 
 .card-buttons .buttons-inner {
@@ -7595,45 +7620,12 @@ input[type='number']::-webkit-inner-spin-button {
   transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
 }
 
-/* 
-.date-graphic .item span {
-  font-family: 'Code Next';
-  font-style: normal;
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 24px;
-  letter-spacing: -0.024em;
-  color: #161e34;
-  margin-right: 32px;
-} */
-
-/* .date-graphic .item:last-child {
+.date-graphic .item:last-child {
   background: #ffffff;
   border: 1px solid #e8edf5;
   box-sizing: border-box;
   border-radius: 8px;
-  padding: 12px 24px;
-} */
-
-/* .date-graphic .item:last-child .switch {
-  align-items: center;
-  justify-content: center;
-} */
-
-/* .date-graphic .item:first-child .form-control {
-  padding: 12px 24px;
-  font-family: 'Code Next';
-  font-style: normal;
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 24px;
-  letter-spacing: -0.024em;
-  color: #161e34;
-  background: #ffffff;
-  border: 1px solid #e8edf5;
-  box-sizing: border-box;
-  border-radius: 8px;
-} */
+}
 
 .credit-container-bottom .form-check-radio {
   display: flex;
@@ -8220,32 +8212,32 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 /* range date picker */
-/* 
+
 .date-graphic .content {
   padding: 12px 24px;
   background: #ffffff;
-  border: 1px solid #e8edf5;
+  /* border: 1px solid #e8edf5; */
   box-sizing: border-box;
   border-radius: 8px;
   cursor: pointer;
   max-width: 245px;
   margin-right: 12px;
-} */
+}
 
-/* .date-graphic .content:hover .date-item {
+.date-graphic .content:hover .date-item {
   cursor: pointer;
-} */
+}
 
-/* .date-graphic .content .date-item {
+.date-graphic .content .date-item {
   border: unset;
   padding: 0;
-  width: 95px;
-} */
-/* 
+  width: 125px;
+}
+
 .date-graphic .content .date-item:focus-visible {
   outline: unset;
   border: unset;
-} */
+}
 
 .tw-user-form .person-name {
   background: rgba(209, 213, 228, 0.32);
@@ -11583,11 +11575,11 @@ hr {
   border-radius: 8px;
 }
 
-/* .tw-tab-items .tw-date-switch .date-graphic.tw-graphic-switch {
+.tw-tab-items .tw-date-switch .date-graphic.tw-graphic-switch {
   display: flex;
   flex-direction: row;
   position: absolute;
-} */
+}
 
 /*payment add page css starting*/
 .tw-payment-add {

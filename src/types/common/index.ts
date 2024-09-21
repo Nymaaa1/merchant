@@ -33,3 +33,10 @@ interface ContractsExcel {
     "ХАРИЛЦСАН ДАНС": string,
     "ОН, САР, ӨДӨР": string,
 }
+
+interface EmailBody {
+    type: string | null;
+    name: string;
+    phone: string;
+    email: string;
+}

@@ -103,8 +103,8 @@ const ChartPage = () => {
     };
 
     return (
-        <div className='p-10'>
-            <Row>
+        <div className='p-10' style={{fontFamily: "Code Next"}}>
+            <Row style={{fontFamily: "Code Next"}}>
                 <Col xl={8} xs={12} lg={8}>
                     <TodeySales briefinfo={briefinfo} />
                 </Col>

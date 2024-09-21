@@ -602,6 +602,31 @@ namespace authService {
         });
     };
 
+    export const email = async (body: EmailBody): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/email', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify(body)
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
     export const handleError = (err: any, reject: any) => {
         if (err instanceof Error) {
             return reject({ message: err.message });

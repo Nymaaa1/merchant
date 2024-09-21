@@ -2,7 +2,7 @@
 import authService from "@/service/api";
 import { useRequest } from "ahooks";
 import { ChangeEvent, FormEvent, use, useContext, useEffect, useRef, useState } from "react";
-import { Alert, Button, Col, Form, InputGroup, Row, Tab, Tabs } from "react-bootstrap";
+import { Alert, Button, Col, Form, InputGroup, Modal, Row, Tab, Tabs } from "react-bootstrap";
 import CurrencyInput from 'react-currency-input-field';
 import FailNotification from "../notification/fail-notif";
 import { Bank } from "@/types/bank";
@@ -50,7 +50,8 @@ const HomeTransaction = () => {
     const [currentTab, setCurrentTab] = useState<string>('candy');
     const [lastChecked, setLastChecked] = useState<string>('');
     const [addAmountFund, setAddAmountFund] = useState<string>('');
-    const [selectedFile, setSelectedFile] = useState<FormData | null>(null);
+    const [response, setResponse] = useState({ success: false, info: "" });
+    const [show, setShow] = useState<boolean>(false);
 
     const handleDownload = (type: string) => {
         const fileUrl = `/auto-transfer/${type}.pdf`;
@@ -246,6 +247,11 @@ const HomeTransaction = () => {
         setSendBankAccount(value);
     };
 
+    const handleClose = () => {
+        setShow(false);
+        window.location.reload();
+    };
+
     const handleTab = async (key: string) => {
         setCurrentTab(key);
         if (key == "bank") {
@@ -315,33 +321,24 @@ const HomeTransaction = () => {
             const file = event.target.files[0];
             const formData = new FormData();
             formData.append('file', file);
-            uploadFile.run(formData);
-            // const apiRes = await fetch(`${process.env.MONPAY_API_URL}/partner/images/upload/partner`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'multipart/form-data;boundary=None',
-            //         'Authorization': `Bearer 4c6db2ab-6261-4e9a-8e9c-756f3526fc25`
-            //     },
-            //     body: file
-            // });
-
-            // const data = await apiRes.json();
-            // alert(JSON.stringify(data))
-            // console.log(data)
+            if (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                uploadFile.run(formData);
+            } else {
+                setAlert({ show: true, message: "Зөвхөн PDF эсвэл DOCX файл оруулна уу." });
+            }
         }
     };
 
     const uploadFile = useRequest(authService.autoFileUpload, {
         onBefore: () => {
-            setLoading(true)
+            setLoading(true);
         },
         manual: true,
         onSuccess: async (data) => {
-            alert("success");
+            setShow(true);
+            setResponse({ success: true, info: data.result });
         },
         onError: (e) => {
-            alert(JSON.stringify(e));
             setAlert({ show: true, message: e.message });
         },
         onFinally: () => {
@@ -756,7 +753,7 @@ const HomeTransaction = () => {
                     </Col> :
                     <DynamicConfirm setConfirmation={setConfirmation} />
                 }
-                <Col style={{ paddingLeft: "20px" }}>
+                <Col style={{ paddingLeft: "20px", fontFamily: "Code Next" }}>
                     <Alert variant="danger" className={`customAlert`}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <img src="/svg/transfer-warning.svg" alt="Warning" className="mr-3" />
@@ -837,6 +834,58 @@ const HomeTransaction = () => {
             {alerts.show && (
                 <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />
             )}
+            <Modal
+                show={show}
+                onHide={() => setShow(false)}
+                dialogClassName={response.success ? 'success-modal' : 'fail-modal'}
+                centered
+            >
+                <div className="content-inner">
+                    <Modal.Header>
+                        <div className="image">
+                            <div className="image-inner">
+                                <img
+                                    src={
+                                        response.success
+                                            ? '/modal-icon-success.svg'
+                                            : '/modal-icon-danger.svg'
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className="body-content">
+                            <div className="title">
+                                <h5>{response.success ? 'амжилттай' : 'амжилтгүй'}</h5>
+                            </div>
+                            <div className="desc">
+                                {response.success ? (
+                                    <p>
+                                        <strong
+                                            style={{
+                                                padding: '0 3px',
+                                                color: "#5B698E"
+                                            }}
+                                        >
+                                            Файл амжилттай илгээгдлээ.
+                                        </strong>
+                                    </p>
+                                ) : (
+                                    <p>
+                                        <strong>{response.info}</strong>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={handleClose}>
+                            {response.success ? 'Баярлалаа' : 'Хаах'}
+                        </Button>
+                    </Modal.Footer>
+                </div>
+            </Modal>
         </Col >
     )
 }

@@ -1,14 +1,83 @@
 "use client";
-import React, { useState } from 'react';
+import FailNotification from '@/components/notification/fail-notif';
+import { useLoading } from '@/context/loading';
+import authService from '@/service/api';
+import { emailRegex, phoneRegex } from '@/utils/utils';
+import { useRequest } from 'ahooks';
+import React, { FormEvent, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 
 const HomePage = () => {
     const serviceMonpayPlus: string[] = ["", "", ""];
     const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
     const [validated, setValidated] = useState(false);
+    const { setLoading, setColor } = useLoading();
+    const [show, setShow] = useState<boolean>(false);
+    const [type, setType] = useState<boolean>(false);
+    const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
+    const [response, setResponse] = useState({ success: false, info: "" });
+
+    const emailSend = useRequest(authService.email, {
+        onBefore: () => {
+            setColor("#4341CC");
+            setLoading(true);
+        },
+        manual: true,
+        onSuccess: async (data) => {
+            setLoading(false);
+            setShowPaymentPassword(false);
+            setShow(true);
+            setResponse({ success: true, info: data.result });
+        },
+        onError: (e) => {
+            setResponse({ success: false, info: e.message });
+        },
+        onFinally: () => {
+            setLoading(false);
+        }
+    });
+
+    const handleClose = () => {
+        setShow(false);
+        window.location.reload();
+    };
+
+    const closeNotification = () => {
+        setAlert({ show: false, message: "" });
+    };
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = event.currentTarget as HTMLFormElement;
+        if (form.checkValidity() === false) {
+            event.stopPropagation();
+        } else if (!emailRegex.test(form.email.value)) {
+            setAlert({ show: true, message: "И-Мэйл хаяг оруулна уу!" });
+            setValidated(true);
+        } else if (!phoneRegex.test(form.phone.value)) {
+            setAlert({ show: true, message: "Утасны дугаар оруулна уу!" });
+            setValidated(true);
+        } else if (!(form.companyName.value.length > 0)) {
+            setAlert({ show: true, message: "Байгууллагын нэр оруулна уу!" });
+            setValidated(true);
+        } else {
+            const phone = form.phone.value;
+            const email = form.email.value;
+            const name = form.companyName.value;
+
+            const body: EmailBody = {
+                type: type ? "AW" : "PLUS",
+                name: name,
+                phone: phone,
+                email: email,
+            };
+            emailSend.run(body);
+        }
+        setValidated(true);
+    };
 
     return (
-        <Container fluid>
+        <Container fluid style={{ fontFamily: "Code Next" }}>
             <Row className="wrapper-row">
                 <div
                     style={{
@@ -70,7 +139,7 @@ const HomePage = () => {
                                         </p>
                                     </Col>
                                     <Col className='d-flex justify-content-end align-items-center'>
-                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#15A3AA", color: "#ffff", width: "225px", height: "48px" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
+                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#15A3AA", color: "#ffff", width: "225px", height: "48px" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setType(false) }}>
                                             Хүсэлт илгээх →
                                         </Button>
                                     </Col>
@@ -125,7 +194,7 @@ const HomePage = () => {
                                         </p>
                                     </Col>
                                     <Col className='d-flex justify-content-end align-items-center'>
-                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#FF8650", color: "#ffff", width: "225px", height: "48px" }}>
+                                        <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#FF8650", color: "#ffff", width: "225px", height: "48px" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setType(true) }}>
                                             Хүсэлт илгээх →
                                         </Button>
                                     </Col>
@@ -135,6 +204,12 @@ const HomePage = () => {
                     </div>
                 </div>
             </Row>
+            {alerts.show && (
+                <FailNotification
+                    show={alerts.show}
+                    infos={alerts.message}
+                    close={closeNotification} position={undefined} />
+            )}
             <Modal
                 show={showPaymentPassword}
                 onHide={() => setShowPaymentPassword(false)}
@@ -151,7 +226,7 @@ const HomePage = () => {
                         paddingBottom: '0',
                     }}
                 >
-                    <Form noValidate validated={validated} onSubmit={() => { }}>
+                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
                         <Form.Group>
                             <div className="template-body">
                                 <div className="tw-user-bottom">
@@ -164,10 +239,7 @@ const HomePage = () => {
                                                 <Form.Control
                                                     className="save-temp-input"
                                                     type="text"
-                                                    onChange={(e) => {
-                                                        // handleCheck(e);
-                                                        // setUid(e.target?.value);
-                                                    }}
+                                                    name='companyName'
                                                 />
                                             </InputGroup>
                                         </div>
@@ -181,10 +253,7 @@ const HomePage = () => {
                                                     type="number"
                                                     maxLength={8}
                                                     plaintext
-                                                    onChange={(e) => {
-                                                        // handleCheck(e);
-                                                        // setUid(e.target?.value);
-                                                    }}
+                                                    name='phone'
                                                 />
                                             </InputGroup>
                                         </div>
@@ -196,17 +265,14 @@ const HomePage = () => {
                                                 <Form.Control
                                                     className="save-temp-input"
                                                     type="text"
-                                                    onChange={(e) => {
-                                                        // handleCheck(e);
-                                                        // setUid(e.target?.value);
-                                                    }}
+                                                    name='email'
                                                 />
                                             </InputGroup>
                                         </div>
                                     </div>
                                     <div className="tw-form-buttons" style={{ marginTop: "30px" }}>
                                         <div className="tw-single-button">
-                                            <Button type="submit">Хүсэлт илгээх</Button>
+                                            <Button type="submit" style={{ fontSize: "13px", fontWeight: "600", fontFamily: "Code Next" }}>Хүсэлт илгээх</Button>
                                         </div>
 
                                     </div>
@@ -217,6 +283,58 @@ const HomePage = () => {
                 </Modal.Body>
                 <Modal.Footer>
                 </Modal.Footer>
+            </Modal>
+            <Modal
+                show={show}
+                onHide={() => setShow(false)}
+                dialogClassName={response.success ? 'success-modal' : 'fail-modal'}
+                centered
+            >
+                <div className="content-inner">
+                    <Modal.Header>
+                        <div className="image">
+                            <div className="image-inner">
+                                <img
+                                    src={
+                                        response.success
+                                            ? '/modal-icon-success.svg'
+                                            : '/modal-icon-danger.svg'
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className="body-content">
+                            <div className="title">
+                                <h5>{response.success ? 'Амжилттай' : 'Амжилтгүй'}</h5>
+                            </div>
+                            <div className="desc">
+                                {response.success ? (
+                                    <p>
+                                        <strong
+                                            style={{
+                                                padding: '0 3px',
+                                                color: "#5B698E"
+                                            }}
+                                        >
+                                            Таны хүсэлт амжилттай илгээгдлээ.
+                                        </strong>
+                                    </p>
+                                ) : (
+                                    <p>
+                                        <strong>{response.info}</strong>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={handleClose}>
+                            {response.success ? 'Баярлалаа' : 'Хаах'}
+                        </Button>
+                    </Modal.Footer>
+                </div>
             </Modal>
         </Container>
     );

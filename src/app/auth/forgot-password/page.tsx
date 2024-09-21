@@ -54,7 +54,6 @@ const ForgotPassword: React.FC = () => {
     const otpAction = useRequest(authService.getPasswordOtp, {
         manual: true,
         onSuccess: async (data) => {
-            alert(data.result.state)
             setPasswordRecoverOTP(data.result.state);
             jsCookie.set('phoneAndEmail', phoneEmail);
             router.push('/auth/otp');
@@ -67,7 +66,6 @@ const ForgotPassword: React.FC = () => {
     const branchOTPAction = useRequest(authBranchService.getPasswordOtp, {
         manual: true,
         onSuccess: async (data) => {
-            alert(data.result.state)
             setPasswordRecoverOTP(data.result.state);
             jsCookie.set('phoneAndEmail', phoneEmail);
             router.push('/auth/otp');

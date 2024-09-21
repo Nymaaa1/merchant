@@ -17,8 +17,10 @@ interface IctContextProps {
     branchBalance: BranchBalance;
     partnerBalance: BalanceResult;
     cardIndex: number;
+    tableHideAbout: boolean;
     passwordRecoverOTP: string;
     transferInfo: TransferProps;
+    setTableHideAbout: (val: boolean) => void;
     setUserRole: (val: "branch" | "partner" | "") => void;
     setLoginType: (val: string) => void;
     setPartner: (val: Partner) => void;
@@ -37,6 +39,7 @@ const IctContext = React.createContext<IctContextProps>({
     partner: { profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },
     cardIndex: 0,
     userRole: "",
+    tableHideAbout: false,
     partnerBalance: { totalBalance: 0, balanceList: [] },
     passwordRecoverOTP: "",
     transferInfo: { type: "", title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" }, monpay: { phoneNumber: "", userName: "", amount: "", description: "" }, merchant: { phoneNumber: "", userName: "", amount: "", description: "" } },
@@ -78,6 +81,7 @@ const IctContext = React.createContext<IctContextProps>({
     setPartner: () => { },
     setPasswordRecoverOTP: () => { },
     setLogout: () => { },
+    setTableHideAbout: () => { },
     setUserInfo: () => { },
     setTransferInfo: () => { },
     setPartnerBalance: () => { },
@@ -94,6 +98,7 @@ interface IctProviderProps {
 export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const [userRole, setUserRole] = useState<"branch" | "partner" | "">("");
     const [loginType, setLoginType] = useState<string>("");
+    const [tableHideAbout, setTableHideAbout] = useState<boolean>(false);
     const [partner, setPartner] = useState<Partner>({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
     const [cardIndex, setCardIndex] = useState<number>(0);
     const [transferInfo, setTransferInfo] = useState<TransferProps>({ type: "", title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" }, monpay: { phoneNumber: "", userName: "", amount: "", description: "" }, merchant: { phoneNumber: "", userName: "", amount: "", description: "" } });
@@ -233,7 +238,9 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
                 partnerBalance,
                 passwordRecoverOTP,
                 transferInfo,
+                tableHideAbout,
                 cardIndex,
+                setTableHideAbout,
                 setUserRole,
                 setLoginType,
                 setBranchBalance,

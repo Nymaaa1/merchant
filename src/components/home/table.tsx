@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
-import { Col, Nav, Tab, Table, Alert, Pagination, Row, Button } from "react-bootstrap";
+import { Col, Nav, Tab, Table, Pagination, Row, Button } from "react-bootstrap";
 import IctContext from "@/context/ict-context";
 import { useRequest } from "ahooks";
 import authService from "@/service/api";
@@ -10,10 +10,12 @@ import { format } from "date-fns";
 import { TransactionListResponse } from "@/types";
 import { DateRangePicker } from "rsuite";
 import 'rsuite/DateRangePicker/styles/index.css';
+import "rsuite/dist/rsuite.min.css";
 import Image from "next/image";
 import { useLoading } from "@/context/loading";
 import { TransactionBranchListResponse } from "@/types/branch";
 import { excelDownload } from "@/utils/excel";
+import Switch from "../widget/switch";
 
 const HomeTable = () => {
     const { setLoading, setColor } = useLoading();
@@ -23,7 +25,7 @@ const HomeTable = () => {
     const [partnerTransactions, setPartnerTransactions] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } })
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const tra = useTranslations('transaction');
-    const { partner, cardIndex, partnerBalance } = useContext(IctContext);
+    const { partner, cardIndex, partnerBalance, tableHideAbout, setTableHideAbout } = useContext(IctContext);
     const [params, setParams] = useState<DatePickerModel>({
         offset: 0,
         limit: 20,
@@ -52,7 +54,7 @@ const HomeTable = () => {
 
     const recentAction = useRequest(authService.getRecent, {
         onBefore: () => {
-            setLoading(true)
+            // setLoading(true);
         },
         manual: true,
         onSuccess: async (data) => {
@@ -84,6 +86,9 @@ const HomeTable = () => {
         }
     });
 
+    const toggleHandler = () => {
+        setTableHideAbout(!tableHideAbout);
+    };
 
     const getPartnerDetialTransaction = useRequest(authService.getPartnerDetialTransaction, {
         onBefore: () => {
@@ -208,13 +213,32 @@ const HomeTable = () => {
                                         </Nav.Link>
                                     </Nav.Item>
                                     <div className="date-graphic">
-                                        <DateRangePicker
-                                            value={[beginDate, endDate]}
-                                            disabled={false}
-                                            className="custom-date-range-picker"
-                                            placement="autoVerticalEnd"
-                                            onChange={changeDateRange}
-                                        />
+                                        <div className="content" style={{ height: "48px" }}>
+                                            <DateRangePicker
+                                                // caretAs={<img src="/caret-down.svg" alt="Toggle password visibility" />}
+                                                value={[beginDate, endDate]}
+                                                disabled={false}
+                                                oneTap={true}
+                                                className="custom-date-range-picker"
+                                                placement="autoVerticalEnd"
+                                                onChange={changeDateRange}
+                                                style={{ zIndex: 1000 }}
+                                            />
+                                        </div>
+                                        <div className="item d-flex justify-content-center align-items-center" style={{ width: "155px", height: "48px", }}>
+                                            <Row className="d-flex justify-content-between align-items-center g-0 m-0 p-0">
+                                                <Col className="text-nowrap mr-6" style={{ fontSize: "13px", fontWeight: "600", fontFamily: 'Code Next' }}>
+                                                    Харах
+                                                </Col>
+                                                <Col className="d-flex justify-content-end align-items-center">
+                                                    <Switch
+                                                        isOn={tableHideAbout}
+                                                        handleToggle={toggleHandler}
+                                                        onColor={!tableHideAbout ? "#4341CC" : ""}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </div>
                                     </div>
                                 </Nav>
                             </div>
@@ -245,12 +269,12 @@ const HomeTable = () => {
                                                             </td>
                                                             <td>
                                                                 <span>
-                                                                    {cat.amount
+                                                                    {tableHideAbout ? cat.amount
                                                                         .toString()
                                                                         .replace(
                                                                             /\B(?=(\d{3})+(?!\d))/g,
                                                                             ','
-                                                                        )} ₮
+                                                                        ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                 </span>
                                                             </td>
                                                             <td>
@@ -262,7 +286,7 @@ const HomeTable = () => {
                                                                     height: "24px",
                                                                 }}>
                                                                     <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
-                                                                    {(cat.coopAccountNo)}
+                                                                    {tableHideAbout ? cat.coopAccountNo : "********"}
                                                                 </span>
                                                             </td>
                                                             <td>
@@ -317,12 +341,12 @@ const HomeTable = () => {
                                                                 </td>
                                                                 <td>
                                                                     <span>
-                                                                        {cat.amount
+                                                                        {tableHideAbout ? cat.amount
                                                                             .toString()
                                                                             .replace(
                                                                                 /\B(?=(\d{3})+(?!\d))/g,
                                                                                 ','
-                                                                            )} ₮
+                                                                            ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -334,7 +358,7 @@ const HomeTable = () => {
                                                                         height: "24px",
                                                                     }}>
                                                                         <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
-                                                                        {converHidePhone(cat.accountNo)}
+                                                                        {tableHideAbout ? cat.coopAccountNo : "********"}
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -402,17 +426,17 @@ const HomeTable = () => {
                                                                 </td>
                                                                 <td>
                                                                     <span>
-                                                                        {cat.amount
+                                                                        {tableHideAbout ? cat.amount
                                                                             .toString()
                                                                             .replace(
                                                                                 /\B(?=(\d{3})+(?!\d))/g,
                                                                                 ','
-                                                                            )} ₮
+                                                                            ) : '*'.repeat(cat.amount.toString().length)} ₮
                                                                     </span>
                                                                 </td>
                                                                 <td>
                                                                     <span>
-                                                                        {converHidePhone(cat.accountNo)}
+                                                                        {tableHideAbout ? cat.coopAccountNo : "********"}
                                                                     </span>
                                                                 </td>
                                                                 <td>

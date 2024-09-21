@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState, FormEvent } from 'react';
+import React, { useContext, useState, FormEvent, useRef } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup, Tabs, Tab } from 'react-bootstrap';
 import Link from 'next/link';
 import IctContext from '@/context/ict-context';
@@ -15,6 +15,7 @@ import { useLoading } from "@/context/loading";
 
 const Login: React.FC = () => {
     const t = useTranslations('login');
+    const ref = useRef<HTMLFormElement>(null)
     const { setPartner, setBranch, setUserRole, setLoginType, loginType } = useContext(IctContext);
     const [passwordShown, setPasswordShown] = useState(false);
     const [validated, setValidated] = useState(false);
@@ -123,7 +124,7 @@ const Login: React.FC = () => {
                                 <Tabs
                                     id="controlled-tab-example"
                                     defaultActiveKey={loginType}
-                                    onSelect={(key) => setLoginType(key || 'branch')}
+                                    onSelect={(key) => { setLoginType(key || 'branch'); ref.current?.reset(); }}
                                     className="recharge-tab"
                                 >
                                     <Tab eventKey="creater" title={t('account')} />
@@ -134,6 +135,7 @@ const Login: React.FC = () => {
                     </div>
                     <Form className="tw-register pt-8" noValidate validated={validated}
                         onSubmit={handleSubmit}
+                        ref={ref}
                     >
                         <Form.Group>
                             <InputGroup hasValidation>
