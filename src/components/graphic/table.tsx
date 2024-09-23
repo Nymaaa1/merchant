@@ -17,9 +17,9 @@ import { excelDownload } from "@/utils/excel";
 import Switch from "../widget/switch";
 
 const BranchTable = () => {
-    const { setLoading ,setColor} = useLoading();
+    const { setLoading, setColor } = useLoading();
     let dayjs = require('dayjs');
-    const [recent, setRecent] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
+    const [recent, setRecent] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 }, offset: 0 });
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const tra = useTranslations('transaction');
     const { branch, tableHideAbout, setTableHideAbout } = useContext(IctContext);

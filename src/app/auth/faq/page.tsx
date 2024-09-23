@@ -24,16 +24,14 @@ const Question = () => {
                         <Row className="wrapper-row app-contract">
                             <div
                                 style={{
-                                    maxWidth: '1032px',
+                                    maxWidth: '768px',
                                     margin: 'auto',
                                     padding: '0',
                                 }}
                             >
                                 <Row>
-                                    <Col xs={12} lg={3}>
-                                    </Col>
-                                    <Col xs={12} lg={9}>
-                                        <Row className="tw-question-second-row">
+                                    <Col xs={12} lg={12}>
+                                        <Row className="tw-question-second-row ml-4">
                                             <div className="question-bottom">
                                                 <div className="question-title">
                                                     <h4>{t('faq')}</h4>

@@ -23,9 +23,9 @@ const HomeTable = () => {
 
     useEffect(() => {
         setColor("#4341CC");
-        if (cardIndex === 0 && transaction.result.length === 0) {
+        if (cardIndex === 0 && transaction?.result?.length === 0) {
             recentAction.run(partner?.profileId, params);
-        } else if (transaction.result.length === 0) {
+        } else if (transaction?.result?.length === 0) {
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         }
     }, [cardIndex]);
@@ -108,22 +108,22 @@ const HomeTable = () => {
     };
 
     const changeDateRange = (value: [Date, Date] | null) => {
-        // alert(value);
-        // if (value && value[0] && value[1]) {
-        //     setParams({
-        //         limit: 20,
-        //         offset: params.offset,
-        //         maxPage: params.maxPage,
-        //         pagingStart: 0,
-        //         beginDate: format(value[0], 'yyyy-MM-dd'),
-        //         endDate: format(value[1], 'yyyy-MM-dd'),
-        //     });
-        //     if (cardIndex === 0) {
-        //         getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-        //     } else {
-        //         getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-        //     }
-        // }
+        alert(value);
+        if (value && value[0] && value[1]) {
+            setParams({
+                limit: 20,
+                offset: params.offset,
+                maxPage: params.maxPage,
+                pagingStart: 0,
+                beginDate: format(value[0], 'yyyy-MM-dd'),
+                endDate: format(value[1], 'yyyy-MM-dd'),
+            });
+            if (cardIndex === 0) {
+                getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+            } else {
+                getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+            }
+        }
     };
 
     const renderData = () => {
@@ -197,7 +197,7 @@ const HomeTable = () => {
                                                 // oneTap={true}
                                                 className="custom-date-range-picker"
                                                 placement="autoVerticalEnd"
-                                                // onChange={changeDateRange}
+                                                onChange={changeDateRange}
                                                 style={{ zIndex: 1000 }}
                                             />
                                         </div>

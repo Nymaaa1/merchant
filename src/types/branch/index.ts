@@ -66,7 +66,7 @@ export interface TransactionBranchListResponse {
     offset: number;
     limit: number;
     total: number;
-    paging: TransactionPagination;
+    paging: TransactionPagination
 }
 
 export interface TransactionPagination {

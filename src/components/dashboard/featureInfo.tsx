@@ -51,12 +51,6 @@ const FeaturedInfo = () => {
     setAlert({ show: false, message: "" });
   };
 
-  const converHidePhone = (val: string) => {
-    return val.length > 4
-      ? val.substring(0, 2) + '***' + val.substring(5)
-      : val;
-  }
-
   return (
     <Container fluid style={{ fontFamily: "Code Next" }}>
       <Row className="d-flex dashboard-features" style={{ marginBottom: '24px' }}>
