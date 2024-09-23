@@ -8,9 +8,12 @@ import { BalanceResult } from '@/types/user/balance';
 import authBranchService from '@/service/branch';
 import authService from '@/service/api';
 import { BranchBalance } from '@/types/branch';
+import { TransactionListResponse } from "@/types";
+import dayjs from 'dayjs';
 
 interface IctContextProps {
     userRole: "branch" | "partner" | "";
+    transaction: TransactionListResponse;
     branch: Branch;
     partner: Partner;
     loginType: string;
@@ -20,12 +23,14 @@ interface IctContextProps {
     tableHideAbout: boolean;
     passwordRecoverOTP: string;
     transferInfo: TransferProps;
+    params: DatePickerModel;
+    setParams: (val: DatePickerModel) => void;
+    setTransaction: (val: TransactionListResponse) => void;
     setTableHideAbout: (val: boolean) => void;
     setUserRole: (val: "branch" | "partner" | "") => void;
     setLoginType: (val: string) => void;
     setPartner: (val: Partner) => void;
     setLogout: () => void;
-    setUserInfo: (val: any) => void;
     setTransferInfo: (val: TransferProps) => void;
     setPasswordRecoverOTP: (val: string) => void;
     setPartnerBalance: (val: BalanceResult) => void;
@@ -41,6 +46,7 @@ const IctContext = React.createContext<IctContextProps>({
     userRole: "",
     tableHideAbout: false,
     partnerBalance: { totalBalance: 0, balanceList: [] },
+    transaction: { code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } },
     passwordRecoverOTP: "",
     transferInfo: { type: "", title: '', bank: { description: "", bankAccount: "", bankName: "", amount: "", accountName: "", sourceAccountNo: "" }, monpay: { phoneNumber: "", userName: "", amount: "", description: "" }, merchant: { phoneNumber: "", userName: "", amount: "", description: "" } },
     branchBalance: {
@@ -77,12 +83,14 @@ const IctContext = React.createContext<IctContextProps>({
         }
     },
     loginType: "creater",
+    params: { offset: 0, limit: 20, pagingStart: 0, maxPage: 1, beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'), endDate: dayjs().format('YYYY-MM-DD') },
+    setParams: () => { },
+    setTransaction: () => { },
     setLoginType: () => { },
     setPartner: () => { },
     setPasswordRecoverOTP: () => { },
     setLogout: () => { },
     setTableHideAbout: () => { },
-    setUserInfo: () => { },
     setTransferInfo: () => { },
     setPartnerBalance: () => { },
     setCardIndex: () => { },
@@ -105,6 +113,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const [passwordRecoverOTP, setPasswordRecoverOTP] = useState<string>("");
     const [partnerBalance, setPartnerBalance] = useState<BalanceResult>({ totalBalance: 0, balanceList: [] });
     const [branch, setBranch] = useState<Branch>({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
+    const [transaction, setTransaction] = useState<TransactionListResponse>({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
     const [branchBalance, setBranchBalance] = useState<BranchBalance>({
         accountNo: "",
         ibanAccount: "",
@@ -137,6 +146,14 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             branchId: 0,
             accountName: ""
         }
+    });
+    const [params, setParams] = useState<DatePickerModel>({
+        offset: 0,
+        limit: 20,
+        pagingStart: 0,
+        maxPage: 1,
+        beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
+        endDate: dayjs().format('YYYY-MM-DD'),
     });
     const router = useRouter();
     const pathname = usePathname();
@@ -199,19 +216,16 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         }
     }, [pathname]);
 
-    const setUserInfo = (val: any) => {
-        const now = new Date();
-        val.lastUpdated = now.getTime();
-    };
-
     const setLogout = () => {
         setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
         setBranch({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
-        // setCardIndex(0);
+        setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
+        setCardIndex(0);
         setTableHideAbout(false);
         setLoginType("creater");
         clear();
         setUserRole("");
+        setParams({ offset: 0, limit: 20, pagingStart: 0, maxPage: 1, beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'), endDate: dayjs().format('YYYY-MM-DD') });
         router.push('/auth/login');
     };
 
@@ -232,6 +246,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         <IctContext.Provider
             value={{
                 partner,
+                params,
                 loginType,
                 branchBalance,
                 userRole,
@@ -241,6 +256,9 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
                 transferInfo,
                 tableHideAbout,
                 cardIndex,
+                transaction,
+                setParams,
+                setTransaction,
                 setTableHideAbout,
                 setUserRole,
                 setLoginType,
@@ -252,7 +270,6 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
                 setTransferInfo,
                 setLogout,
                 setCardIndex,
-                setUserInfo,
             }}
         >
             {props.children}

@@ -169,7 +169,7 @@ const Login: React.FC = () => {
                             </div>
                             <div className="tw-bottom-button">
                                 <Link href="/auth/login">
-                                    <Button type="submit">{t('back')}</Button>
+                                    <Button type="submit">Буцах</Button>
                                 </Link>
                             </div>
                         </div>

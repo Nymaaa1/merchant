@@ -1,4 +1,5 @@
 import { Transaction } from "./bank";
+import { TransactionPagination } from "./branch";
 import { AgeCount } from "./demo";
 
 
@@ -24,6 +25,7 @@ export interface TransactionListResponse {
   offset: number;
   limit: number;
   total: number;
+  paging: TransactionPagination;
 }
 
 

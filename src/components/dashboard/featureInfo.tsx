@@ -14,7 +14,7 @@ import "../../styles/CustomSwitchComponent.css";
 
 const FeaturedInfo = () => {
   const t = useTranslations('dashboard');
-  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance } = useContext(IctContext);
+  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance, setTransaction } = useContext(IctContext);
   const [show, setShow] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<number>(0);
   const [accountSettings, setAccountSettings] = useState<boolean>(false);
@@ -22,8 +22,10 @@ const FeaturedInfo = () => {
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
   useEffect(() => {
-    balanceAction.run(partner?.profileId);
-  }, []);
+    if (partnerBalance.balanceList.length === 0) {
+      balanceAction.run(partner?.profileId);
+    }
+  }, [partnerBalance]);
 
   const balanceAction = useRequest(authService.getBalance, {
     manual: true,
@@ -33,7 +35,12 @@ const FeaturedInfo = () => {
     onError: (e) => {
       setAlert({ show: true, message: e.message });
     }
-  })
+  });
+
+  const changeCardIndex = (index: number) => {
+    setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
+    setCardIndex(index);
+  }
 
   const toggle = () => {
     const state = show;
@@ -107,7 +114,7 @@ const FeaturedInfo = () => {
               </div>
             </div>
             :
-            <Card className="p-3 mb-10" style={{ backgroundColor: '#8089AC', color: '#fff', height: "86px", }} onClick={() => setCardIndex(0)}>
+            <Card className="p-3 mb-10" style={{ backgroundColor: '#8089AC', color: '#fff', height: "86px", }} onClick={() => changeCardIndex(0)}>
               <div className="mp-wallet">
                 <div className="contents">
                   <div className="content-inner" style={{ paddingLeft: 10 }}>
@@ -159,7 +166,7 @@ const FeaturedInfo = () => {
             <Row>
               {partnerBalance?.balanceList.map((account, index) => (
                 index === 0 ? <></> :
-                  <Col key={index} md={12} className="mb-3" onClick={() => { setCardIndex(index); }}>
+                  <Col key={index} md={12} className="mb-3" onClick={() => { changeCardIndex(index); }}>
                     {index === cardIndex ?
                       <>
                         <div className={`mp-wallet background ${cardIndex === 0 ? "mb-10" : ""}`} >
@@ -280,7 +287,7 @@ type AccountInfoProps = {
 };
 
 const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
-  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance } = useContext(IctContext);
+  const { partner } = useContext(IctContext);
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const converHidePhone = (val: string) => {

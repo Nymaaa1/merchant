@@ -7,59 +7,36 @@ import { useRequest } from "ahooks";
 import authService from "@/service/api";
 import FailNotification from "../notification/fail-notif";
 import { format } from "date-fns";
-import { TransactionListResponse } from "@/types";
 import { DateRangePicker } from "rsuite";
 import 'rsuite/DateRangePicker/styles/index.css';
 import "rsuite/dist/rsuite.min.css";
 import Image from "next/image";
 import { useLoading } from "@/context/loading";
-import { TransactionBranchListResponse } from "@/types/branch";
 import { excelDownload } from "@/utils/excel";
 import Switch from "../widget/switch";
 
 const HomeTable = () => {
     const { setLoading, setColor } = useLoading();
-    let dayjs = require('dayjs');
-    const [recent, setRecent] = useState<TransactionListResponse>({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0 });
-    const [merchantRecent, setMerchantRecent] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } })
-    const [partnerTransactions, setPartnerTransactions] = useState<TransactionBranchListResponse>({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } })
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const tra = useTranslations('transaction');
-    const { partner, cardIndex, partnerBalance, tableHideAbout, setTableHideAbout } = useContext(IctContext);
-    const [params, setParams] = useState<DatePickerModel>({
-        offset: 0,
-        limit: 20,
-        pagingStart: 0,
-        maxPage: 1,
-        beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
-        endDate: dayjs().format('YYYY-MM-DD'),
-    });
-
-    const converHidePhone = (val: string) => {
-        return val.length > 8
-            ? val.substring(0, 4) + '****' + val.substring(7)
-            : val;
-    }
+    const { partner, cardIndex, partnerBalance, tableHideAbout, setTableHideAbout, params, setParams, transaction, setTransaction } = useContext(IctContext);
 
     useEffect(() => {
         setColor("#4341CC");
-        if (cardIndex === 0) {
+        if (cardIndex === 0 && transaction.result.length === 0) {
             recentAction.run(partner?.profileId, params);
-            setMerchantRecent({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
-        } else {
-            setRecent({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0 });
+        } else if (transaction.result.length === 0) {
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         }
     }, [cardIndex]);
 
     const recentAction = useRequest(authService.getRecent, {
         onBefore: () => {
-            // setLoading(true);
+            setLoading(true);
         },
         manual: true,
         onSuccess: async (data) => {
-            setMerchantRecent({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
-            setRecent(data);
+            setTransaction(data);
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
@@ -71,18 +48,17 @@ const HomeTable = () => {
 
     const getBranchTableData = useRequest(authService.getBranchTableData, {
         onBefore: () => {
-            setLoading(true)
+            setLoading(true);
         },
         manual: true,
         onSuccess: async (data) => {
-            setRecent({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0 });
-            setMerchantRecent(data);
+            setTransaction(data);
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
         },
         onFinally: () => {
-            setLoading(false)
+            setLoading(false);
         }
     });
 
@@ -92,13 +68,11 @@ const HomeTable = () => {
 
     const getPartnerDetialTransaction = useRequest(authService.getPartnerDetialTransaction, {
         onBefore: () => {
-            setLoading(true)
+            setLoading(true);
         },
         manual: true,
         onSuccess: async (data) => {
-            setRecent({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0 });
-            setMerchantRecent({ code: 0, info: "", result: [], limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
-            setPartnerTransactions(data);
+            setTransaction(data);
         },
         onError: (e) => {
             setAlert({ show: true, message: e.message });
@@ -118,10 +92,14 @@ const HomeTable = () => {
     }
 
     const handlePaging = (value: number) => {
-        setParams((params) => ({
-            ...params,
+        setParams({
+            limit: 20,
+            offset: params.offset,
+            beginDate: params.beginDate,
+            endDate: params.endDate,
+            maxPage: params.maxPage,
             pagingStart: value
-        }));
+        });
         if (cardIndex === 0) {
             getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         } else {
@@ -130,29 +108,27 @@ const HomeTable = () => {
     };
 
     const changeDateRange = (value: [Date, Date] | null) => {
-        if (value && value[0] && value[1]) {
-            setParams((params) => ({
-                ...params,
-                pagingStart: 0,
-                beginDate: format(value[0], 'yyyy-MM-dd'),
-                endDate: format(value[1], 'yyyy-MM-dd'),
-            }));
-            if (cardIndex === 0) {
-                getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-            } else {
-                getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-            }
-        }
+        // alert(value);
+        // if (value && value[0] && value[1]) {
+        //     setParams({
+        //         limit: 20,
+        //         offset: params.offset,
+        //         maxPage: params.maxPage,
+        //         pagingStart: 0,
+        //         beginDate: format(value[0], 'yyyy-MM-dd'),
+        //         endDate: format(value[1], 'yyyy-MM-dd'),
+        //     });
+        //     if (cardIndex === 0) {
+        //         getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        //     } else {
+        //         getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        //     }
+        // }
     };
 
     const renderData = () => {
-        if (cardIndex === 0 && recent?.result &&
-            recent?.result?.length > 0) {
-            return recent;
-        } else if (merchantRecent?.result && merchantRecent?.result?.length > 0) {
-            return merchantRecent;
-        } else if (partnerTransactions?.result && partnerTransactions?.result?.length > 0 && cardIndex === 0) {
-            return partnerTransactions;
+        if (transaction?.result && transaction?.result?.length > 0) {
+            return transaction;
         }
         return { result: [] };
     }
@@ -218,10 +194,10 @@ const HomeTable = () => {
                                                 // caretAs={<img src="/caret-down.svg" alt="Toggle password visibility" />}
                                                 value={[beginDate, endDate]}
                                                 disabled={false}
-                                                oneTap={true}
+                                                // oneTap={true}
                                                 className="custom-date-range-picker"
                                                 placement="autoVerticalEnd"
-                                                onChange={changeDateRange}
+                                                // onChange={changeDateRange}
                                                 style={{ zIndex: 1000 }}
                                             />
                                         </div>
@@ -460,7 +436,7 @@ const HomeTable = () => {
                                         </h5>
                                     </div>
                                     <Pagination className="custom-pagination" style={{ gap: 10 }}>
-                                        {Array.from({ length: cardIndex === 0 && recent?.result?.length > 0 ? recent.total : cardIndex === 0 && partnerTransactions?.result?.length > 0 ? partnerTransactions?.paging?.maxPage : merchantRecent?.paging?.maxPage }, (_, i) => (
+                                        {Array.from({ length: transaction?.paging?.maxPage ?? 0 }, (_, i) => (
                                             <Pagination.Item
                                                 key={i + 1}
                                                 active={i === params.pagingStart}

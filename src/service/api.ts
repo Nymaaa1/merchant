@@ -427,7 +427,7 @@ namespace authService {
         });
     };
 
-    export const getBranchTableData = async (accountId: number, params: DatePickerModel): Promise<TransactionBranchListResponse> => {
+    export const getBranchTableData = async (accountId: number, params: DatePickerModel): Promise<TransactionListResponse> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/branch/merchant', {
@@ -435,7 +435,7 @@ namespace authService {
                     headers: { Authorization: `Bearer ${getToken()}`, },
                     body: JSON.stringify({ "accountId": accountId, "beginDate": params.beginDate, "endDate": params.endDate, "pagingStart": params.pagingStart })
                 });
-                const data: TransactionBranchListResponse = await response.json();
+                const data: TransactionListResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
@@ -453,7 +453,7 @@ namespace authService {
     };
 
 
-    export const getPartnerDetialTransaction = async (accountId: number, params: DatePickerModel): Promise<TransactionBranchListResponse> => {
+    export const getPartnerDetialTransaction = async (accountId: number, params: DatePickerModel): Promise<TransactionListResponse> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/recent/partner', {
@@ -461,7 +461,7 @@ namespace authService {
                     headers: { Authorization: `Bearer ${getToken()}`, },
                     body: JSON.stringify({ "accountId": accountId, "beginDate": params.beginDate, "endDate": params.endDate, "pagingStart": params.pagingStart })
                 });
-                const data: TransactionBranchListResponse = await response.json();
+                const data: TransactionListResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
