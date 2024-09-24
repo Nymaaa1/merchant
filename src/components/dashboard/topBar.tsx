@@ -23,9 +23,10 @@ const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
             <div className="Topbar">
                 <div className="top-left-side">
                     <div className="mobile-logo">
-                        <Link href="/#">
-                            <Image src="/logo/monpay-logo.png" width={105} height={45} alt={''} />
-                        </Link>
+                        <div className="image">
+                            <img src={logo} />
+                        </div>
+                        <span className="title">{name}</span>
                     </div>
                     <div className="topbar-inner">
                         <div className="image ">

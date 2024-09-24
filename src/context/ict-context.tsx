@@ -166,12 +166,13 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         const branchData = localStorage.getItem("branch");
         const branchRole = localStorage.getItem("branchRole");
         const partnerRole = localStorage.getItem("partnerRole");
-        const data: Partner = JSON.parse(localStorage.getItem('partner') ?? ""); ``
-        // if (pathname?.match("/") && partnerData) {
-        //     setPartner(JSON.parse(partnerData));
-        // }
+        const convertData = localStorage.getItem('partner');
+        let data: Partner = { profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, };
+        if (convertData) {
+            data = JSON?.parse(convertData);
+        }
         if (pathname?.match("/(app)/")) {
-            if (partnerData && partnerToken && partnerRole) {
+            if (partnerData && partnerToken && partnerRole && data.profileId !== 0) {
                 setUserRole("partner");
                 balanceAction.run(data.profileId);
                 recentAction.run(data.profileId, params);
@@ -180,7 +181,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             } else if (branchToken && branchData && branchRole) {
                 authBranchService.setBranch(branchData, branchToken);
                 setBranch(JSON.parse(branchData));
-                router.push("/branch/dashboard")
+                router.push("/branch/dashboard");
                 setUserRole("branch");
             } else {
                 router.push("/auth/login");

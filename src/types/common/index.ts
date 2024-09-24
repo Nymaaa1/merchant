@@ -40,3 +40,9 @@ interface EmailBody {
     phone: string;
     email: string;
 }
+
+
+interface NameChangeBody {
+    nickName: string;
+    accountNo: string;
+}

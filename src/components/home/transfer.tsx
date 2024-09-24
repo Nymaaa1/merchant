@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useLoading } from "@/context/loading";
 
 const HomeTransaction = () => {
-    const { setTransferInfo } = useContext(IctContext);
+    const { setTransferInfo, cardIndex } = useContext(IctContext);
     const { setLoading, setColor } = useLoading();
 
     //Bank to transfer
@@ -52,6 +52,25 @@ const HomeTransaction = () => {
     const [addAmountFund, setAddAmountFund] = useState<string>('');
     const [response, setResponse] = useState({ success: false, info: "" });
     const [show, setShow] = useState<boolean>(false);
+
+    useEffect(() => {
+        setReceiverNameMonpay("");
+        setForDisabledMonpay(false);
+        setSendToMonpayAmount("");
+        setSendToMonpayPhone("");
+        setSendToMonpayDescription("");
+        setReceiverNameMerchant("");
+        setForDisabledMerchant(false);
+        setSendToMerchantAmount("");
+        setSendToMerchantPhone("");
+        setSendToMerchantDescription("");
+        setValidated(false);
+        setAlert({ show: false, message: "" });
+        setSendBankAccount("");
+        setSendBankUserName("");
+        setSendBankAmount("");
+        setSendBankDescription("");
+    }, [cardIndex]);
 
     const handleDownload = (type: string) => {
         const fileUrl = `/auto-transfer/${type}.pdf`;
@@ -173,7 +192,10 @@ const HomeTransaction = () => {
         e.preventDefault();
         const { value = '' } = e.target;
         const parsedValue = value.replace(/[^\d.]/gi, '');
-        setSendToMonpayAmount(parsedValue);
+        const numericValue = parseInt(parsedValue || "0", 10);
+        if (numericValue < 5000000) {
+            setSendToMonpayAmount(parsedValue);
+        }
     };
 
     const handleChangeMerchant = (e: ChangeEvent<HTMLInputElement>) => {

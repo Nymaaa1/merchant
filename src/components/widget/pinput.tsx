@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type OtpPinPutProps = {
     type: string;
@@ -9,10 +9,22 @@ type OtpPinPutProps = {
 const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
     // const [otp, setOtp] = useState(new Array(4).fill(""));
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    const [inputType, setInputType] = useState(type);
+
+    // useEffect(() => {
+    //     let timer: NodeJS.Timeout | undefined;
+    //     if (isPassword) {
+    //         timer = setTimeout(() => {
+    //             setIsPassword(false);
+    //         }, 1000);
+    //     }
+    //     return () => clearTimeout(timer);
+    // }, [isPassword]);
 
     const handleFocus = (index: number) => {
         setFocusedIndex(index);
     };
+
 
     const handleBlur = () => {
         setFocusedIndex(null);
@@ -45,7 +57,7 @@ const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
                 const borderColor = focusedIndex === index ? "#4341CC" : "#D1D5E4";
                 return (
                     <input
-                        type={type}
+                        type={inputType}
                         key={index}
                         value={data}
                         required

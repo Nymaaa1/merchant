@@ -652,6 +652,56 @@ namespace authService {
         });
     };
 
+    export const changeName = async (body: NameChangeBody): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/name', {
+                    method: 'PUT',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify(body)
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const changePhone = async (phone: string): Promise<DefaultResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/name', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                    body: JSON.stringify({"phone": phone})
+                });
+                const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
 
     export const handleError = (err: any, reject: any) => {
         if (err instanceof Error) {

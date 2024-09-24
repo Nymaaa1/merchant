@@ -115,7 +115,7 @@ const Control = () => {
                                                     <h6 style={{ fontSize: "15px" }}>Open API</h6>
                                                     <h6 style={{ color: "#8089AC", fontSize: "11px" }}>Хөгжүүлэгч нарт зориулсан</h6>
                                                 </div>
-                                                <div className="images" style={{ display: 'flex', justifyContent: 'center' }}>
+                                                <div className="imagess" style={{ display: 'flex', justifyContent: 'center' }}>
                                                     <div className="content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                                         <h4 style={{ color: "#5B698E", fontSize: "13px", textAlign: "center" }}>
                                                             Та Монпэй хөгжүүлэлттэй холбоотой бүх төрлийн зааварчилгааг доорх Site-с мэдээлэл аваарай.
@@ -139,7 +139,7 @@ const Control = () => {
                                         style={{
                                             paddingTop: "25px",
                                         }}>
-                                        <h5 style={{ fontSize: "19px" }}> Кассын програм хөгжүүлэгч байгууллагууд</h5>
+                                        <h5 style={{ fontSize: "19px" }}>Кассын програм хөгжүүлэгч байгууллагууд</h5>
                                         <h5 style={{ color: "#8089AC", fontSize: "14px" }}>Кассын системийн тохиргоо, заавар мэдээлэл</h5>
                                     </div>
                                 </Col>

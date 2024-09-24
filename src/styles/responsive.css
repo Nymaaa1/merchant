@@ -638,7 +638,7 @@
     }
 
     .dashboard-right-side .control {
-        padding-top: 90px;
+        padding-top: 40px;
         padding-right: 24px;
         padding-left: 24px;
     }
@@ -1464,7 +1464,7 @@
         display: none;
     }
     .Topbar .top-left-side .title.mobile {
-        margin-left: 18px;
+        display: none !important;
     }
 
     .Topbar .top-right-side .inner .info {
@@ -1481,16 +1481,16 @@
 
     .topbar-inner.mobile {
         position: absolute;
-        top: 78px;
+        /* top: 78px; */
         left: 19px;
         align-items: center;
         display: flex !important;
     }
 
     .top-left-side .title.mobile {
-        display: block !important;
-        position: absolute;
-        top: 75px;
+        display: none !important;
+        /* position: absolute;
+        top: 75px; */
     }
 
     .Topbar {

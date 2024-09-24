@@ -16,6 +16,7 @@ import { useRequest } from 'ahooks';
 import authService from '@/service/api';
 import { useLoading } from '@/context/loading';
 import OtpInput from '../widget/pinput';
+import Link from 'next/link';
 
 interface DynamicConfirmProps {
     setConfirmation: (value: boolean) => void;
@@ -35,7 +36,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const { setLoading } = useLoading();
     const [checked, setChecked] = useState<number>(0);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
-
+    const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
     const [response, setResponse] = useState<ReponseProps>({ success: false, message: "", info: "" });
     const [show, setShow] = useState<boolean>(false);
     const [counter, setCounter] = useState<number>(60);
@@ -47,40 +48,36 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     };
 
     const handleShowOTP = () => {
-        if (otp1.join("").length === 4) {
-            if (transferInfo.type === "bank") {
-                // getOTPCode.run(transferInfo.bank.sourceAccountNo);
-            } else if (transferInfo.type === "candy") {
-                getOTPCode.run();
-                const timer: NodeJS.Timeout = setInterval(() => {
-                    setCounter(prevCounter => {
-                        if (prevCounter <= 1) {
-                            clearInterval(timer); // Clear the interval when counter reaches 0
-                            return 0; // Ensure it doesn't go negative
-                        }
-                        return prevCounter - 1;
-                    });
-                }, 1000);
-                return () => {
-                    clearInterval(timer);
-                };
-            } else if (transferInfo.type === "merchant") {
-                getOTPCode.run();
-                const timer: NodeJS.Timeout = setInterval(() => {
-                    setCounter(prevCounter => {
-                        if (prevCounter <= 1) {
-                            clearInterval(timer); // Clear the interval when counter reaches 0
-                            return 0; // Ensure it doesn't go negative
-                        }
-                        return prevCounter - 1;
-                    });
-                }, 1000);
-                return () => {
-                    clearInterval(timer);
-                };
-            }
-        } else {
-            setAlert({ show: true, message: "Гүйлгээний нууц үг оруулна уу." });
+        if (transferInfo.type === "bank") {
+            // getOTPCode.run(transferInfo.bank.sourceAccountNo);
+        } else if (transferInfo.type === "candy") {
+            getOTPCode.run();
+            const timer: NodeJS.Timeout = setInterval(() => {
+                setCounter(prevCounter => {
+                    if (prevCounter <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prevCounter - 1;
+                });
+            }, 1000);
+            return () => {
+                clearInterval(timer);
+            };
+        } else if (transferInfo.type === "merchant") {
+            getOTPCode.run();
+            const timer: NodeJS.Timeout = setInterval(() => {
+                setCounter(prevCounter => {
+                    if (prevCounter <= 1) {
+                        clearInterval(timer); // Clear the interval when counter reaches 0
+                        return 0; // Ensure it doesn't go negative
+                    }
+                    return prevCounter - 1;
+                });
+            }, 1000);
+            return () => {
+                clearInterval(timer);
+            };
         }
     }
 
@@ -108,6 +105,9 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     })
 
     const postOTPCode = useRequest(authService.postOTPCode, {
+        onBefore: () => {
+            setLoading(true);
+        },
         manual: true,
         onSuccess: async (data) => {
             const body: TransferToMonpayModel = transferInfo.type === "candy" ? {
@@ -133,11 +133,16 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                     pin: otp1.join(""),
                     passwordToken: data.result.passwordToken,
                 }
+            setLoading(false);
             transferToMonpay.run(body);
         },
         onError: (e) => {
+            setLoading(false);
             setChecked(0);
-            setAlert({ show: true, message: e.message });
+            setOtp2(new Array(4).fill(""));
+            setShow(true);
+            setResponse({ message: e.message, success: false, info: e.message });
+            // setAlert({ show: true, message: e.message });
         },
     })
 
@@ -168,8 +173,8 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
         const timer: NodeJS.Timeout = setInterval(() => {
             setCounter(prevCounter => {
                 if (prevCounter <= 1) {
-                    clearInterval(timer); // Clear the interval when counter reaches 0
-                    return 0; // Ensure it doesn't go negative
+                    clearInterval(timer);
+                    return 0;
                 }
                 return prevCounter - 1;
             });
@@ -187,9 +192,16 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
             event.stopPropagation();
         } else {
             event.preventDefault();
-            postOTPCode.run(otp2.join(""));
+            setShowPaymentPassword(true);
+            //show -------->
+            // postOTPCode.run(otp2.join(""));
         }
     };
+
+    const handleTransfer = () => {
+        setShowPaymentPassword(false);
+        postOTPCode.run(otp2.join(""));
+    }
 
     const handleClose = () => {
         setShow(false);
@@ -229,7 +241,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                     </span>
                                                 </div>
                                                 {transferInfo.type === "bank" ?
-                                                    <div className="content">
+                                                    <div className="content p-0 m-0">
                                                         <div className="content-inner">
                                                             <div className="content-item">
                                                                 <h5 className="item-title">
@@ -271,7 +283,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                             </div>
                                                         </div>
                                                     </div> : transferInfo.type === "candy" ?
-                                                        <div className="content">
+                                                        <div className="content pb-0 m-0">
                                                             <div className="content-inner">
                                                                 <div className="content-item">
                                                                     <h5 className="item-title">
@@ -306,7 +318,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                                 </div>
                                                             </div>
                                                         </div> : transferInfo.type === "merchant" ?
-                                                            <div className="content">
+                                                            <div className="content pb-0 m-0">
                                                                 <div className="content-inner">
                                                                     <div className="content-item">
                                                                         <h5 className="item-title">
@@ -345,13 +357,9 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                             <></>
                                                 }
                                                 <Form
-                                                    className="email-confirm-code"
+                                                    className="email-confirm-code pt-0"
                                                     onSubmit={handleSubmit}
                                                 >
-                                                    <div className="label-title" style={{ paddingBottom: "10px" }}>
-                                                        <h5>Гүйлгээний нууц үг оруулна уу</h5>
-                                                    </div>
-                                                    <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
                                                     {checked === 0 ?
                                                         <div className="transfer-buttons">
                                                             <div className="buttons-inner">
@@ -452,6 +460,33 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                         </Button>
                     </Modal.Footer>
                 </div>
+            </Modal>
+            <Modal
+                show={showPaymentPassword}
+                onHide={() => setShowPaymentPassword(false)}
+                dialogClassName="save-templates"
+                centered
+            >
+                <Modal.Header closeButton className="d-flex justify-content-between align-items-center">
+                    <div className="header-title">
+                        <h5 style={{ fontSize: "14px" }}>Гүйлгээний пин кодоо оруулна уу</h5>
+                    </div>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-flex justify-content-center align-items-center">
+                        <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                    </div>
+                    <div className="d-flex justify-content-end p-0 mt-2">
+                        <Link style={{ fontSize: "13px", color: "#8089AC" }} href="/app/settings">Нууц үг сэргээх</Link>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer className='mt-0 pt-0'>
+                    <div className="tw-single-button">
+                        <Button onClick={() => { if (otp1.join("").length === 4) { handleTransfer() } }}>
+                            Хадгалах
+                        </Button>
+                    </div>
+                </Modal.Footer>
             </Modal>
             {alerts?.show && (
                 <FailNotification

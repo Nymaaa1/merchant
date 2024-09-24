@@ -7055,6 +7055,24 @@ input[type='number']::-webkit-inner-spin-button {
   align-items: center;
 }
 
+.save-templates {
+  padding-top: 10px;
+  display: flex;
+  width: 360px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.save-templates .modal-content .modal-footer {
+  padding: 24px 32px 32px 32px;
+  border: unset;
+}
+
+.save-templates .modal-content .modal-footer .tw-single-button {
+  margin: 0;
+  width: 100%;
+}
+
 .save-template span {
   font-family: 'Code Next';
   font-style: normal;
@@ -7716,6 +7734,13 @@ input[type='number']::-webkit-inner-spin-button {
   padding-bottom: 35px;
 }
 
+
+.transaction-template .content .imagess {
+  display: flex;
+  padding: 14px 12px;
+  padding-bottom: 35px;
+}
+
 .transaction-template .content .images::-webkit-scrollbar {
   height: 7px;
   cursor: pointer;
@@ -7744,7 +7769,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .transaction-template .content .images .content:hover {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .transaction-template .content .images .content:last-child {

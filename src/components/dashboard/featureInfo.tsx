@@ -9,7 +9,7 @@ import authService from '@/service/api';
 import FailNotification from '../notification/fail-notif';
 import HomeTable from '../home/table';
 import HomeTransaction from '../home/transfer';
-import { thousands } from '@/utils/utils';
+import { phoneRegex, thousands } from '@/utils/utils';
 import "../../styles/CustomSwitchComponent.css";
 import { useLoading } from '@/context/loading';
 import { Partner } from '@/types/user';
@@ -283,12 +283,15 @@ type AccountInfoProps = {
 };
 
 const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
-  const { partner, cardIndex, partnerBalance } = useContext(IctContext);
+  const { setLoading, setColor } = useLoading();
+  const { partner, cardIndex, partnerBalance, setPartnerBalance } = useContext(IctContext);
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
-  const { setLoading, setColor } = useLoading();
   const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [show, setShow] = useState<boolean>(false);
+  const [response, setResponse] = useState({ success: false, info: "" });
 
   useEffect(() => {
     setName(partnerBalance?.balanceList[index]?.nickName ?? "");
@@ -319,8 +322,77 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
     }
   });
 
+  const changeNameAction = () => {
+    if (name === "") return;
+    changeName.run({
+      nickName: name,
+      accountNo: partnerBalance?.balanceList[index]?.accountNo ?? ""
+    });
+  }
+
+  const changePhoneAction = () => {
+    if (phoneRegex.test(phone)) return;
+    changePhone.run("");
+  }
+
+  const changeName = useRequest(authService.changeName, {
+    onBefore: () => {
+      setLoading(true);
+    },
+    manual: true,
+    onSuccess: async (data) => {
+      setResponse({ success: true, info: data.result });
+      setLoading(false);
+      setShow(true);
+    },
+    onError: (e) => {
+      setResponse({ success: false, info: e.message });
+      setLoading(false);
+      setAlert({ show: true, message: e.message });
+    }
+  });
+
+  const changePhone = useRequest(authService.changePhone, {
+    onBefore: () => {
+      setLoading(true);
+    },
+    manual: true,
+    onSuccess: async (data) => {
+      setResponse({ success: true, info: data.result });
+      setLoading(false);
+      setShow(true);
+    },
+    onError: (e) => {
+      setResponse({ success: false, info: e.message });
+      setLoading(false);
+      setAlert({ show: true, message: e.message });
+    }
+  });
+
+  const balanceAction = useRequest(authService.getBalance, {
+    manual: true,
+    onBefore: () => {
+      setLoading(true);
+    },
+    onSuccess: async (data) => {
+      setPartnerBalance(data);
+      setLoading(false);
+    },
+    onError: (e) => {
+      setLoading(true);
+      setAlert({ show: true, message: e.message });
+    }
+  });
+
   const closeNotification = () => {
     setAlert({ show: false, message: "" });
+  };
+
+  const handleClose = () => {
+    setShow(false);
+    if (response.success) {
+      balanceAction.run(partner?.profileId);
+    }
   };
 
   return (
@@ -345,7 +417,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
                     className="custom-placeholder"
                   />
                 </Col>
-                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => changeNameAction()}>
                   Хадгалах
                 </Col>
               </Form.Group>
@@ -452,13 +524,63 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
         <Modal.Footer>
           <div className="tw-single-button">
             <Button
-            // disabled={!forDisabled}
-            // onClick={handleSubmitCreate}
             >
               Хадгалах
             </Button>
           </div>
         </Modal.Footer>
+      </Modal>
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        dialogClassName={response.success ? 'success-modal' : 'fail-modal'}
+        centered
+      >
+        <div className="content-inner">
+          <Modal.Header>
+            <div className="image">
+              <div className="image-inner">
+                <img
+                  src={
+                    response.success
+                      ? '/modal-icon-success.svg'
+                      : '/modal-icon-danger.svg'
+                  }
+                />
+              </div>
+            </div>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="body-content">
+              <div className="title">
+                <h5>{response.success ? 'амжилттай' : 'амжилтгүй'}</h5>
+              </div>
+              <div className="desc">
+                {response.success ? (
+                  <p>
+                    <strong
+                      style={{
+                        padding: '0 3px',
+                        color: "#5B698E"
+                      }}
+                    >
+                      Амжилттай солигдлоо.
+                    </strong>
+                  </p>
+                ) : (
+                  <p>
+                    <strong>{response.info}</strong>
+                  </p>
+                )}
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleClose}>
+              {response.success ? 'Баярлалаа' : 'Хаах'}
+            </Button>
+          </Modal.Footer>
+        </div>
       </Modal>
       {alerts.show && (
         <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />

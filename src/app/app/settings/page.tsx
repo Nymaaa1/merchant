@@ -150,7 +150,7 @@ const ProfileMain = () => {
                                                                 style={{ backgroundColor: "#ffff", height: "48px", borderRadius: "8px" }}
                                                                 type="text"
                                                                 name="lastname"
-                                                                placeholder={partner?.phone}
+                                                                placeholder={partner?.verifiedPhone}
                                                             />
                                                         </InputGroup>
                                                     </div>

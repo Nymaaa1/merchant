@@ -78,7 +78,7 @@ const HomePage = () => {
 
     return (
         <Container fluid style={{ fontFamily: "Code Next" }}>
-            <Row className="wrapper-row">
+            <Row className="wrapper-row" style={{paddingTop:"0px"}}>
                 <div
                     style={{
                         margin: 'auto',
@@ -92,30 +92,21 @@ const HomePage = () => {
                                 <div>
                                     <h2 style={{ color: "#15A3AA", fontSize: "32px" }}>MONPAY PLUS ҮЙЛЧИЛГЭЭ</h2>
                                     <h4 style={{ color: "#5B698E", fontSize: "22px" }}>Хүүгүй, Урьдчилгаагүй 2-6 хуваан төлөх боломж </h4>
-                                    <p style={{ fontSize: "14px", fontWeight: "600" }} className='mt-10'>
-                                        Хэрэглэгч та MonPay Plus үйлчилгээ ашиглан бараа бүтээгдэхүүн
-                                        худалдаан авахдаа MonPay апп-аа оруул QR кодыг уншуулан өөрт
-                                        тохируулах 2-6 хуваан төлөх боломжтой.
+                                    <p style={{ fontSize: "13px", fontWeight: "600" }} className='mt-10'>
+                                        Та өөрийн бизнесээ өргөжүүлж хэрэглэгчдийнхээ худалдан авалтын боломжийг нэмэхийг хүсвэл MonPay Plus үйлчилгээнд нэгдээрэй.
                                     </p>
-                                    <p style={{ fontSize: "14px", fontWeight: "600" }}> Урт хугацаат зээлийн үндсэн мэдээлэл:</p>
-                                    <p style={{ fontSize: "14px", fontWeight: "600" }}>Зээлийн хэмжээ: 50,000₮ -2,500,000₮ хүртэлх</p>
-                                    <ul className="list-disc pl-7 mb-4" style={{ fontSize: "14px", fontWeight: "600" }}>
-                                        <li>Зээлийн хэмжээ: 50,000₮ - 2,500,000₮ хүртэлх</li>
-                                        <li>1-3 сарын хугацаатай</li>
-                                        <li>Хүү, Урьдчилгаа, Шимтгэлгүй</li>
-                                        <li>2-6 хуваан төлөх боломжтой</li>
+                                    <p style={{ fontSize: "13px", fontWeight: "600", marginTop: "20px" }}>Хэрэглэгч Монпэй PLUS үйлчилгээг ашиглан 50,000₮-с дээш үнийн дүнтэй бүтээгдэхүүн үйлчилгээ худалдан авахдаа ашиглан ямар ч урьдчилгаа төлбөр төлөхгүйгээр, хүүгүй, шимтгэлгүй 2-6 хуваан төлөх боломжтой болно.</p>
+                                    <p style={{ fontSize: "13px", fontWeight: "600", marginTop: "20px" }}>MonPay PLUS үйлчилгээг нэвтрүүлснээр үүсэх давуу талууд:</p>
+                                    <ul className="list-disc pl-7 mb-4" style={{ fontSize: "13px", fontWeight: "600" }}>
+                                        <li>Хэрэглэгчийн худалдан авах боломж нэмэгдэнэ</li>
+                                        <li>50,000₮-с дээш бүтээгдэхүүн зээлээр худалдах боломж</li>
+                                        <li>Худалдан авагчийн зээлээр авсан үнийн дүн 24/7 бодит цагийн горимоор танай данс руу шилжинэ</li>
+                                        <li>Худалдан авахад хялбар</li>
+                                        <li>Монпэй үйлчилгээний хэрэглэгчдэд өөрийн бизнесээ таниулах боломж</li>
+                                        <li>Монпэй-н сувгуудаар өөрийн бизнесээ сурталчлах, мэдээлэл хүргэх боломж</li>
                                     </ul>
-                                    <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>Урт хугацаат зээлийн шалгуур:</p>
-                                    <ul className="list-disc pl-7" style={{ fontSize: "14px", fontWeight: "600" }}>
-                                        <li>18 нас хүрсэн Монгол улсын иргэн байх;</li>
-                                        <li>Цахим мөнгөний гэрээ байгуулсан;</li>
-                                        <li>Богино хугацаат зээлийн эрх нээх гэрээ байгуулсан;</li>
-                                        <li>Өр, орлогын харьцаа хэтрээгүй;</li>
-                                        <li>Зээлийн Мэдээллийн Санд хэвийнээс бусад зээлгүй;</li>
-                                    </ul>
-                                    <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
-                                        Хэрэглэгч та дээр дурдсан шалгууруудыг хангасан дараах зааврын
-                                        дагуу MonPay Plus үйлчилгээгээ аваарай.
+                                    <p className="mb-2" style={{ fontSize: "13px", fontWeight: "600" }}>
+                                        Та бизнестээ MonPay PLUS үйлчилгээг нэвтрүүлэн бидэнтэй хамтарч ажиллахыг хүсвэл бидэнд  хүсэлтээ илгээнэ үү.
                                     </p>
                                 </div>
                                 <div
@@ -133,12 +124,12 @@ const HomePage = () => {
                                     </Row>
                                 </div>
                                 <Row className='mt-10'>
-                                    <Col className='d-flex align-items-center'>
+                                    <Col className='d-flex align-items-center' xl={6} lg={6} md={12} sm={12}>
                                         <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
                                             Та MonPay Plus үйлчилгээнд нэгдэх бол хүсэлт илгээж бидэнтэй холбогдох боломжтой.
                                         </p>
                                     </Col>
-                                    <Col className='d-flex justify-content-end align-items-center'>
+                                    <Col className='d-flex justify-content-end align-items-center' xl={6} lg={6} md={12} sm={12}>
                                         <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#15A3AA", color: "#ffff", width: "225px", height: "48px" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setType(false) }}>
                                             Хүсэлт илгээх →
                                         </Button>
@@ -188,12 +179,12 @@ const HomePage = () => {
                                     </Row>
                                 </div>
                                 <Row className='mt-10'>
-                                    <Col className='d-flex align-items-center'>
+                                    <Col className='d-flex align-items-center' xl={6} lg={6} md={12} sm={12}>
                                         <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
                                             Та MonPay AWWW үйлчилгээнд нэгдэх бол хүсэлт илгээж бидэнтэй холбогдох боломжтой.
                                         </p>
                                     </Col>
-                                    <Col className='d-flex justify-content-end align-items-center'>
+                                    <Col className='d-flex justify-content-end align-items-center' xl={6} lg={6} md={12} sm={12}>
                                         <Button style={{ borderRadius: "8px", border: "none", backgroundColor: "#FF8650", color: "#ffff", width: "225px", height: "48px" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setType(true) }}>
                                             Хүсэлт илгээх →
                                         </Button>
