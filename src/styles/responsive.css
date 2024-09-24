@@ -81,9 +81,9 @@
     .top-left-side .title.mobile {
         display: none !important;
     }
-    .mobile-logo {
+    /* .mobile-logo {
         display: none;
-    }
+    } */
     .control .col-lg-9 {
         width: 70%;
     }
@@ -138,9 +138,9 @@
     .top-left-side .title.mobile {
         display: none !important;
     }
-    .mobile-logo {
+    /* .mobile-logo {
         display: none;
-    }
+    } */
 
     .app-contract .col-lg-3 {
         width: 30%;
@@ -1475,17 +1475,17 @@
         padding: unset !important;
     }
 
-    .topbar-inner {
+    /* .topbar-inner {
         display: none;
-    }
+    } */
 
-    .topbar-inner.mobile {
+    /* .topbar-inner.mobile {
         position: absolute;
-        /* top: 78px; */
+        top: 78px;
         left: 19px;
         align-items: center;
         display: flex !important;
-    }
+    } */
 
     .top-left-side .title.mobile {
         display: none !important;
@@ -1512,9 +1512,9 @@
         padding-right: 20px;
     }
 
-    .mobile-logo {
+    /* .mobile-logo {
         display: block !important;
-    }
+    } */
 
     .recharge-tab .nav-item {
         width: 100%;
@@ -1548,11 +1548,11 @@
     }
 }
 
-@media (min-width: 575px) {
+/* @media (min-width: 575px) {
     .topbar-inner.mobile {
         display: none !important;
     }
-}
+} */
 
 @media (max-width: 540px) {
     .mp-home-slider-custom{

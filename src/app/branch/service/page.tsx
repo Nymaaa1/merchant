@@ -1,21 +1,31 @@
 "use client";
 import FailNotification from '@/components/notification/fail-notif';
+import IctContext from '@/context/ict-context';
 import { useLoading } from '@/context/loading';
 import authService from '@/service/api';
 import { emailRegex, phoneRegex } from '@/utils/utils';
 import { useRequest } from 'ahooks';
-import React, { FormEvent, useState } from 'react';
+import Image from 'next/image';
+import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 
 const HomePage = () => {
-    const serviceMonpayPlus: string[] = ["", "", ""];
+    const serviceMonpayPlus: string[] = ["/images/plus1.jpg", "/images/plus2.jpg", "/images/plus3.jpg"];
     const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
-    const [validated, setValidated] = useState(false);
+    const [validated, setValidated] = useState<boolean>(false);
     const { setLoading, setColor } = useLoading();
     const [show, setShow] = useState<boolean>(false);
     const [type, setType] = useState<boolean>(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [response, setResponse] = useState({ success: false, info: "" });
+    const { branch } = useContext(IctContext);
+    const [phone, setPhone] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+
+    useEffect(() => {
+        setPhone(branch?.phone);
+        // setEmail(branch?.em);
+    }, [branch]);
 
     const emailSend = useRequest(authService.email, {
         onBefore: () => {
@@ -51,23 +61,16 @@ const HomePage = () => {
         const form = event.currentTarget as HTMLFormElement;
         if (form.checkValidity() === false) {
             event.stopPropagation();
-        } else if (!emailRegex.test(form.email.value)) {
+        } else if (!emailRegex.test(email)) {
             setAlert({ show: true, message: "И-Мэйл хаяг оруулна уу!" });
             setValidated(true);
         } else if (!phoneRegex.test(form.phone.value)) {
             setAlert({ show: true, message: "Утасны дугаар оруулна уу!" });
             setValidated(true);
-        } else if (!(form.companyName.value.length > 0)) {
-            setAlert({ show: true, message: "Байгууллагын нэр оруулна уу!" });
-            setValidated(true);
         } else {
-            const phone = form.phone.value;
-            const email = form.email.value;
-            const name = form.companyName.value;
-
             const body: EmailBody = {
                 type: type ? "AW" : "PLUS",
-                name: name,
+                name: branch?.username,
                 phone: phone,
                 email: email,
             };
@@ -78,7 +81,7 @@ const HomePage = () => {
 
     return (
         <Container fluid style={{ fontFamily: "Code Next" }}>
-            <Row className="wrapper-row" style={{paddingTop:"0px"}}>
+            <Row className="wrapper-row" style={{ paddingTop: "0px" }}>
                 <div
                     style={{
                         margin: 'auto',
@@ -88,7 +91,7 @@ const HomePage = () => {
                 >
                     <div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="p-10 rounded-lg flex flex-col justify-between" style={{ color: "#5B698E", backgroundColor: "#DCFDFF" }} >
+                            <div className="p-10 rounded-lg flex flex-col" style={{ color: "#5B698E", backgroundColor: "#DCFDFF" }} >
                                 <div>
                                     <h2 style={{ color: "#15A3AA", fontSize: "32px" }}>MONPAY PLUS ҮЙЛЧИЛГЭЭ</h2>
                                     <h4 style={{ color: "#5B698E", fontSize: "22px" }}>Хүүгүй, Урьдчилгаагүй 2-6 хуваан төлөх боломж </h4>
@@ -97,7 +100,7 @@ const HomePage = () => {
                                     </p>
                                     <p style={{ fontSize: "13px", fontWeight: "600", marginTop: "20px" }}>Хэрэглэгч Монпэй PLUS үйлчилгээг ашиглан 50,000₮-с дээш үнийн дүнтэй бүтээгдэхүүн үйлчилгээ худалдан авахдаа ашиглан ямар ч урьдчилгаа төлбөр төлөхгүйгээр, хүүгүй, шимтгэлгүй 2-6 хуваан төлөх боломжтой болно.</p>
                                     <p style={{ fontSize: "13px", fontWeight: "600", marginTop: "20px" }}>MonPay PLUS үйлчилгээг нэвтрүүлснээр үүсэх давуу талууд:</p>
-                                    <ul className="list-disc pl-7 mb-4" style={{ fontSize: "13px", fontWeight: "600" }}>
+                                    <ul className="list-disc pl-0 mb-3" style={{ fontSize: "13px", fontWeight: "600" }}>
                                         <li>Хэрэглэгчийн худалдан авах боломж нэмэгдэнэ</li>
                                         <li>50,000₮-с дээш бүтээгдэхүүн зээлээр худалдах боломж</li>
                                         <li>Худалдан авагчийн зээлээр авсан үнийн дүн 24/7 бодит цагийн горимоор танай данс руу шилжинэ</li>
@@ -105,25 +108,26 @@ const HomePage = () => {
                                         <li>Монпэй үйлчилгээний хэрэглэгчдэд өөрийн бизнесээ таниулах боломж</li>
                                         <li>Монпэй-н сувгуудаар өөрийн бизнесээ сурталчлах, мэдээлэл хүргэх боломж</li>
                                     </ul>
-                                    <p className="mb-2" style={{ fontSize: "13px", fontWeight: "600" }}>
-                                        Та бизнестээ MonPay PLUS үйлчилгээг нэвтрүүлэн бидэнтэй хамтарч ажиллахыг хүсвэл бидэнд  хүсэлтээ илгээнэ үү.
-                                    </p>
                                 </div>
                                 <div
                                     style={{
+                                        padding: "0px",
+                                        margin: "0px",
                                         overflowX: 'auto',
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    <Row className="flex-nowrap g-2">
+                                    <Row className="flex-nowrap g-2 p-0 m-0">
                                         {serviceMonpayPlus.map((service, index) => (
                                             <Col key={index} style={{ display: 'inline-block', gap: "2px" }}>
-                                                <div className='mt-10' style={{ height: "209px", width: "209px", backgroundColor: "#BBDEE0", borderRadius: "8px" }}></div>
+                                                <div className='' style={{ height: "189px", width: "189px", backgroundColor: "#BBDEE0", borderRadius: "8px", overflow: "hidden", }}>
+                                                    <Image src={service} alt="Toggle password visibility" width={189} height={189} />
+                                                </div>
                                             </Col>
                                         ))}
                                     </Row>
                                 </div>
-                                <Row className='mt-10'>
+                                <Row className='mt-4'>
                                     <Col className='d-flex align-items-center' xl={6} lg={6} md={12} sm={12}>
                                         <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>
                                             Та MonPay Plus үйлчилгээнд нэгдэх бол хүсэлт илгээж бидэнтэй холбогдох боломжтой.
@@ -143,14 +147,14 @@ const HomePage = () => {
                                     <p style={{ fontSize: "14px", fontWeight: "600" }} className='mt-10'>
                                         Хэрэглэгч та MonPay Plus үйлчилгээг ашиглан бараа бүтээгдэхүүн худалдан авахдаа MonPay апп-аараа ороод QR кодыг уншуулан өөрт тохируулан 2-6 хуваан төлөх боломжтой.
                                     </p>
-                                    <p style={{ fontSize: "14px", fontWeight: "600" }}>Урт хугацаат зээлийн үндсэн мэдээлэл:</p>
+                                    {/* <p style={{ fontSize: "14px", fontWeight: "600" }}>Урт хугацаат зээлийн үндсэн мэдээлэл:</p>
                                     <p style={{ fontSize: "14px", fontWeight: "600" }}>Зээлийн хэмжээ: 50,000₮ -2,500,000₮ хүртэлх</p>
                                     <ul className="list-disc pl-7 mb-4" style={{ fontSize: "14px", fontWeight: "600" }}>
                                         <li>Зээлийн хэмжээ: 50,000₮ - 2,500,000₮ хүртэлх</li>
                                         <li>1-3 сарын хугацаатай</li>
                                         <li>Хүү, Урьдчилгаа, Шимтгэлгүй</li>
                                         <li>2-6 хуваан төлөх боломжтой</li>
-                                    </ul>
+                                    </ul> */}
                                     <p className="mb-2" style={{ fontSize: "14px", fontWeight: "600" }}>Урт хугацаат зээлийн шалгуур:</p>
                                     <ul className="list-disc pl-7" style={{ fontSize: "14px", fontWeight: "600" }}>
                                         <li>18 нас хүрсэн Монгол улсын иргэн байх;</li>
@@ -228,9 +232,11 @@ const HomePage = () => {
                                         <div className="input-item">
                                             <InputGroup hasValidation>
                                                 <Form.Control
+                                                    disabled={true}
                                                     className="save-temp-input"
                                                     type="text"
                                                     name='companyName'
+                                                    value={branch?.username}
                                                 />
                                             </InputGroup>
                                         </div>
@@ -244,8 +250,19 @@ const HomePage = () => {
                                                     type="number"
                                                     maxLength={8}
                                                     plaintext
+                                                    required
                                                     name='phone'
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                        if (e.target.value.length > 8) {
+                                                            e.target.value = e.target.value.slice(0, 8);
+                                                        }
+                                                    }}
                                                 />
+                                                <Form.Control.Feedback type="invalid">
+                                                    Утасны дугаар оруулна уу.
+                                                </Form.Control.Feedback>
                                             </InputGroup>
                                         </div>
                                         <div className="person-title">
@@ -257,7 +274,13 @@ const HomePage = () => {
                                                     className="save-temp-input"
                                                     type="text"
                                                     name='email'
+                                                    required
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
                                                 />
+                                                <Form.Control.Feedback type="invalid">
+                                                    И-Мэйл хаяг оруулна уу.
+                                                </Form.Control.Feedback>
                                             </InputGroup>
                                         </div>
                                     </div>

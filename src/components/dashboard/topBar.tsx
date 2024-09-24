@@ -14,20 +14,14 @@ const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
     const { partner } = useContext(IctContext);
     return (
         <>
-            <div className="topbar-inner mobile">
-                <div className="image">
-                    <img src={logo} />
-                </div>
-                <span className="title">{name}</span>
-            </div>
             <div className="Topbar">
                 <div className="top-left-side">
-                    <div className="mobile-logo">
+                    {/* <div className="mobile-logo">
                         <div className="image">
                             <img src={logo} />
                         </div>
                         <span className="title">{name}</span>
-                    </div>
+                    </div> */}
                     <div className="topbar-inner">
                         <div className="image ">
                             <img src={logo} />

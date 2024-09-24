@@ -802,34 +802,40 @@ const HomeTransaction = () => {
                         </div>
                         <div className="auto-transfer-buttons">
                             <div className="buttons-inner">
-                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('user')}>
-                                    <Image
-                                        className="ml-2"
-                                        src="/svg/table-cloud-output.svg"
-                                        alt="Toggle password visibility"
-                                        width={24}
-                                        height={24}
-                                    />
-                                    <Col>
-                                        Файл татах
-                                        <br />
-                                        <span>Хувь хүнээр</span>
+                                <Row className="g-2">
+                                    <Col xs={12} lg={6} md={12} xl={12} sm={6}>
+                                        <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('user')}>
+                                            <Image
+                                                className="ml-2"
+                                                src="/svg/table-cloud-output.svg"
+                                                alt="Toggle password visibility"
+                                                width={24}
+                                                height={24}
+                                            />
+                                            <Col>
+                                                Файл татах
+                                                <br />
+                                                <span>Хувь хүнээр</span>
+                                            </Col>
+                                        </Button>
                                     </Col>
-                                </Button>
-                                <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('company')}>
-                                    <Image
-                                        className="ml-2"
-                                        src="/svg/table-cloud-output.svg"
-                                        alt="Toggle password visibility"
-                                        width={24}
-                                        height={24}
-                                    />
-                                    <Col>
-                                        Файл татах
-                                        <br />
-                                        <span>Байгууллагаар</span>
+                                    <Col xs={12} lg={6} md={12} xl={12} sm={6}>
+                                        <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('company')}>
+                                            <Image
+                                                className="ml-2"
+                                                src="/svg/table-cloud-output.svg"
+                                                alt="Toggle password visibility"
+                                                width={24}
+                                                height={24}
+                                            />
+                                            <Col>
+                                                Файл татах
+                                                <br />
+                                                <span>Байгууллагаар</span>
+                                            </Col>
+                                        </Button>
                                     </Col>
-                                </Button>
+                                </Row>
                             </div>
                             <Form.Group controlId="formFile">
                                 <Form.Label className="d-flex justify-content-center align-items-center mt-3 gap-2"

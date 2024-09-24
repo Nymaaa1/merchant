@@ -6145,8 +6145,8 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .auto-transfer-buttons .buttons-inner {
-  gap: 10px;
-  display: flex;
+  /* gap: 10px; */
+  /* display: flex; */
 }
 
 .auto-transfer-buttons button {
@@ -9548,7 +9548,7 @@ input[type='number'] {
   display: flex;
 }
 
-.topbar-inner.mobile .title {
+/* .topbar-inner.mobile .title {
   font-family: 'Code Next';
   font-style: normal;
   font-weight: 600;
@@ -9557,7 +9557,7 @@ input[type='number'] {
   letter-spacing: -0.024em;
   color: #161e34;
   margin-left: 12px;
-}
+} */
 
 .tw-credit-confirm ul li .confirm-input:active,
 .tw-credit-confirm ul li .confirm-input:focus {
