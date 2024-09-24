@@ -47,7 +47,7 @@ const HomeTransaction = () => {
 
     const [validated, setValidated] = useState<boolean>(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
-    const [currentTab, setCurrentTab] = useState<string>('candy');
+    const [currentTab, setCurrentTab] = useState<string>('bank');
     const [lastChecked, setLastChecked] = useState<string>('');
     const [addAmountFund, setAddAmountFund] = useState<string>('');
     const [response, setResponse] = useState({ success: false, info: "" });
@@ -342,11 +342,11 @@ const HomeTransaction = () => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             const formData = new FormData();
-            formData.append('file', file);
-            if (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+            if (file) {
+                formData.append('file', file);
                 uploadFile.run(formData);
             } else {
-                setAlert({ show: true, message: "Зөвхөн PDF эсвэл DOCX файл оруулна уу." });
+                setAlert({ show: true, message: "Файл оруулна уу." });
             }
         }
     };

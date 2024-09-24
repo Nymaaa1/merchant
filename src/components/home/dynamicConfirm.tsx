@@ -48,6 +48,8 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     };
 
     const handleShowOTP = () => {
+        setOtp1(new Array(4).fill(""));
+        setOtp2(new Array(4).fill(""));
         if (transferInfo.type === "bank") {
             // getOTPCode.run(transferInfo.bank.sourceAccountNo);
         } else if (transferInfo.type === "candy") {
@@ -477,7 +479,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                         <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
                     </div>
                     <div className="d-flex justify-content-end p-0 mt-2">
-                        <Link style={{ fontSize: "13px", color: "#8089AC" }} href="/app/settings">Нууц үг сэргээх</Link>
+                        <Link style={{ marginRight: "20px", fontSize: "13px", color: "#8089AC" }} href="/app/settings">Нууц үг сэргээх</Link>
                     </div>
                 </Modal.Body>
                 <Modal.Footer className='mt-0 pt-0'>

@@ -335,7 +335,6 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   }
 
   const changePhoneAction = () => {
-    alert(phoneRegex.test(phone) + "---" + phone)
     if (phoneRegex.test(phone)) {
       setShowPaymentPassword(false);
       changePhone.run("");
