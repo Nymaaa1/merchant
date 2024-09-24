@@ -11,10 +11,12 @@ import HomeTable from '../home/table';
 import HomeTransaction from '../home/transfer';
 import { thousands } from '@/utils/utils';
 import "../../styles/CustomSwitchComponent.css";
+import { useLoading } from '@/context/loading';
+import { Partner } from '@/types/user';
 
 const FeaturedInfo = () => {
   const t = useTranslations('dashboard');
-  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance, setTransaction } = useContext(IctContext);
+  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance, setTransaction, setPartner } = useContext(IctContext);
   const [show, setShow] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<number>(0);
   const [accountSettings, setAccountSettings] = useState<boolean>(false);
@@ -232,7 +234,7 @@ const FeaturedInfo = () => {
                                     <img onClick={toggle} src="/account-icon-on.svg" />
                                   </div>
                                 </div>
-                                <span style={{ fontSize: 16 }}>
+                                <span style={{ fontSize: 16, maxLines: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {show
                                     ? '***.***'
                                     : account.balance.toString().replace(thousands, ',') ??
@@ -281,9 +283,17 @@ type AccountInfoProps = {
 };
 
 const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
-  const { partner } = useContext(IctContext);
+  const { partner, cardIndex, partnerBalance } = useContext(IctContext);
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
+  const { setLoading, setColor } = useLoading();
+  const [name, setName] = useState<string>("");
+
+  useEffect(() => {
+    setName(partnerBalance?.balanceList[index]?.nickName ?? "");
+  }, [partnerBalance]);
+
   const converHidePhone = (val: string) => {
     return val.length > 4
       ? val.substring(0, 2) + '***' + val.substring(5)
@@ -291,76 +301,122 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   }
 
   const changeCheckSwitch = () => {
-    setIsChecked(!isChecked);
+    messageGet.run(!isChecked ? partner?.verifiedPhone : "")
+  };
+
+  const messageGet = useRequest(authService.messageGet, {
+    onBefore: () => {
+      setLoading(true);
+    },
+    manual: true,
+    onSuccess: async (data) => {
+      setLoading(false);
+      setIsChecked(!isChecked);
+    },
+    onError: (e) => {
+      setLoading(false);
+      setAlert({ show: true, message: e.message });
+    }
+  });
+
+  const closeNotification = () => {
+    setAlert({ show: false, message: "" });
   };
 
   return (
     <>
       <div className='mb-10' >
-        <div className="person-title mt-10" >
-          <h5 style={{ fontSize: "13px", color: "#5B698E" }}>Дансны нэр</h5>
-        </div>
-        <div className="input-item">
-          <InputGroup >
-            <Form.Control
-              disabled={false}
-              style={{ backgroundColor: "#ffff", height: "48px", borderRadius: "8px", paddingLeft: "18px" }}
-              type="text"
-              name="lastname"
-              placeholder={partner?.username}
-              className="custom-placeholder"
-            />
-          </InputGroup>
-        </div>
-        <div className="person-title mt-2">
-          <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
-            Мессеж үйлчилгээг хаах / нээх
-          </h5>
-        </div>
-        <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
-          <Form.Group as={Row} controlId="customSwitch">
-            <Col sm={9}>
-              <Form.Control
-                plaintext
-                readOnly
-                type="text"
-                name="lastname"
-                placeholder={converHidePhone(partner?.phone)}
-                style={{ paddingLeft: "10px", fontSize: "13px" }}
-                className="custom-placeholder"
-              />
-            </Col>
-            <Col sm={3} className="d-flex justify-content-end align-items-center">
-              <label className="switch">
-                <input type="checkbox" checked={isChecked} onChange={changeCheckSwitch} />
-                <span className="slider round"></span>
-              </label>
-            </Col>
-          </Form.Group>
-        </div>
-        <div className="person-title mt-2">
-          <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
-            Мессеж дугаар солих
-          </h5>
-        </div>
-        <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
-          <Form.Group as={Row} controlId="customSwitch">
-            <Col sm={9}>
-              <Form.Control
-                maxLength={8}
-                plaintext
-                type="number"
-                name="lastname"
-                defaultValue={partner?.phone}
-                style={{ paddingLeft: "10px", fontSize: "13px" }}
-                className="custom-placeholder"
-              />
-            </Col>
-            <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
-              Хадгалах
-            </Col>
-          </Form.Group>
-        </div>
+        {cardIndex === 0 ?
+          <>
+            <div className="person-title mt-10" >
+              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>Дансны нэр</h5>
+            </div>
+            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+              <Form.Group as={Row} controlId="customSwitch">
+                <Col sm={9}>
+                  <Form.Control
+                    maxLength={40}
+                    plaintext
+                    type="text"
+                    name="lastname"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    style={{ paddingLeft: "10px", fontSize: "13px" }}
+                    className="custom-placeholder"
+                  />
+                </Col>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
+                  Хадгалах
+                </Col>
+              </Form.Group>
+            </div>
+            <div className="person-title mt-2">
+              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                Мессеж үйлчилгээг хаах / нээх
+              </h5>
+            </div>
+            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+              <Form.Group as={Row} controlId="customSwitch">
+                <Col sm={9}>
+                  <Form.Control
+                    plaintext
+                    readOnly
+                    type="text"
+                    name="lastname"
+                    placeholder={converHidePhone(partner?.phone)}
+                    style={{ paddingLeft: "10px", fontSize: "13px" }}
+                    className="custom-placeholder"
+                  />
+                </Col>
+                <Col sm={3} className="d-flex justify-content-end align-items-center">
+                  <label className="switch">
+                    <input type="checkbox" checked={isChecked} onChange={changeCheckSwitch} />
+                    <span className="slider round"></span>
+                  </label>
+                </Col>
+              </Form.Group>
+            </div>
+            <div className="person-title mt-2">
+              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                Мессеж дугаар солих
+              </h5>
+            </div>
+            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+              <Form.Group as={Row} controlId="customSwitch">
+                <Col sm={9}>
+                  <Form.Control
+                    maxLength={8}
+                    plaintext
+                    type="number"
+                    name="lastname"
+                    defaultValue={partner?.phone}
+                    style={{ paddingLeft: "10px", fontSize: "13px" }}
+                    className="custom-placeholder"
+                  />
+                </Col>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
+                  Хадгалах
+                </Col>
+              </Form.Group>
+            </div>
+          </> : <>
+            <div className="person-title mt-10" >
+              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>Дансны нэр</h5>
+            </div>
+            <div className="input-item">
+              <InputGroup >
+                <Form.Control
+                  disabled={false}
+                  style={{ backgroundColor: "#ffff", height: "48px", borderRadius: "8px", paddingLeft: "18px" }}
+                  type="text"
+                  name="lastname"
+                  className="custom-placeholder"
+                  value={partnerBalance?.balanceList[index]?.nickName ?? ""}
+                />
+              </InputGroup>
+            </div>
+          </>
+        }
       </div >
       <Modal
         show={showPaymentPassword}
@@ -404,6 +460,9 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
           </div>
         </Modal.Footer>
       </Modal>
+      {alerts.show && (
+        <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />
+      )}
     </>
   )
 };

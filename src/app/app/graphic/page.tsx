@@ -24,13 +24,13 @@ const ChartPage = () => {
     const [type, setType] = useState<string>("monthly");
 
     useEffect(() => {
-        setColor("#4341CC");
-        setLoading(true);
         fetchData();
     }, []);
 
     const fetchData = async () => {
         try {
+            setColor("#4341CC");
+            setLoading(true);
             await recentAction.run();
             await getGraphicDistrict.run();
             await getGraphicGender.run();
@@ -103,8 +103,8 @@ const ChartPage = () => {
     };
 
     return (
-        <div className='p-10' style={{fontFamily: "Code Next"}}>
-            <Row style={{fontFamily: "Code Next"}}>
+        <div className='p-10' style={{ fontFamily: "Code Next" }}>
+            <Row style={{ fontFamily: "Code Next" }}>
                 <Col xl={8} xs={12} lg={8}>
                     <TodeySales briefinfo={briefinfo} />
                 </Col>

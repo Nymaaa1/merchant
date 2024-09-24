@@ -7189,6 +7189,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .transaction-history-outer .date-graphic {
   display: flex;
+  padding-bottom: 40px;
   align-items: center;
   position: absolute;
   right: 0;
@@ -7258,6 +7259,7 @@ input[type='number']::-webkit-inner-spin-button {
   font-style: normal;
   font-weight: 600;
   font-size: 13px;
+  height: 48px;
   line-height: 24px;
   letter-spacing: -0.024em;
   color: #5b698e;
@@ -8225,14 +8227,11 @@ input[type='number']::-webkit-inner-spin-button {
 /* range date picker */
 
 .date-graphic .content {
-  padding: 12px 24px;
   background: #ffffff;
-  /* border: 1px solid #e8edf5; */
-  box-sizing: border-box;
-  border-radius: 8px;
-  cursor: pointer;
-  max-width: 245px;
   margin-right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .date-graphic .content:hover .date-item {
@@ -12725,4 +12724,46 @@ header .mp-header-button ul li {
 
 .custom-date-range-picker {
   font-family: Code Next, sans-serif;
+}
+
+.datepickerInput {
+  padding: '8px';
+  border: '1px solid #E8EDF5',
+}
+
+.datepickerInput input[type="date"] {
+  /* position: relative; */
+  /* padding: 10px; */
+}
+
+.datepickerInput input[type="date"]::-webkit-calendar-picker-indicator {
+  /* color: transparent; */
+  width: 10px;
+  height: 10px;
+  background: url("/scg/icon-select-arrow.svg") no-repeat;
+  /* z-index: 1; */
+}
+
+.datepickerInput input[type="date"]:before {
+  /* color: transparent; */
+  background: url("/scg/icon-select-arrow.svg") no-repeat;
+  /* display: block;
+  font-family: 'FontAwesome'; */
+  content: '\f073';
+  position: absolute;
+  top: 12px;
+  right: 6px;
+  /* color: #999; */
+}
+
+
+.datepickerInput input[type="date"]::after {
+  background-image: url("/scg/icon-select-arrow.svg") no-repeat;
+  content: '';
+  display: block;
+  background-size: 10%;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  transform: translateX(-2%);
 }

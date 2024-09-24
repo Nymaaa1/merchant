@@ -48,14 +48,14 @@ export default function RootLayout({
     return (
         <html lang={locale}>
             <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
-                <NextIntlClientProvider messages={messages}>
-                    <LoadingProvider>
-                        <IctProvider>
+                <IctProvider>
+                    <NextIntlClientProvider messages={messages}>
+                        <LoadingProvider>
                             {children}
-                        </IctProvider>
-                        <Loading />
-                    </LoadingProvider>
-                </NextIntlClientProvider>
+                            <Loading />
+                        </LoadingProvider>
+                    </NextIntlClientProvider>
+                </IctProvider>
             </body>
         </html>
     );

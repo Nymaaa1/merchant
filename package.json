@@ -28,10 +28,11 @@
     "react": "^18",
     "react-apexcharts": "^1.4.1",
     "react-bootstrap": "^2.10.4",
-    "react-chartjs-2": "^5.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-currency-input-field": "^3.8.0",
+    "react-day-picker": "^9.1.2",
     "rsuite": "^5.70.1",
+    "tailwind-datepicker-react": "^1.4.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -41,7 +42,6 @@
     "@types/nodemailer": "^6.4.15",
     "@types/react": "^18",
     "@types/react-copy-to-clipboard": "^5.0.7",
-    "@types/react-date-range": "^1.4.9",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",

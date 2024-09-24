@@ -10,6 +10,7 @@ import authService from '@/service/api';
 import { BranchBalance } from '@/types/branch';
 import { TransactionListResponse } from "@/types";
 import dayjs from 'dayjs';
+import { useRequest } from 'ahooks';
 
 interface IctContextProps {
     userRole: "branch" | "partner" | "";
@@ -165,11 +166,16 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         const branchData = localStorage.getItem("branch");
         const branchRole = localStorage.getItem("branchRole");
         const partnerRole = localStorage.getItem("partnerRole");
-
+        const data: Partner = JSON.parse(localStorage.getItem('partner') ?? ""); ``
+        // if (pathname?.match("/") && partnerData) {
+        //     setPartner(JSON.parse(partnerData));
+        // }
         if (pathname?.match("/(app)/")) {
             if (partnerData && partnerToken && partnerRole) {
                 setUserRole("partner");
-                setPartner(JSON.parse(partnerData));
+                balanceAction.run(data.profileId);
+                recentAction.run(data.profileId, params);
+                setPartner(data);
                 authService.setPartner(partnerData, partnerToken);
             } else if (branchToken && branchData && branchRole) {
                 authBranchService.setBranch(branchData, branchToken);
@@ -215,6 +221,20 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             }
         }
     }, [pathname]);
+
+    const balanceAction = useRequest(authService.getBalance, {
+        manual: true,
+        onSuccess: async (data) => {
+            setPartnerBalance(data);
+        },
+    });
+
+    const recentAction = useRequest(authService.getRecent, {
+        manual: true,
+        onSuccess: async (data) => {
+            setTransaction(data);
+        },
+    });
 
     const setLogout = () => {
         setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);

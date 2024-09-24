@@ -42,7 +42,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
       },
     ],
   });
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthNames: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const changeTableDataType = (val: string) => {
     setTableDataType(val);

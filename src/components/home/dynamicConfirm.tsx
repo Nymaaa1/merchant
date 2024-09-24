@@ -29,7 +29,7 @@ type ReponseProps = {
 
 const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const t = useTranslations('account');
-    const { partner, cardIndex, partnerBalance, transferInfo } = useContext(IctContext);
+    const { partner, cardIndex, partnerBalance, transferInfo, setTransaction, setPartnerBalance } = useContext(IctContext);
     const [otp1, setOtp1] = useState(new Array(4).fill(""));
     const [otp2, setOtp2] = useState(new Array(4).fill(""));
     const { setLoading } = useLoading();
@@ -48,7 +48,6 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
 
     const handleShowOTP = () => {
         if (otp1.join("").length === 4) {
-
             if (transferInfo.type === "bank") {
                 // getOTPCode.run(transferInfo.bank.sourceAccountNo);
             } else if (transferInfo.type === "candy") {
@@ -148,6 +147,8 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
         },
         manual: true,
         onSuccess: async (data) => {
+            setPartnerBalance({ balanceList: [], totalBalance: 0 });
+            setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             setShow(true);
             setResponse({ message: data.result.message, success: true, info: data.result.info });
         },
@@ -193,9 +194,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const handleClose = () => {
         setShow(false);
         // formreset?.current?.reset();
-        window.location.reload();
         if (response.success) {
-            window.location.reload();
             router.push('/app/dashboard');
         }
     };
@@ -365,7 +364,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                         :
                                                         <>
                                                             <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
-                                                                <h5>Бид таны {converHidePhone(partner.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
+                                                                <h5>Бид таны {converHidePhone(partner?.phone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
                                                             </div>
                                                             <OtpInput otp={otp2} setOtp={setOtp2} type="number" />
                                                             <div className="timer mt-3">

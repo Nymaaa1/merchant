@@ -7,13 +7,14 @@ import { useRequest } from "ahooks";
 import authService from "@/service/api";
 import FailNotification from "../notification/fail-notif";
 import { format } from "date-fns";
-import { DateRangePicker } from "rsuite";
-import 'rsuite/DateRangePicker/styles/index.css';
-import "rsuite/dist/rsuite.min.css";
+// import { DateRangePicker } from "rsuite";
+// import 'rsuite/DateRangePicker/styles/index.css';
+// import "rsuite/dist/rsuite.min.css";
 import Image from "next/image";
 import { useLoading } from "@/context/loading";
 import { excelDownload } from "@/utils/excel";
 import Switch from "../widget/switch";
+import DatePickerModel from "../widget/date";
 
 const HomeTable = () => {
     const { setLoading, setColor } = useLoading();
@@ -24,8 +25,10 @@ const HomeTable = () => {
     useEffect(() => {
         setColor("#4341CC");
         if (cardIndex === 0 && transaction?.result?.length === 0) {
+            setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             recentAction.run(partner?.profileId, params);
         } else if (transaction?.result?.length === 0) {
+            setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         }
     }, [cardIndex]);
@@ -101,14 +104,15 @@ const HomeTable = () => {
             pagingStart: value
         });
         if (cardIndex === 0) {
+            setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         } else {
+            setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         }
     };
 
     const changeDateRange = (value: [Date, Date] | null) => {
-        alert(value);
         if (value && value[0] && value[1]) {
             setParams({
                 limit: 20,
@@ -125,6 +129,38 @@ const HomeTable = () => {
             }
         }
     };
+
+    const changeBeginDate = (value: Date) => {
+        setParams({
+            limit: 20,
+            offset: params.offset,
+            maxPage: params.maxPage,
+            pagingStart: 0,
+            beginDate: format(value, 'yyyy-MM-dd'),
+            endDate: params.endDate,
+        });
+        if (cardIndex === 0) {
+            getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        } else {
+            getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        }
+    }
+
+    const changeEndDate = (value: Date) => {
+        setParams({
+            limit: 20,
+            offset: params.offset,
+            maxPage: params.maxPage,
+            pagingStart: 0,
+            beginDate: params.beginDate,
+            endDate: format(value, 'yyyy-MM-dd'),
+        });
+        if (cardIndex === 0) {
+            getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        } else {
+            getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
+        }
+    }
 
     const renderData = () => {
         if (transaction?.result && transaction?.result?.length > 0) {
@@ -151,7 +187,6 @@ const HomeTable = () => {
 
     const beginDate = params.beginDate ? new Date(params.beginDate) : new Date();
     const endDate = params.endDate ? new Date(params.endDate) : new Date();
-
 
     return (
         <Col xs={6} className="flex-grow-1" xl={2} lg={2}>
@@ -189,17 +224,9 @@ const HomeTable = () => {
                                         </Nav.Link>
                                     </Nav.Item>
                                     <div className="date-graphic">
-                                        <div className="content" style={{ height: "48px" }}>
-                                            <DateRangePicker
-                                                // caretAs={<img src="/caret-down.svg" alt="Toggle password visibility" />}
-                                                value={[beginDate, endDate]}
-                                                disabled={false}
-                                                // oneTap={true}
-                                                className="custom-date-range-picker"
-                                                placement="autoVerticalEnd"
-                                                onChange={changeDateRange}
-                                                style={{ zIndex: 1000 }}
-                                            />
+                                        <div className="content d-flex justify-content-between align-items-center" style={{ height: "48px" }}>
+                                            <DatePickerModel selectedDate={beginDate} setSelectedDate={changeBeginDate} />
+                                            <DatePickerModel selectedDate={endDate} setSelectedDate={changeEndDate} />
                                         </div>
                                         <div className="item d-flex justify-content-center align-items-center" style={{ width: "155px", height: "48px", }}>
                                             <Row className="d-flex justify-content-between align-items-center g-0 m-0 p-0">
