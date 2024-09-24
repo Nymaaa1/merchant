@@ -103,7 +103,7 @@ const ChartPage = () => {
     };
 
     return (
-        <div className='p-10' style={{ fontFamily: "Code Next" }}>
+        <div className='pr-10 pb-10 pt-1 pl-10' style={{ fontFamily: "Code Next" }}>
             <Row style={{ fontFamily: "Code Next" }}>
                 <Col xl={8} xs={12} lg={8}>
                     <TodeySales briefinfo={briefinfo} />
@@ -113,7 +113,7 @@ const ChartPage = () => {
                 </Col>
             </Row>
             <Row>
-                <Col xl={3} xs={6} lg={3}>
+                <Col xl={3} xs={12} lg={3}>
                     <AgeGroupChart ageList={ageList} />
                 </Col>
                 <Col xl={4} xs={6} lg={4}>

@@ -1,22 +1,29 @@
 "use client";
 import FailNotification from '@/components/notification/fail-notif';
+import IctContext from '@/context/ict-context';
 import { useLoading } from '@/context/loading';
 import authService from '@/service/api';
 import { emailRegex, phoneRegex } from '@/utils/utils';
 import { useRequest } from 'ahooks';
 import Image from 'next/image';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 
 const HomePage = () => {
     const serviceMonpayPlus: string[] = ["/images/plus1.jpg", "/images/plus2.jpg", "/images/plus3.jpg"];
     const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
-    const [validated, setValidated] = useState(false);
+    const [validated, setValidated] = useState<boolean>(false);
     const { setLoading, setColor } = useLoading();
     const [show, setShow] = useState<boolean>(false);
     const [type, setType] = useState<boolean>(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [response, setResponse] = useState({ success: false, info: "" });
+    const { partner } = useContext(IctContext);
+    const [phone, setPhone] = useState<string>("");
+
+    useEffect(() => {
+        setPhone(partner?.verifiedPhone);
+    }, [partner]);
 
     const emailSend = useRequest(authService.email, {
         onBefore: () => {
@@ -58,18 +65,15 @@ const HomePage = () => {
         } else if (!phoneRegex.test(form.phone.value)) {
             setAlert({ show: true, message: "Утасны дугаар оруулна уу!" });
             setValidated(true);
-        } else if (!(form.companyName.value.length > 0)) {
-            setAlert({ show: true, message: "Байгууллагын нэр оруулна уу!" });
-            setValidated(true);
         } else {
-            const phone = form.phone.value;
+            const phones = phone;
             const email = form.email.value;
-            const name = form.companyName.value;
+            const name = partner?.name;
 
             const body: EmailBody = {
                 type: type ? "AW" : "PLUS",
                 name: name,
-                phone: phone,
+                phone: phones,
                 email: email,
             };
             emailSend.run(body);
@@ -79,7 +83,7 @@ const HomePage = () => {
 
     return (
         <Container fluid style={{ fontFamily: "Code Next" }}>
-            <Row className="wrapper-row" style={{paddingTop:"0px"}}>
+            <Row className="wrapper-row" style={{ paddingTop: "0px" }}>
                 <div
                     style={{
                         margin: 'auto',
@@ -119,7 +123,7 @@ const HomePage = () => {
                                     <Row className="flex-nowrap g-2">
                                         {serviceMonpayPlus.map((service, index) => (
                                             <Col key={index} style={{ display: 'inline-block', gap: "2px" }}>
-                                                <div className='mt-10' style={{ height: "189px", width: "189px", backgroundColor: "#BBDEE0", borderRadius: "8px",overflow: "hidden",}}>
+                                                <div className='mt-10' style={{ height: "189px", width: "189px", backgroundColor: "#BBDEE0", borderRadius: "8px", overflow: "hidden", }}>
                                                     <Image src={service} alt="Toggle password visibility" width={189} height={189} />
                                                 </div>
                                             </Col>
@@ -231,9 +235,11 @@ const HomePage = () => {
                                         <div className="input-item">
                                             <InputGroup hasValidation>
                                                 <Form.Control
+                                                    disabled={true}
                                                     className="save-temp-input"
                                                     type="text"
                                                     name='companyName'
+                                                    value={partner?.username}
                                                 />
                                             </InputGroup>
                                         </div>
@@ -247,8 +253,19 @@ const HomePage = () => {
                                                     type="number"
                                                     maxLength={8}
                                                     plaintext
+                                                    required
                                                     name='phone'
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                        if (e.target.value.length > 8) {
+                                                            e.target.value = e.target.value.slice(0, 8);
+                                                        }
+                                                    }}
                                                 />
+                                                <Form.Control.Feedback type="invalid">
+                                                    Утасны дугаар оруулна уу.
+                                                </Form.Control.Feedback>
                                             </InputGroup>
                                         </div>
                                         <div className="person-title">
@@ -260,7 +277,11 @@ const HomePage = () => {
                                                     className="save-temp-input"
                                                     type="text"
                                                     name='email'
+                                                    required
                                                 />
+                                                <Form.Control.Feedback type="invalid">
+                                                    И-Мэйл хаяг оруулна уу.
+                                                </Form.Control.Feedback>
                                             </InputGroup>
                                         </div>
                                     </div>

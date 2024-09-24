@@ -72,7 +72,7 @@ const AgeGroupChart: React.FC<AgeCountProps> = ({ ageList }) => {
       </div>
 
       <div className="py-6">
-        <Chart options={chartOptions} series={series} type="donut" height={300} />
+        <Chart options={chartOptions} series={series} type="donut" height={280} />
       </div>
     </div>
   );

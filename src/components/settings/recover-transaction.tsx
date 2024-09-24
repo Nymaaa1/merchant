@@ -162,7 +162,7 @@ const ProfileRecoverTransactionPass = () => {
                                         marginBottom: '20px',
                                     }}
                                 >
-                                    Бид таны {converHidePhone(partner?.phone)} дугаарт нууц үг сэргээх кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу
+                                    Бид таны {converHidePhone(partner?.verifiedPhone)} дугаарт нууц үг сэргээх кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу
                                 </h5>
                             </div>
                             <OtpInput otp={otp1} setOtp={setOtp1} type="number" />

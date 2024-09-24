@@ -41,7 +41,7 @@ const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
                             <Dropdown.Toggle id="dropdown-autoclose-true">
                                 <div className="inner d-flex align-items-center">
                                     <div className="info me-2">
-                                        <span className="people-phone-number" style={{ fontSize: "16px", color: "#161E34" }}>{partner?.name}</span>
+                                        <span className="people-phone-number" style={{ fontSize: "16px", color: "#161E34" }}>{partner?.username}</span>
                                     </div>
                                     <div className="avatar position-relative">
                                         <img className="profileImgSmall rounded-circle" src="/topbar-avatar-img.png" alt="Profile" />

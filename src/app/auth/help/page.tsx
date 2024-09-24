@@ -95,10 +95,7 @@ const Control = () => {
                                                 <li>Хүү, Урьдчилгаа, Шимтгэлгүй</li>
                                                 <li>2-6 хуваан төлөх боломжтой</li>
                                             </ul>
-                                            <Button className='d-flex justify-content-center align-items-center gap-2 mt-3' style={{ borderRadius: "8px", border: "none", backgroundColor: "#4341CC", color: "#ffff", width: "177px", height: "48px" }}>
-                                                <Image src={"/svg/help-world.svg"} alt='' width={24} height={24} />
-                                                Сайтаар зочлох
-                                            </Button>
+                                            
                                         </div>
                                     </Col>
                                     <Col xl={3} xs={12} lg={3}>

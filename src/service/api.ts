@@ -2,7 +2,7 @@
 
 import { LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
+import { BaseResponse, ChangePhoneResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
 import { DistrictGraphicResponse, GenderGraphicResponse, SalesGraphic, SalesPartnerGraphic } from "@/types/demo";
@@ -677,15 +677,15 @@ namespace authService {
         });
     };
 
-    export const changePhone = async (phone: string): Promise<DefaultResponse> => {
+    export const changePhone = async (phone: string): Promise<BaseResponse<ChangePhoneResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/name', {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${getToken()}`, },
-                    body: JSON.stringify({"phone": phone})
+                    body: JSON.stringify({ "phone": phone })
                 });
-                const data: DefaultResponse = await response.json();
+                const data: BaseResponse<ChangePhoneResponse> = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

@@ -34,6 +34,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
   const [typeDate, setTypeDate] = useState<ChooseTypeProps[]>([{ name: "Жилээр", en: "annual" }, { name: "Сараар", en: "monthly" }, { name: "7 хоног", en: "weekly" }]);
   const [typeUser, setTypeUser] = useState<ChooseTypeProps[]>([{ name: "Хэрэглэгчийн тоо", en: "user" }, { name: "Гүйлгээний тоо", en: "transaction" }, { name: "Мөнгөн дүн", en: "amount" }]);
   const [tableDataType, setTableDataType] = useState<string>("amount");
+  const [axisValue, setAxisValue] = useState<string[]>([]);
   const [chartData, setChartData] = useState<ChartData>({
     series: [
       {
@@ -60,9 +61,11 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
   useEffect(() => {
     if (sales) {
       const formattedDates = sales.map((item) => {
-        const date = new Date(item.xaxis);
-        const monthIndex = date.getMonth();
-        return monthNames[monthIndex];
+        const [year, month, day] = item.xaxis.split('-');
+        if (item.xaxis.length > 8) {
+          return `${month}-${day}`;
+        }
+        return `${year}`;
       });
       setDates(formattedDates);
       const data = sales.map((item) => item.totalAmount ?? 0);
@@ -157,14 +160,11 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 md:p-6 mb-10" style={{ boxShadow: "0px 0px 8px 8px #F8F9FA" }}>
-      <div
-        className="control"
-        style={{
-          margin: 'auto',
-          height: "302px"
-        }}>
-        <div className="flex justify-between items-center mb-4">
+    <div className="bg-white rounded-lg p-4 md:p-6 mb-10" style={{
+      maxHeight: "350px", boxShadow: "0px 0px 8px 8px #F8F9FA"
+    }}>
+      <div>
+        <div>
           <h5 className="text-md font-semibold text-gray-900">
             Борлуулалтын мэдээ
           </h5>
@@ -175,7 +175,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
               value={type}
               name="bankCode"
               style={{ fontSize: "10px" }}
-              onChange={(e) => handleChange(e.target.value)}
+              onChange={(e) => { handleChange(e.target.value); alert(e.target.value) }}
             >
               {typeDate?.map((data, index) => {
                 return (
@@ -211,7 +211,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
             </Form.Select>
           </div>
         </div>
-        <Chart options={chartOptions} series={chartData.series} type="line" />
+        <Chart options={chartOptions} series={chartData.series} type="line" height={280} />
       </div>
     </div>
   );

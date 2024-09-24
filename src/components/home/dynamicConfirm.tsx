@@ -372,7 +372,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                         :
                                                         <>
                                                             <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
-                                                                <h5>Бид таны {converHidePhone(partner?.phone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
+                                                                <h5>Бид таны {converHidePhone(partner?.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
                                                             </div>
                                                             <OtpInput otp={otp2} setOtp={setOtp2} type="number" />
                                                             <div className="timer mt-3">
@@ -483,7 +483,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                 <Modal.Footer className='mt-0 pt-0'>
                     <div className="tw-single-button">
                         <Button onClick={() => { if (otp1.join("").length === 4) { handleTransfer() } }}>
-                            Хадгалах
+                            Шилжүүлэх
                         </Button>
                     </div>
                 </Modal.Footer>

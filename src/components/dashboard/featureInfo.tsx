@@ -13,6 +13,8 @@ import { phoneRegex, thousands } from '@/utils/utils';
 import "../../styles/CustomSwitchComponent.css";
 import { useLoading } from '@/context/loading';
 import { Partner } from '@/types/user';
+import OtpInput from '../widget/pinput';
+import Link from 'next/link';
 
 const FeaturedInfo = () => {
   const t = useTranslations('dashboard');
@@ -283,8 +285,8 @@ type AccountInfoProps = {
 };
 
 const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
-  const { setLoading, setColor } = useLoading();
-  const { partner, cardIndex, partnerBalance, setPartnerBalance } = useContext(IctContext);
+  const { setLoading } = useLoading();
+  const { partner, cardIndex, partnerBalance, setPartnerBalance, setPartner } = useContext(IctContext);
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
@@ -292,9 +294,11 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const [phone, setPhone] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);
   const [response, setResponse] = useState({ success: false, info: "" });
+  const [otp1, setOtp1] = useState(new Array(4).fill(""));
 
   useEffect(() => {
     setName(partnerBalance?.balanceList[index]?.nickName ?? "");
+    setPhone(partner.phone);
   }, [partnerBalance]);
 
   const converHidePhone = (val: string) => {
@@ -331,8 +335,11 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   }
 
   const changePhoneAction = () => {
-    if (phoneRegex.test(phone)) return;
-    changePhone.run("");
+    alert(phoneRegex.test(phone) + "---" + phone)
+    if (phoneRegex.test(phone)) {
+      setShowPaymentPassword(false);
+      changePhone.run("");
+    } else return;
   }
 
   const changeName = useRequest(authService.changeName, {
@@ -358,7 +365,8 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
     },
     manual: true,
     onSuccess: async (data) => {
-      setResponse({ success: true, info: data.result });
+      setResponse({ success: true, info: data.info });
+      setPartner({ ...partner, phone: data.result.phone });
       setLoading(false);
       setShow(true);
     },
@@ -461,12 +469,13 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
                     plaintext
                     type="number"
                     name="lastname"
-                    defaultValue={partner?.phone}
+                    value={phone}
                     style={{ paddingLeft: "10px", fontSize: "13px" }}
                     className="custom-placeholder"
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </Col>
-                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => setShowPaymentPassword(!showPaymentPassword)}>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setOtp1(new Array(4).fill("")) }}>
                   Хадгалах
                 </Col>
               </Form.Group>
@@ -475,17 +484,24 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
             <div className="person-title mt-10" >
               <h5 style={{ fontSize: "13px", color: "#5B698E" }}>Дансны нэр</h5>
             </div>
-            <div className="input-item">
-              <InputGroup >
-                <Form.Control
-                  disabled={false}
-                  style={{ backgroundColor: "#ffff", height: "48px", borderRadius: "8px", paddingLeft: "18px" }}
-                  type="text"
-                  name="lastname"
-                  className="custom-placeholder"
-                  value={partnerBalance?.balanceList[index]?.nickName ?? ""}
-                />
-              </InputGroup>
+            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+              <Form.Group as={Row} controlId="customSwitch">
+                <Col sm={9}>
+                  <Form.Control
+                    maxLength={40}
+                    plaintext
+                    type="text"
+                    name="lastname"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    style={{ paddingLeft: "10px", fontSize: "13px" }}
+                    className="custom-placeholder"
+                  />
+                </Col>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => changeNameAction()}>
+                  Хадгалах
+                </Col>
+              </Form.Group>
             </div>
           </>
         }
@@ -493,37 +509,26 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
       <Modal
         show={showPaymentPassword}
         onHide={() => setShowPaymentPassword(false)}
-        dialogClassName="save-template"
+        dialogClassName="save-templates"
         centered
       >
         <Modal.Header closeButton className="d-flex justify-content-between align-items-center">
-          <div className="header-title" >
-            <h5>Гүйлгээний нууц үг</h5>
+          <div className="header-title">
+            <h5 style={{ fontSize: "14px" }}>Гүйлгээний пин кодоо оруулна уу</h5>
           </div>
         </Modal.Header>
-        <Modal.Body
-          style={{
-            paddingBottom: '0',
-          }}
-        >
-          <div className="template-body">
-            <div>
-              <div>
-                <Form.Control
-                  className="save-temp-input"
-                  type="text"
-                  onChange={(e) => {
-                    // handleCheck(e);
-                    // setUid(e.target?.value);
-                  }}
-                />
-              </div>
-            </div>
+        <Modal.Body>
+          <div className="d-flex justify-content-center align-items-center">
+            <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+          </div>
+          <div className="d-flex justify-content-end p-0 mt-2">
+            <Link style={{ fontSize: "13px", color: "#8089AC", paddingRight: "20px" }} href="/app/settings">Нууц үг сэргээх</Link>
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className='mt-0 pt-0'>
           <div className="tw-single-button">
             <Button
+              onClick={() => { if (otp1.join("").length === 4) { changePhoneAction() } }}
             >
               Хадгалах
             </Button>

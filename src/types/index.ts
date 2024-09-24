@@ -46,6 +46,11 @@ export interface PaginationResponse<T> {
   data: Array<T>;
 }
 
+export interface ChangePhoneResponse {
+  verifiedPhone: string;
+  phone: string;
+}
+
 export interface DeleteConfirm {
   confirm: string;
 }

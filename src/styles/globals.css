@@ -4381,12 +4381,16 @@ input[type='number']::-webkit-inner-spin-button {
   font-family: 'Code Next';
   font-style: normal;
   font-weight: 600;
+  justify-content: end;
+  display: flex;
   font-size: 11px;
   line-height: 16px;
   letter-spacing: -0.008em;
   color: rgba(255, 255, 255, 0.64);
   margin: 0;
   padding-right: 24px;
+  margin-left: 10px;
+  /* position: absolute; */
 }
 
 .dashboard-features .mp-wallet .contents .content-inner .mp-wallet-id span {
@@ -4398,8 +4402,9 @@ input[type='number']::-webkit-inner-spin-button {
   text-align: right;
   letter-spacing: -0.016em;
   color: #ffffff;
-  position: absolute;
-  right: 0;
+  position:relative;
+  max-lines: 1;
+  /* right: 0; */
 }
 
 .dashboard-features .mp-wallet .contents .content-inner .mp-wallet-id .icon {
@@ -4453,6 +4458,8 @@ input[type='number']::-webkit-inner-spin-button {
 
 .dashboard-features .mp-wallet .content .content-inner .mp-wallet-id h6 {
   font-family: 'Code Next';
+  justify-content: end;
+  display: flex;
   font-style: normal;
   font-weight: 600;
   font-size: 11px;
@@ -4461,6 +4468,7 @@ input[type='number']::-webkit-inner-spin-button {
   color: rgba(255, 255, 255, 0.64);
   margin: 0;
   padding-right: 24px;
+  /* padding: 0px; */
 }
 
 .dashboard-features .mp-wallet .content .content-inner .mp-wallet-id span {
@@ -4472,7 +4480,7 @@ input[type='number']::-webkit-inner-spin-button {
   text-align: right;
   letter-spacing: -0.016em;
   color: #ffffff;
-  position: absolute;
+  position: relative;
   right: 0;
 }
 

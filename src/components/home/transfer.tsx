@@ -193,7 +193,7 @@ const HomeTransaction = () => {
         const { value = '' } = e.target;
         const parsedValue = value.replace(/[^\d.]/gi, '');
         const numericValue = parseInt(parsedValue || "0", 10);
-        if (numericValue < 5000000) {
+        if (numericValue < 5000001) {
             setSendToMonpayAmount(parsedValue);
         }
     };
