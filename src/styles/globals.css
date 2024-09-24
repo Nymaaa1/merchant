@@ -3558,11 +3558,21 @@ input[type='number']::-webkit-inner-spin-button {
   font-family: 'Code Next';
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 24px;
   letter-spacing: -0.008em;
   color: #4341CC;
   cursor: pointer;
+}
+.timer-number span{
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: -0.008em;
+  color: #8089AC;
+  margin-left: 8px;
 }
 
 .register-confirm .tw-login-form .tw-register .timer span {
@@ -3573,7 +3583,7 @@ input[type='number']::-webkit-inner-spin-button {
   font-family: 'Code Next';
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 24px;
   letter-spacing: -0.008em;
   color: #161e34;

@@ -14,6 +14,16 @@ const nextConfig = {
     },
     env: {
         MONPAY_API_URL: process.env.MONPAY_API_URL
-    }
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'monpaycontent.blob.ub.cloud.mobinet.mn',
+                port: '',
+                pathname: '/images/**',
+            },
+        ],
+    },
 };
 export default nextIntlConfig(nextConfig);

@@ -154,63 +154,46 @@ const ForgotPasswordConfirm = () => {
     };
 
     return (
-        <Container className="register-confirm" fluid>
-            <Row className="tw-form">
-                <Col
-                    className="tw-image-section d-none d-xl-flex"
-                    style={{
-                        backgroundImage: `url("/login/Bg.png")`,
-                    }}
-                    xl={7}
-                    xxl={7}
-                >
-                    <div className="big-image">
-                        <div className="image-stack">
-                            <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
-                        </div>
+        <>
+            <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
+                <div className="tw-logo-title">
+                    <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
+                    <div className="tw-form-title">
+                        <span>{t('password-recover')}</span>
+                        <p className='mt-2'>
+                            Бид таны <strong>{phoneMasked}</strong> дугаарлуу кодыг илгээсэн.
+                            Доорхи талбарт оруулан баталгаажуулна уу.
+                        </p>
                     </div>
-                </Col>
-                <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <div className="tw-logo-title">
-                        <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
-                        <div className="tw-form-title">
-                            <span>{t('password-recover')}</span>
-                            <p>
-                                <strong>{phoneMasked}</strong> {t('desc-2')}
-                            </p>
-                        </div>
+                </div>
+                <Form className="tw-register" onSubmit={handleSubmit}>
+                    <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                    <div className="timer mt-2">
+                        {counter === 0 ? (
+                            <span className="timer-text" onClick={retryPin}>
+                                {t('get-code-again')}
+                            </span>
+                        ) : (
+                            <span className="timer-number">
+                                <span>Дахин код авах уу?</span> 00:{counter < 10 ? '0' : ''}
+                                {counter}
+                            </span>
+                        )}
                     </div>
-                    <Form className="tw-register" onSubmit={handleSubmit}>
-                        <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
-                        <div className="timer">
-                            {counter === 0 ? (
-                                <span className="timer-text" onClick={retryPin}>
-                                    {t('get-code-again')}
-                                </span>
-                            ) : (
-                                <span className="timer-number">
-                                    <span>Дахин код авах уу?</span> 00:{counter < 10 ? '0' : ''}
-                                    {counter}
-                                </span>
-                            )}
+                    <Col>
+                        <div className="tw-form-buttons p-0 mt-5">
+                            <div className="tw-top-button">
+                                <Button disabled={forDisabled} type="submit">{t('confirm')}</Button>
+                            </div>
+                            <div className="tw-bottom-button">
+                                <Link href="/auth/forgot-password">
+                                    <Button type="submit">{t('back')}</Button>
+                                </Link>
+                            </div>
                         </div>
-                        <Row>
-                            <Col>
-                                <div className="tw-form-buttons">
-                                    <div className="tw-top-button">
-                                        <Button disabled={forDisabled} type="submit">{t('confirm')}</Button>
-                                    </div>
-                                    <div className="tw-bottom-button">
-                                        <Link href="/auth/forgot-password">
-                                            <Button type="submit">{t('back')}</Button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Col>
-            </Row>
+                    </Col>
+                </Form>
+            </Col>
             {notification?.show && (
                 <Notification
                     show={notification.show}
@@ -225,7 +208,7 @@ const ForgotPasswordConfirm = () => {
                     close={closeFailNotification} position={undefined}>
                 </FailNotification>
             )}
-        </Container>
+        </>
     );
 };
 

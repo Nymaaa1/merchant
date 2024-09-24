@@ -2,7 +2,7 @@
 
 import { LoginResult } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseResponse, ChangePhoneResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
+import { Banner, BannerResponse, BaseResponse, ChangePhoneResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
 import { DistrictGraphicResponse, GenderGraphicResponse, SalesGraphic, SalesPartnerGraphic } from "@/types/demo";
@@ -686,6 +686,29 @@ namespace authService {
                     body: JSON.stringify({ "phone": phone })
                 });
                 const data: BaseResponse<ChangePhoneResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getBanner = (): Promise<BannerResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/banner', {
+                    method: 'GET',
+                });
+                const data: BannerResponse = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

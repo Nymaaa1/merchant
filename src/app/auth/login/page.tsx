@@ -99,109 +99,98 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Container fluid>
-            <Row className="tw-form">
-                <Col
-                    className="tw-image-section d-none d-xl-flex"
-                    style={{
-                        backgroundImage: `url("/login/Bg.png")`,
-                    }}
-                    xl={7}
-                    xxl={7}
-                >
-                </Col>
-                <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <div className="tw-logo-title">
-                        <Link href="/auth/login">
-                            <div>
-                                <Image src="/logo/monpay-logo.png" width={185} height={45} alt="Monpay Logo" />
-                            </div>
-                        </Link>
-                        <div className="tw-form-title">
-                            <span>{t('title')}</span>
+        <>
+            <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
+                <div className="tw-logo-title">
+                    <Link href="/auth/login">
+                        <div>
+                            <Image src="/logo/monpay-logo.png" width={185} height={45} alt="Monpay Logo" />
                         </div>
+                    </Link>
+                    <div className="tw-form-title">
+                        <span>{t('title')}</span>
                     </div>
-                    <div className="deposit-tab">
-                        <div className="deposit-tab-content">
-                            <Form
-                                validated={validated}
-                                name="creater"
+                </div>
+                <div className="deposit-tab">
+                    <div className="deposit-tab-content">
+                        <Form
+                            validated={validated}
+                            name="creater"
+                        >
+                            <Tabs
+                                id="controlled-tab-example"
+                                defaultActiveKey={loginType || "creater"}
+                                onSelect={(key) => { setLoginType(key || 'creater'); ref.current?.reset(); }}
+                                className="recharge-tab"
                             >
-                                <Tabs
-                                    id="controlled-tab-example"
-                                    defaultActiveKey={loginType || "creater"}
-                                    onSelect={(key) => { setLoginType(key || 'creater'); ref.current?.reset(); }}
-                                    className="recharge-tab"
-                                >
-                                    <Tab eventKey="creater" title={t('account')} />
-                                    <Tab eventKey="branch" title={t('branch')} />
-                                </Tabs>
-                            </Form>
+                                <Tab eventKey="creater" title={t('account')} />
+                                <Tab eventKey="branch" title={t('branch')} />
+                            </Tabs>
+                        </Form>
+                    </div>
+                </div>
+                <Form className="tw-register pt-8" noValidate validated={validated}
+                    onSubmit={handleSubmit}
+                    ref={ref}
+                >
+                    <Form.Group>
+                        <InputGroup hasValidation>
+                            <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
+                            <Form.Control
+                                required
+                                name="username"
+                                type="text"
+                                className="tw-input tw-phone"
+                                placeholder={t('phone')}
+                                autoComplete="off"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Нэвтрэх нэр оруулна уу!
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                        <InputGroup hasValidation>
+                            <InputGroup.Text
+                                className="password"
+                                id="inputGroupPrepend"
+                            ></InputGroup.Text>
+                            <Form.Control
+                                required
+                                name="password"
+                                type={passwordShown ? 'text' : 'password'}
+                                className="tw-input tw-password"
+                                placeholder={t('password')}
+                                autoComplete="off"
+                            />
+                            <span className="icon-on-off" onClick={togglePasswordVisibility}>
+                                <img src={passwordShown ? "/svg/icon-off.svg" : "/svg/icon-on.svg"} alt="Toggle password visibility" />
+                            </span>
+                            <Form.Control.Feedback type="invalid">
+                                Нууц үг оруулна уу!
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                    </Form.Group>
+                    <div className="tw-recover-password">
+                        <Link href="/auth/forgot-password">
+                            <Button>{t('recover')}</Button>
+                        </Link>
+                    </div>
+                    <div className="tw-form-buttons">
+                        <div className="tw-top-button">
+                            <Button style={{ border: "unset" }} type="submit">{t('login')}</Button>
+                        </div>
+                        <div className="tw-request">
+                            <Button>Монпэй хамтрагч болох бол <Link href="/auth/request"><span>ЭНД ДАРНА</span></Link> уу!</Button>
+                        </div>
+                        <div className="help-and-services">
+                            <Button><Link href="/auth/help">Тусламж</Link> • <Link href="/auth/faq">FAQ</Link></Button>
                         </div>
                     </div>
-                    <Form className="tw-register pt-8" noValidate validated={validated}
-                        onSubmit={handleSubmit}
-                        ref={ref}
-                    >
-                        <Form.Group>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
-                                <Form.Control
-                                    required
-                                    name="username"
-                                    type="text"
-                                    className="tw-input tw-phone"
-                                    placeholder={t('phone')}
-                                    autoComplete="off"
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Нэвтрэх нэр оруулна уу!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text
-                                    className="password"
-                                    id="inputGroupPrepend"
-                                ></InputGroup.Text>
-                                <Form.Control
-                                    required
-                                    name="password"
-                                    type={passwordShown ? 'text' : 'password'}
-                                    className="tw-input tw-password"
-                                    placeholder={t('password')}
-                                    autoComplete="off"
-                                />
-                                <span className="icon-on-off" onClick={togglePasswordVisibility}>
-                                    <img src={passwordShown ? "/svg/icon-off.svg" : "/svg/icon-on.svg"} alt="Toggle password visibility" />
-                                </span>
-                                <Form.Control.Feedback type="invalid">
-                                    Нууц үг оруулна уу!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                        </Form.Group>
-                        <div className="tw-recover-password">
-                            <Link href="/auth/forgot-password">
-                                <Button>{t('recover')}</Button>
-                            </Link>
-                        </div>
-                        <div className="tw-form-buttons">
-                            <div className="tw-top-button">
-                                <Button style={{ border: "unset" }} type="submit">{t('login')}</Button>
-                            </div>
-                            <div className="tw-request">
-                                <Button>Монпэй хамтрагч болох бол <Link href="/auth/request"><span>ЭНД ДАРНА</span></Link> уу!</Button>
-                            </div>
-                            <div className="help-and-services">
-                                <Button><Link href="/auth/help">Тусламж</Link> • <Link href="/auth/faq">FAQ</Link></Button>
-                            </div>
-                        </div>
-                    </Form>
-                </Col>
-            </Row>
+                </Form>
+            </Col>
             {alerts.show && (
                 <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />
             )}
-        </Container>
+        </>
     );
 };
 

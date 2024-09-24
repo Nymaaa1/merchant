@@ -76,67 +76,52 @@ const ForgotPassword: React.FC = () => {
     })
 
     return (
-        <Container fluid>
-            <Row className="tw-form">
-                <Col
-                    className="tw-image-section d-none d-xl-flex"
-                    style={{
-                        backgroundImage: `url("/login/Bg.png")`,
-                    }}
-                    xl={7}
-                    xxl={7}
+        <>
+
+            <Col className="tw-login-form forgot-password" xl={5} xxl={5} xs={12}>
+                <div className="tw-logo-title">
+                    <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
+                    <div className="tw-form-title">
+                        <span>{t('password-recover')}</span>
+                    </div>
+                </div>
+                <Form noValidate validated={validated}
+                    onSubmit={handleSubmit}
                 >
-                    {/* <div className="big-image">
-                        <div className="image-stack">
-                            <img className="big-image" src="/login-4-images.png" />
+                    <Form.Group>
+                        <InputGroup hasValidation>
+                            <Form.Control
+                                required
+                                name="number"
+                                type="number"
+                                pattern="[1-9]{1}[0-9]{7}"
+                                className="tw-input"
+                                placeholder="Утасны дугаар"
+                                autoComplete="off"
+                                maxLength={8}
+                                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    if (e.target.value.length > 8) {
+                                        e.target.value = e.target.value.slice(0, 8);
+                                    }
+                                }}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Утасны дугаар оруулна уу.
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                    </Form.Group>
+                    <div className="tw-form-buttons" style={{ marginTop: "30px" }}>
+                        <div className="tw-top-button">
+                            <Button type="submit" style={{ border: "unset" }}>{t('send-code')}</Button>
                         </div>
-                    </div> */}
-                </Col>
-                <Col className="tw-login-form forgot-password" xl={5} xxl={5} xs={12}>
-                    <div className="tw-logo-title">
-                        <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
-                        <div className="tw-form-title">
-                            <span>{t('password-recover')}</span>
+                        <div className="tw-bottom-button">
+                            <Link href="/auth/login">
+                                <Button>{t('back')}</Button>
+                            </Link>
                         </div>
                     </div>
-                    <Form noValidate validated={validated}
-                        onSubmit={handleSubmit}
-                    >
-                        <Form.Group>
-                            <InputGroup hasValidation>
-                                <Form.Control
-                                    required
-                                    name="number"
-                                    type="number"
-                                    pattern="[1-9]{1}[0-9]{7}"
-                                    className="tw-input"
-                                    placeholder="Утасны дугаар"
-                                    autoComplete="off"
-                                    maxLength={8}
-                                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        if (e.target.value.length > 8) {
-                                            e.target.value = e.target.value.slice(0, 8);
-                                        }
-                                    }}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Утасны дугаар оруулна уу.
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                        </Form.Group>
-                        <div className="tw-form-buttons" style={{ marginTop: "30px" }}>
-                            <div className="tw-top-button">
-                                <Button type="submit" style={{ border: "unset" }}>{t('send-code')}</Button>
-                            </div>
-                            <div className="tw-bottom-button">
-                                <Link href="/auth/login">
-                                    <Button>{t('back')}</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </Form>
-                </Col>
-            </Row>
+                </Form>
+            </Col>
             {alerts?.show && (
                 <FailNotification
                     show={alerts.show}
@@ -144,7 +129,7 @@ const ForgotPassword: React.FC = () => {
                     close={closeNotification} position={undefined}>
                 </FailNotification>
             )}
-        </Container>
+        </>
     );
 };
 

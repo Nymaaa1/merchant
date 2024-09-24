@@ -55,6 +55,18 @@ export interface DeleteConfirm {
   confirm: string;
 }
 
+export interface Banner {
+  imageUrl: string;
+}
+
+export interface BannerResponse {
+  code: string;
+  intCode: number;
+  info: string;
+  result: Banner[];
+}
+
+
 export type SuccessResponse = { success: boolean };
 
 export type SortDirection = "ASC" | "DESC";
