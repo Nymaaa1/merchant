@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState, FormEvent, useRef } from 'react';
+import React, { useContext, useState, FormEvent, useRef, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup, Tabs, Tab } from 'react-bootstrap';
 import Link from 'next/link';
 import IctContext from '@/context/ict-context';
@@ -22,6 +22,12 @@ const Login: React.FC = () => {
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const router = useRouter();
     const { setLoading, setColor } = useLoading();
+
+    useEffect(() => {
+        if (!loginType) {
+            setLoginType("creater");
+        }
+    }, []);
 
     const togglePasswordVisibility = () => {
         setPasswordShown(!passwordShown);
@@ -123,8 +129,8 @@ const Login: React.FC = () => {
                             >
                                 <Tabs
                                     id="controlled-tab-example"
-                                    defaultActiveKey={loginType}
-                                    onSelect={(key) => { setLoginType(key || 'branch'); ref.current?.reset(); }}
+                                    defaultActiveKey={loginType || "creater"}
+                                    onSelect={(key) => { setLoginType(key || 'creater'); ref.current?.reset(); }}
                                     className="recharge-tab"
                                 >
                                     <Tab eventKey="creater" title={t('account')} />
@@ -149,7 +155,7 @@ const Login: React.FC = () => {
                                     autoComplete="off"
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {t('validation.phone')}
+                                    Нэвтрэх нэр оруулна уу!
                                 </Form.Control.Feedback>
                             </InputGroup>
                             <InputGroup hasValidation>
@@ -169,7 +175,7 @@ const Login: React.FC = () => {
                                     <img src={passwordShown ? "/svg/icon-off.svg" : "/svg/icon-on.svg"} alt="Toggle password visibility" />
                                 </span>
                                 <Form.Control.Feedback type="invalid">
-                                    {t('validation.password')}
+                                    Нууц үг оруулна уу!
                                 </Form.Control.Feedback>
                             </InputGroup>
                         </Form.Group>

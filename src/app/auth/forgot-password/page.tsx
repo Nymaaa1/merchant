@@ -120,7 +120,7 @@ const ForgotPassword: React.FC = () => {
                                     }}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    Утасны дугаар зөв оруулна уу.
+                                    Утасны дугаар оруулна уу.
                                 </Form.Control.Feedback>
                             </InputGroup>
                         </Form.Group>
