@@ -5462,6 +5462,120 @@ input[type='number']::-webkit-inner-spin-button {
   justify-content: center;
   margin-right: 4px;
 }
+/* warning modal */
+
+
+.modal-dialog.warning-modal .modal-content .modal-header .image {
+  width: 96px;
+  height: 96px;
+  background-color: rgba(17, 216, 226, 0.08);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.modal-dialog.warning-modal .modal-content .modal-header .image .image-inner {
+  /* background-color: #11d8e2; */
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-header {
+  border: unset;
+  padding: 0;
+  justify-content: center;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body {
+  padding: 0;
+  border: unset;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body .title h5 {
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.016em;
+  color: #161e34;
+  margin: 0;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body .desc {
+  margin-top: 12px;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body .desc p {
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.008em;
+  color: #5b698e;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body .desc p .number {
+  color: #161e34;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-body .title {
+  margin-top: 24px;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-footer {
+  /* border: unset;
+  padding: 0; */
+  /* display: flex; */
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.modal-dialog.warning-modal .modal-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: unset;
+  max-width: 372px;
+  margin: auto;
+}
+
+.modal-dialog.warning-modal .modal-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: unset;
+  max-width: 672px;
+  margin: auto;
+}
+
+.modal-dialog.warning-modal .modal-content .content-inner {
+  padding: 48px 48px;
+}
+
+.modal-dialog.warning-modal .modal-content .modal-footer button {
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.008em;
+  color: #ffffff;
+  /* background-color: #11d8e2; */
+  border-radius: 8px;
+  /* margin: 0; */
+  /* border: unset; */
+  /* width: 100%; */
+  /* padding: 12px 0; */
+}
 
 /* success modal */
 
@@ -5552,6 +5666,14 @@ input[type='number']::-webkit-inner-spin-button {
   border-radius: 8px;
   border: unset;
   max-width: 372px;
+  margin: auto;
+}
+
+.modal-dialog.success-modal .modal-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: unset;
+  max-width: 672px;
   margin: auto;
 }
 

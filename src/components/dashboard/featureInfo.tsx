@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { Row, Col, Button, Container, Card, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Row, Col, Button, Container, Card, Form, InputGroup, Modal, Alert } from 'react-bootstrap';
 import IctContext from '@/context/ict-context';
 import { useTranslations } from 'next-intl';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -12,13 +12,12 @@ import HomeTransaction from '../home/transfer';
 import { phoneRegex, thousands } from '@/utils/utils';
 import "../../styles/CustomSwitchComponent.css";
 import { useLoading } from '@/context/loading';
-import { Partner } from '@/types/user';
 import OtpInput from '../widget/pinput';
 import Link from 'next/link';
 
 const FeaturedInfo = () => {
   const t = useTranslations('dashboard');
-  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance, setTransaction, setPartner } = useContext(IctContext);
+  const { partner, cardIndex, setCardIndex, partnerBalance, setPartnerBalance, setTransaction } = useContext(IctContext);
   const [show, setShow] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<number>(0);
   const [accountSettings, setAccountSettings] = useState<boolean>(false);
@@ -299,11 +298,12 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const [otp1, setOtp1] = useState(new Array(4).fill(""));
   const [changePhoneRequired, setChangePhoneRequired] = useState<boolean>(false);
   const phoneInputRef = useRef<HTMLInputElement>(null);
+  const [phoneChangeStatus, setPhoneChangeStatus] = useState<boolean>(false);
 
   useEffect(() => {
     setName(partnerBalance?.balanceList[index]?.nickName ?? "");
     setPhone(partner.phone);
-    if(partner.phone===undefined){
+    if (partner.phone === undefined) {
       setIsChecked(true);
     }
   }, [partnerBalance]);
@@ -323,6 +323,8 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const changeCheckSwitch = (val: boolean) => {
     if (val) {
       setPhoneDeActive(true);
+    } else {
+      setPhoneChangeStatus(true);
     }
     // messageGet.run(!isChecked ? partner?.verifiedPhone : "")
   };
@@ -712,6 +714,64 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
             </Button>
           </div>
         </Modal.Footer>
+      </Modal>
+      <Modal
+        show={phoneChangeStatus}
+        onHide={() => setPhoneChangeStatus(false)}
+        dialogClassName='warning-modal'
+        centered
+      >
+        <div className="content-inner">
+          <Modal.Header>
+            <div className="image">
+              <img
+                src={
+                  '/svg/warning.svg'
+                }
+              />
+            </div>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="body-content">
+              <div className="title">
+                <h5>Анхааруулга</h5>
+              </div>
+              <div className="desc">
+
+                <p>
+                  <strong
+                    style={{
+                      padding: '0 3px',
+                      color: "#5B698E"
+                    }}
+                  >
+                    Та {converHidePhone(phone)}   тоот дугаарт орлогын мессеж хүлээн авах үйлчилгээ хаахыг зөвшөөрч байна уу.
+                  </strong>
+                </p>
+                <Alert variant="danger" className={`customAlert mt-4`} style={{ border: "1px solid #FF889E", backgroundColor: "#FF889E1A" }}>
+                  <span style={{ fontSize: "12px", color: "#FF889E" }}>
+                    <li>Нэг удаагийн гүйлгээний дээд хэмжээ 5,000,000₮ байх тул та шилжүүлэх дүнгээ таван саяас доош дүнгээр оруулна уу.</li>
+                    <li>Хэрэв та таван саяас дээш дүнгээр гүйлгээ хийх бол хэсэгчлэн шилжүүлнэ үү.</li>
+                  </span>
+                </Alert>
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Row>
+              <Col>
+                <Button onClick={handleClose} className='w-100' variant='outline-primary' style={{ color: "#4341CC", width: "200px" }}>
+                  Хаах
+                </Button>
+              </Col>
+              <Col>
+                <Button onClick={handleClose} className='w-100' style={{ backgroundColor: "#4341CC", border: "unset" }}>
+                  Зөвшөөрөх
+                </Button>
+              </Col>
+            </Row>
+          </Modal.Footer>
+        </div>
       </Modal>
       {
         alerts.show && (
