@@ -167,7 +167,7 @@ const ForgotPasswordConfirm = () => {
                     </div>
                 </div>
                 <Form className="tw-register" onSubmit={handleSubmit}>
-                    <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                    <OtpInput otp={otp1} setOtp={setOtp1}  />
                     <div className="timer mt-2">
                         {counter === 0 ? (
                             <span className="timer-text" onClick={retryPin}>

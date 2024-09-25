@@ -96,7 +96,7 @@ const PinCodeChange: React.FC<PinCodeChangeProps> = ({ setScreenIndex }) => {
                             {t('crrnt-pincode')}
                         </h5>
                     </div>
-                    <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                    <OtpInput otp={otp1} setOtp={setOtp1} />
                     <>
                         <div className="label-title mt-2">
                             <h5
@@ -107,7 +107,7 @@ const PinCodeChange: React.FC<PinCodeChangeProps> = ({ setScreenIndex }) => {
                                 {t('new-pin')}
                             </h5>
                         </div>
-                        <OtpInput otp={otp2} setOtp={setOtp2} type="number" />
+                        <OtpInput otp={otp2} setOtp={setOtp2} />
                         <div className="label-title mt-2">
                             <h5
                                 style={{
@@ -117,7 +117,7 @@ const PinCodeChange: React.FC<PinCodeChangeProps> = ({ setScreenIndex }) => {
                                 {t('repeat-new')}
                             </h5>
                         </div>
-                        <OtpInput otp={otp3} setOtp={setOtp3} type="number" />
+                        <OtpInput otp={otp3} setOtp={setOtp3} />
                     </>
                     <div className="settings-buttons mt-10">
                         <div className="buttons-inner">

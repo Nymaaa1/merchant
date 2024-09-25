@@ -803,7 +803,7 @@ const HomeTransaction = () => {
                         <div className="auto-transfer-buttons">
                             <div className="buttons-inner">
                                 <Row className="g-2">
-                                    <Col xs={12} lg={6} md={12} xl={12} sm={6}>
+                                    <Col xs={12} lg={6} md={12} xl={6} sm={12}>
                                         <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('user')}>
                                             <Image
                                                 className="ml-2"
@@ -819,7 +819,7 @@ const HomeTransaction = () => {
                                             </Col>
                                         </Button>
                                     </Col>
-                                    <Col xs={12} lg={6} md={12} xl={12} sm={6}>
+                                    <Col xs={12} lg={6} md={12} xl={6} sm={12}>
                                         <Button variant="outline-primary" className="d-flex justify-content-center align-items-center gap-1" onClick={() => handleDownload('company')}>
                                             <Image
                                                 className="ml-2"

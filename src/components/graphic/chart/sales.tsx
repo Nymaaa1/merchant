@@ -89,7 +89,6 @@ const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
                         </Row>
                     </div>
                 </Col>
-                {/* </Col> */}
             </div>
         </div>
     );

@@ -1,62 +1,93 @@
 "use client"
 import authService from "@/service/api";
-import { Banner, BannerResponse } from "@/types";
+import { BannerResponse } from "@/types";
 import { useRequest } from "ahooks";
-import Image from "next/image";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Carousel, Col, Container, Row } from "react-bootstrap";
 
 interface RootLayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<RootLayoutProps>) {
-    const [banner, setBanner] = useState<BannerResponse>({ code: "", info: "", intCode: 0, result: [] });
+  const [banner, setBanner] = useState<BannerResponse>({ code: "", info: "", intCode: 0, result: [] });
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const pathName = usePathname();
 
-    useEffect(() => {
-        if (banner.result.length === 0) {
-            bannerAction.run();
+  useEffect(() => {
+    if (banner.result.length === 0) {
+      bannerAction.run();
+    }
+  }, [banner]);
+
+  const bannerAction = useRequest(authService.getBanner, {
+    manual: true,
+    onSuccess: async (data) => {
+      setBanner(data);
+    },
+  });
+
+  const renderCustomIndicators = () => (
+    <div className="custom-indicators">
+      {banner.result.map((_img, index) => (
+        <span
+          key={index}
+          className={`indicator-dot ${index === activeIndex ? "active animate" : ""}`}
+          onClick={() => handleSelect(index)}
+        />
+      ))}
+    </div>
+  );
+
+  const handleSelect = (selectedIndex: number) => {
+    setActiveIndex(selectedIndex);
+  };
+
+  return (
+    <Container fluid>
+      <Row className="tw-form">
+        {pathName !== "/auth/faq" && pathName !== "/auth/help" ?
+          <Col
+            className="tw-image-section"
+            xs={7}
+            xl={7}
+            xxl={7}
+            style={{
+              backgroundImage: `url("/login/Bg.png")`,
+              height: '100vh',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+            }}
+          >
+            <Carousel
+              wrap={false}
+              interval={3000}
+              prevIcon={""}
+              fade={false}
+              nextIcon={""}
+              indicators={false}
+              onSelect={handleSelect}
+              activeIndex={activeIndex}
+            >
+              {banner.result.map((img, index) => (
+                <Carousel.Item key={index}>
+                  <img
+                    src={img.imageUrl}
+                    alt={`Slide ${index + 1}`}
+                    style={{ width: '100%', height: '100vh', objectFit: 'cover' }}
+                  />
+                </Carousel.Item>
+              ))}
+            </Carousel>
+            {renderCustomIndicators()}
+          </Col> : <></>
         }
-    }, [banner]);
+        {children}
+      </Row>
+    </Container>
 
-    const bannerAction = useRequest(authService.getBanner, {
-        manual: true,
-        onSuccess: async (data) => {
-            setBanner(data);
-        },
-    });
-    return (
-        <Container fluid>
-  <Row className="tw-form">
-    <Col
-      className="tw-image-section"
-      xs={7} // Ensures it's always 7 columns wide on extra small screens and larger
-      xl={7}
-      xxl={7}
-      style={{
-        backgroundImage: `url("/login/Bg.png")`,
-        height: '100vh',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-      }}
-    >
-      <Carousel>
-        {banner.result.map((img, index) => (
-          <Carousel.Item key={index}>
-            <img
-              src={img.imageUrl}
-              alt={`Slide ${index + 1}`}
-              style={{ width: '100%', height: '100vh', objectFit: 'cover' }}
-            />
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    </Col>
-    {children}
-  </Row>
-</Container>
-
-    );
+  );
 }
 

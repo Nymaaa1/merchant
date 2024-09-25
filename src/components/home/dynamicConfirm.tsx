@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     Col,
     Row,
@@ -30,17 +30,27 @@ type ReponseProps = {
 
 const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
     const t = useTranslations('account');
+    const router = useRouter();
+    const { setLoading } = useLoading();
     const { partner, cardIndex, partnerBalance, transferInfo, setTransaction, setPartnerBalance } = useContext(IctContext);
     const [otp1, setOtp1] = useState(new Array(4).fill(""));
     const [otp2, setOtp2] = useState(new Array(4).fill(""));
-    const { setLoading } = useLoading();
     const [checked, setChecked] = useState<number>(0);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
     const [response, setResponse] = useState<ReponseProps>({ success: false, message: "", info: "" });
     const [show, setShow] = useState<boolean>(false);
     const [counter, setCounter] = useState<number>(60);
-    const router = useRouter();
+    const [otpCheck, setOtpCheck] = useState<boolean>(false);
+    const [tokenPassword, setTokenPassword] = useState<string>("");
+
+    useEffect(() => {
+        if (otp2.join("").length === 4) {
+            postOTPCode.run(otp2.join(""));
+        } else {
+            setOtpCheck(false);
+        }
+    }, [otp2]);
 
     const handleBack = () => {
         setShow(true);
@@ -112,39 +122,15 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
         },
         manual: true,
         onSuccess: async (data) => {
-            const body: TransferToMonpayModel = transferInfo.type === "candy" ? {
-                srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
-                dstSrc: transferInfo?.monpay?.phoneNumber,
-                amount: transferInfo?.monpay?.amount,
-                description: transferInfo?.monpay?.description,
-                pin: otp1.join(""),
-                passwordToken: data.result.passwordToken,
-            } : transferInfo.type === "merchant" ? {
-                srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
-                dstSrc: transferInfo?.merchant?.phoneNumber,
-                amount: transferInfo?.merchant?.amount,
-                description: transferInfo?.merchant?.description,
-                pin: otp1.join(""),
-                passwordToken: data.result.passwordToken,
-            } :
-                {
-                    srcAccountNo: "",
-                    dstSrc: "",
-                    amount: "",
-                    description: "",
-                    pin: otp1.join(""),
-                    passwordToken: data.result.passwordToken,
-                }
+            setOtpCheck(true);
+            setTokenPassword(data.result.passwordToken);
             setLoading(false);
-            transferToMonpay.run(body);
         },
         onError: (e) => {
             setLoading(false);
-            setChecked(0);
             setOtp2(new Array(4).fill(""));
             setShow(true);
             setResponse({ message: e.message, success: false, info: e.message });
-            // setAlert({ show: true, message: e.message });
         },
     })
 
@@ -160,6 +146,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
             setResponse({ message: data.result.message, success: true, info: data.result.info });
         },
         onError: (e) => {
+            setTokenPassword("");
             setChecked(0);
             setLoading(false);
             setAlert({ show: true, message: e.message });
@@ -195,19 +182,40 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
         } else {
             event.preventDefault();
             setShowPaymentPassword(true);
-            //show -------->
-            // postOTPCode.run(otp2.join(""));
         }
     };
 
     const handleTransfer = () => {
         setShowPaymentPassword(false);
-        postOTPCode.run(otp2.join(""));
+        const body: TransferToMonpayModel = transferInfo.type === "candy" ? {
+            srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
+            dstSrc: transferInfo?.monpay?.phoneNumber,
+            amount: transferInfo?.monpay?.amount,
+            description: transferInfo?.monpay?.description,
+            pin: otp1.join(""),
+            passwordToken: tokenPassword,
+        } : transferInfo.type === "merchant" ? {
+            srcAccountNo: partnerBalance.balanceList[cardIndex].accountNo,
+            dstSrc: transferInfo?.merchant?.phoneNumber,
+            amount: transferInfo?.merchant?.amount,
+            description: transferInfo?.merchant?.description,
+            pin: otp1.join(""),
+            passwordToken: tokenPassword,
+        } :
+            {
+                srcAccountNo: "",
+                dstSrc: "",
+                amount: "",
+                description: "",
+                pin: otp1.join(""),
+                passwordToken: tokenPassword,
+            }
+        transferToMonpay.run(body);
     }
 
     const handleClose = () => {
         setShow(false);
-        // formreset?.current?.reset();
+        window.location.reload();
         if (response.success) {
             router.push('/app/dashboard');
         }
@@ -376,7 +384,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                             <div className="label-title" style={{ paddingTop: "40px", paddingBottom: "10px" }}>
                                                                 <h5>Бид таны {converHidePhone(partner?.verifiedPhone)} дугаарт кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу</h5>
                                                             </div>
-                                                            <OtpInput otp={otp2} setOtp={setOtp2} type="number" />
+                                                            <OtpInput otp={otp2} setOtp={setOtp2} />
                                                             <div className="timer mt-3">
                                                                 {counter === 0 ? (
                                                                     <span className="timer-text" onClick={retryPin}>
@@ -394,7 +402,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                                                                     <Button onClick={(e) => setChecked(0)}>
                                                                         Буцах
                                                                     </Button>
-                                                                    <Button variant="primary" type="submit">
+                                                                    <Button variant="primary" type="submit" disabled={!otpCheck}>
                                                                         Шилжүүлэх
                                                                     </Button>
                                                                 </div>
@@ -476,7 +484,7 @@ const DynamicConfirm: React.FC<DynamicConfirmProps> = ({ setConfirmation }) => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="d-flex justify-content-center align-items-center">
-                        <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                        <OtpInput otp={otp1} setOtp={setOtp1} />
                     </div>
                     <div className="d-flex justify-content-end p-0 mt-2">
                         <Link style={{ marginRight: "20px", fontSize: "13px", color: "#8089AC" }} href="/app/settings">Нууц үг сэргээх</Link>

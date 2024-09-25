@@ -10,11 +10,6 @@ const TopbarNoLogin: React.FC<TopbarProps> = () => {
     return (
         <div className="Topbar">
             <div className="top-left-side">
-                <div className="mobile-logo">
-                    <Link href="/">
-                        <Image src="/logo/monpay-logo.png" alt='' width={100} height={100} />
-                    </Link>
-                </div>
                 <div className="topbar-inner">
                     <div className="image ">
                         <Image src={"/logo/monpay-logo.png"} alt='' width={150} height={50} />

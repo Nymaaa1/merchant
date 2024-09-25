@@ -165,7 +165,7 @@ const ProfileRecoverTransactionPass = () => {
                                     Бид таны {converHidePhone(partner?.verifiedPhone)} дугаарт нууц үг сэргээх кодыг илгээсэн. Баталгаажуулах кодоо оруулна уу
                                 </h5>
                             </div>
-                            <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+                            <OtpInput otp={otp1} setOtp={setOtp1} />
                             <div
                                 className="tw-single-button"
                                 style={{ paddingBottom: '10px' }}

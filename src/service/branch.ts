@@ -22,22 +22,15 @@ class ApiError extends Error {
 
 namespace authBranchService {
 
+    //token
     export const hasBranchToken = () => !!Cookies.get(tokenKey);
 
     export const getBranchToken = () => Cookies.get(tokenKey);
 
-    export const getBranch = () => Cookies.get("branch");
-
     export const remBranchToken = () => Cookies.remove(tokenKey);
 
-    export const remoBranch = () => Cookies.remove("branch");
-
-    export const setBranch = (branch: string, token: string) => {
-        localStorage.setItem('branch', branch);
-        Cookies.set(tokenKey, token, { expires: 12 });
-        localStorage.setItem('branchToken', token);
-        Cookies.set("branch", branch);
-        localStorage.setItem("branchRole", "branch");
+    export const setBranchToken = (token: string) => {
+        Cookies.set(tokenKey, token, { expires: 1 });
     };
 
     export const getBanks = async (): Promise<BanksResponse> => {

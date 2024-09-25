@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Row, Col, Button, Container, Card, Form, InputGroup, Modal } from 'react-bootstrap';
 import IctContext from '@/context/ict-context';
 import { useTranslations } from 'next-intl';
@@ -26,10 +26,11 @@ const FeaturedInfo = () => {
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
   useEffect(() => {
-    if (partnerBalance.balanceList.length === 0) {
+    if (partnerBalance.balanceList.length === 0 && partner) {
+      console.log('called = ' + partner?.profileId)
       balanceAction.run(partner?.profileId);
     }
-  }, [partnerBalance]);
+  }, [partnerBalance, partner]);
 
   const balanceAction = useRequest(authService.getBalance, {
     manual: true,
@@ -288,27 +289,42 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const { setLoading } = useLoading();
   const { partner, cardIndex, partnerBalance, setPartnerBalance, setPartner } = useContext(IctContext);
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [phoneDeActive, setPhoneDeActive] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);
   const [response, setResponse] = useState({ success: false, info: "" });
   const [otp1, setOtp1] = useState(new Array(4).fill(""));
+  const [changePhoneRequired, setChangePhoneRequired] = useState<boolean>(false);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setName(partnerBalance?.balanceList[index]?.nickName ?? "");
     setPhone(partner.phone);
+    if(partner.phone===undefined){
+      setIsChecked(true);
+    }
   }, [partnerBalance]);
 
+  useEffect(() => {
+    if (changePhoneRequired) {
+      phoneInputRef.current?.focus();
+    }
+  }, [changePhoneRequired]);
+
   const converHidePhone = (val: string) => {
-    return val.length > 4
-      ? val.substring(0, 2) + '***' + val.substring(5)
+    return val?.length > 4
+      ? val?.substring(0, 2) + '***' + val?.substring(5)
       : val;
   }
 
-  const changeCheckSwitch = () => {
-    messageGet.run(!isChecked ? partner?.verifiedPhone : "")
+  const changeCheckSwitch = (val: boolean) => {
+    if (val) {
+      setPhoneDeActive(true);
+    }
+    // messageGet.run(!isChecked ? partner?.verifiedPhone : "")
   };
 
   const messageGet = useRequest(authService.messageGet, {
@@ -317,12 +333,15 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
     },
     manual: true,
     onSuccess: async (data) => {
+      setPartner({ ...partner, phone: data.result.phone });
+      setPhone(data.result.phone);
       setLoading(false);
       setIsChecked(!isChecked);
     },
     onError: (e) => {
       setLoading(false);
-      setAlert({ show: true, message: e.message });
+      setShow(true);
+      setResponse({ info: e.message, success: false });
     }
   });
 
@@ -365,9 +384,10 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
     manual: true,
     onSuccess: async (data) => {
       setResponse({ success: true, info: data.info });
-      setPartner({ ...partner, phone: data.result.phone });
+      setPartner({ ...partner, phone: data.result.phone, verifiedPhone: data.result.verifiedPhone });
       setLoading(false);
       setShow(true);
+      alert(JSON.stringify(data));
     },
     onError: (e) => {
       setResponse({ success: false, info: e.message });
@@ -398,6 +418,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const handleClose = () => {
     setShow(false);
     if (response.success) {
+      setResponse({ info: '', success: false });
       balanceAction.run(partner?.profileId);
     }
   };
@@ -424,61 +445,119 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
                     className="custom-placeholder"
                   />
                 </Col>
-                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => changeNameAction()}>
+                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => { changeNameAction() }}>
                   Хадгалах
                 </Col>
               </Form.Group>
             </div>
-            <div className="person-title mt-2">
-              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
-                Мессеж үйлчилгээг хаах / нээх
-              </h5>
-            </div>
-            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
-              <Form.Group as={Row} controlId="customSwitch">
-                <Col sm={9}>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    type="text"
-                    name="lastname"
-                    placeholder={converHidePhone(partner?.phone)}
-                    style={{ paddingLeft: "10px", fontSize: "13px" }}
-                    className="custom-placeholder"
-                  />
-                </Col>
-                <Col sm={3} className="d-flex justify-content-end align-items-center">
-                  <label className="switch">
-                    <input type="checkbox" checked={isChecked} onChange={changeCheckSwitch} />
-                    <span className="slider round"></span>
-                  </label>
-                </Col>
-              </Form.Group>
-            </div>
-            <div className="person-title mt-2">
-              <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
-                Мессеж дугаар солих
-              </h5>
-            </div>
-            <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
-              <Form.Group as={Row} controlId="customSwitch">
-                <Col sm={9}>
-                  <Form.Control
-                    maxLength={8}
-                    plaintext
-                    type="number"
-                    name="lastname"
-                    value={phone}
-                    style={{ paddingLeft: "10px", fontSize: "13px" }}
-                    className="custom-placeholder"
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </Col>
-                <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => { setShowPaymentPassword(!showPaymentPassword); setOtp1(new Array(4).fill("")) }}>
-                  Хадгалах
-                </Col>
-              </Form.Group>
-            </div>
+            {phone !== "" && phone !== undefined ?
+              <>
+                <div className="person-title mt-2">
+                  <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                    Мессеж үйлчилгээг хаах / нээх
+                  </h5>
+                </div>
+                <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+                  <Form.Group as={Row} controlId="customSwitch">
+                    <Col sm={9}>
+                      <Form.Control
+                        plaintext
+                        readOnly
+                        type="text"
+                        name="lastname"
+                        placeholder={converHidePhone(phone)}
+                        style={{ paddingLeft: "10px", fontSize: "13px" }}
+                        className="custom-placeholder"
+                      />
+                    </Col>
+                    <Col sm={3} className="d-flex justify-content-end align-items-center">
+                      <label className="switch">
+                        <input type="checkbox" checked={isChecked} onChange={() => changeCheckSwitch(false)} />
+                        <span className="slider round"></span>
+                      </label>
+                    </Col>
+                  </Form.Group>
+                </div>
+                <div className="person-title mt-2">
+                  <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                    Мессеж дугаар солих
+                  </h5>
+                </div>
+                <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px' }}>
+                  <Form.Group as={Row} controlId="customSwitch">
+                    <Col sm={9}>
+                      <Form.Control
+                        maxLength={8}
+                        plaintext
+                        type="number"
+                        name="lastname"
+                        disabled={!changePhoneRequired}
+                        value={phone + "1"}
+                        style={{ paddingLeft: "10px", fontSize: "13px" }}
+                        className="custom-placeholder"
+                        onChange={(e) => setPhone(e.target.value)}
+                        ref={phoneInputRef}
+                      />
+                    </Col>
+                    <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#4341CC" }} onClick={() => { changePhoneRequired ? (phoneRegex.test(phone) ? (setShowPaymentPassword(!showPaymentPassword), setOtp1(new Array(4).fill(""))) : setAlert({ message: "Дугаар оруулна уу.", show: true })) : (setChangePhoneRequired(!changePhoneRequired)) }}>
+                      {changePhoneRequired ? "Хадгалах" : "Засах"}
+                    </Col>
+                  </Form.Group>
+                </div>
+              </>
+              : <>
+                <div className="person-title mt-2">
+                  <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                    Мессеж үйлчилгээг хаах / нээх
+                  </h5>
+                </div>
+                <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px', backgroundColor: "#D1D5E433" }}>
+                  <Form.Group as={Row} controlId="customSwitch" >
+                    <Col sm={9}>
+                      <Form.Control
+                        plaintext
+                        readOnly
+                        disabled={true}
+                        // type="text"
+                        name="lastname"
+                        value="Бүртгэл байхгүй"
+                        style={{ paddingLeft: "10px", fontSize: "13px", color: "#5B698E80" }}
+                        className="custom-placeholder"
+                      />
+                    </Col>
+                    <Col sm={3} className="d-flex justify-content-end align-items-center">
+                      <label className="switch">
+                        <input type="checkbox" checked={isChecked} onChange={() => changeCheckSwitch(true)} />
+                        <span className="slider round"></span>
+                      </label>
+                    </Col>
+                  </Form.Group>
+                </div>
+                <div className="person-title mt-2">
+                  <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
+                    Мессеж дугаар солих
+                  </h5>
+                </div>
+                <div style={{ padding: '8px', border: '1px solid #e5e5e5', borderRadius: '8px', backgroundColor: "#D1D5E433" }}>
+                  <Form.Group as={Row} controlId="customSwitch">
+                    <Col sm={9}>
+                      <Form.Control
+                        plaintext
+                        readOnly
+                        name="lastname"
+                        disabled={true}
+                        value={"Бүртгэл байхгүй"}
+                        style={{ paddingLeft: "10px", fontSize: "13px", color: "#5B698E80" }}
+                        className="custom-placeholder"
+                      />
+                    </Col>
+                    <Col sm={3} className="d-flex justify-content-end align-items-center" style={{ color: "#5B698E33", fontSize: "13px" }} onClick={() => { changePhoneRequired ? (phoneRegex.test(phone) ? (setShowPaymentPassword(!showPaymentPassword), setOtp1(new Array(4).fill(""))) : setAlert({ message: "Дугаар оруулна уу.", show: true })) : (setChangePhoneRequired(!changePhoneRequired)) }}>
+                      Хадгалах
+                    </Col>
+                  </Form.Group>
+                </div>
+              </>
+            }
           </> : <>
             <div className="person-title mt-10" >
               <h5 style={{ fontSize: "13px", color: "#5B698E" }}>Дансны нэр</h5>
@@ -518,7 +597,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
         </Modal.Header>
         <Modal.Body>
           <div className="d-flex justify-content-center align-items-center">
-            <OtpInput otp={otp1} setOtp={setOtp1} type="number" />
+            <OtpInput otp={otp1} setOtp={setOtp1} />
           </div>
           <div className="d-flex justify-content-end p-0 mt-2">
             <Link style={{ fontSize: "13px", color: "#8089AC", paddingRight: "20px" }} href="/app/settings">Нууц үг сэргээх</Link>
@@ -586,9 +665,59 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
           </Modal.Footer>
         </div>
       </Modal>
-      {alerts.show && (
-        <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />
-      )}
+      <Modal
+        show={phoneDeActive}
+        onHide={() => setPhoneDeActive(false)}
+        dialogClassName="save-templates"
+        centered
+      >
+        <Modal.Header closeButton className="d-flex justify-content-between align-items-center">
+          <div className="header-title">
+            <h5 style={{ fontSize: "14px" }}>Гүйлгээний пин кодоо оруулна уу</h5>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group as={Row} controlId="customSwitch">
+            <Col sm={9}>
+              <Form.Control
+                plaintext
+                readOnly
+                type="text"
+                name="lastname"
+                placeholder={converHidePhone(partner?.phone)}
+                style={{ paddingLeft: "10px", fontSize: "13px" }}
+                className="custom-placeholder"
+              />
+            </Col>
+            <Col sm={3} className="d-flex justify-content-end align-items-center">
+              <label className="switch">
+                <input type="checkbox" checked={isChecked} onChange={() => changeCheckSwitch(false)} />
+                <span className="slider round"></span>
+              </label>
+            </Col>
+          </Form.Group>
+          <div className="d-flex justify-content-center align-items-center">
+            <OtpInput otp={otp1} setOtp={setOtp1} />
+          </div>
+          <div className="d-flex justify-content-end p-0 mt-2">
+            <Link style={{ fontSize: "13px", color: "#8089AC", paddingRight: "20px" }} href="/app/settings">Нууц үг сэргээх</Link>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className='mt-0 pt-0'>
+          <div className="tw-single-button">
+            <Button
+              onClick={() => { if (otp1.join("").length === 4) { changePhoneAction() } }}
+            >
+              Хадгалах
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
+      {
+        alerts.show && (
+          <FailNotification show={alerts.show} infos={alerts.message} close={closeNotification} />
+        )
+      }
     </>
   )
 };

@@ -68,7 +68,7 @@ const Control = () => {
                         <div
                             className="control"
                             style={{
-                                marginTop:"10px",
+                                marginTop: "10px",
                                 margin: 'auto',
                                 paddingRight: "20px",
                                 paddingLeft: "20px"
@@ -95,7 +95,7 @@ const Control = () => {
                                                 <li>Хүү, Урьдчилгаа, Шимтгэлгүй</li>
                                                 <li>2-6 хуваан төлөх боломжтой</li>
                                             </ul>
-                                            
+
                                         </div>
                                     </Col>
                                     <Col xl={3} xs={12} lg={3}>

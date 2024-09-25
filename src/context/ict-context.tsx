@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import jsCookie from 'js-cookie';
 import { useRouter, usePathname } from 'next/navigation';
 import { Branch, Partner } from '@/types/user';
@@ -106,7 +106,7 @@ interface IctProviderProps {
 
 export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const [userRole, setUserRole] = useState<"branch" | "partner" | "">("");
-    const [loginType, setLoginType] = useState<string>("");
+    const [loginType, setLoginType] = useState<string>("creater");
     const [tableHideAbout, setTableHideAbout] = useState<boolean>(false);
     const [partner, setPartner] = useState<Partner>({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
     const [cardIndex, setCardIndex] = useState<number>(0);
@@ -159,86 +159,77 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    React.useEffect(() => {
-        const partnerToken = localStorage.getItem('partnerToken');
-        const partnerData = localStorage.getItem('partner');
-        const branchToken = localStorage.getItem("branchToken");
-        const branchData = localStorage.getItem("branch");
-        const branchRole = localStorage.getItem("branchRole");
-        const partnerRole = localStorage.getItem("partnerRole");
-        const convertData = localStorage.getItem('partner');
-        let data: Partner = { profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, };
-        if (convertData) {
-            data = JSON?.parse(convertData);
+    useEffect(() => {
+        if (authService.hasToken()) { fetch(); };
+    }, []);
+
+    const fetch = async () => {
+        try {
+            console.log("call")
+            await _profile.run();
+        } catch (error) {
+            console.error(error);
         }
-        if (pathname?.match("/(app)/")) {
-            if (partnerData && partnerToken && partnerRole && data.profileId !== 0) {
-                setUserRole("partner");
-                balanceAction.run(data.profileId);
-                recentAction.run(data.profileId, params);
-                setPartner(data);
-                authService.setPartner(partnerData, partnerToken);
-            } else if (branchToken && branchData && branchRole) {
-                authBranchService.setBranch(branchData, branchToken);
-                setBranch(JSON.parse(branchData));
-                router.push("/branch/dashboard");
-                setUserRole("branch");
+    };
+
+    const _profile = useRequest(authService.getUserInfo, {
+        manual: true,
+        onSuccess: (data) => {
+            setPartner(data.result);
+            setUserRole("partner");
+        },
+        onError: (err) => {
+            // setLogout();
+            router.push("/auth/login");
+        },
+    });
+
+    useEffect(() => { //here branch token check
+        // alert(pathname)
+        if (!authService.hasToken()) {
+            router.push("/auth/login");
+        } else if (pathname?.match("/(app)/")) {
+            // alert("here--"+pathname)
+            if (partner && userRole === "partner") {
+
+                // return;
+            } else if (branch && userRole === "branch") {
+                // return;
             } else {
                 router.push("/auth/login");
             }
         } else if (pathname?.match("/(branch)/")) {
-            if (partnerData && partnerToken && partnerRole) {
-                setUserRole("partner");
-                setPartner(JSON.parse(partnerData));
-                authService.setPartner(partnerData, partnerToken);
+            if (partner && userRole === "partner") {
                 router.push("/app/dashboard");
-            } else if (branchToken && branchData && branchRole) {
-                authBranchService.setBranch(branchData, branchToken);
-                setBranch(JSON.parse(branchData));
-                setUserRole("branch");
+            } else if (branch && userRole === "branch") {
+                return;
             } else {
                 router.push("/auth/login");
-            }
-        } else if (pathname?.match('(login|new|forgot-password|success|request)')) {
-            if (partnerData && partnerToken && partnerRole) {
-                router.push("/app/dashboard");
-            } else if (branchToken && branchData && branchRole) {
-                router.push("/branch/dashboard");
-            }
-        } else if (pathname === "/") {
-            if (partnerData && partnerToken && partnerRole) {
-                setUserRole("partner");
-                setPartner(JSON.parse(partnerData));
-                authService.setPartner(partnerData, partnerToken);
-                router.push("/app/dashboard");
-            } else if (branchToken && branchData && branchRole) {
-                authBranchService.setBranch(branchData, branchToken);
-                setBranch(JSON.parse(branchData));
-                setUserRole("branch");
-                router.push("/branch/dashboard");
-            } else {
-                router.push("/auth/login");
-                setLogout();
             }
         }
-    }, [pathname]);
-
-    const balanceAction = useRequest(authService.getBalance, {
-        manual: true,
-        onSuccess: async (data) => {
-            setPartnerBalance(data);
-        },
-    });
-
-    const recentAction = useRequest(authService.getRecent, {
-        manual: true,
-        onSuccess: async (data) => {
-            setTransaction(data);
-        },
-    });
+        else if (pathname?.match('(login|new|forgot-password|success|request)')) {
+            if (partner && userRole === "partner") {
+                router.push("/app/dashboard");
+            } else if (branch && userRole === "branch") {
+                router.push("/branch/dashboard");
+            }
+        }
+        else if (pathname === "/") {
+            alert("use taht")
+            console.log("run why?2");
+            if (partner && authService.hasToken() && userRole === "partner") {
+                router.push("/app/dashboard");
+            } else if (branch && authBranchService.hasBranchToken() && userRole === "branch") {
+                router.push("/branch/dashboard");
+            } else {
+                console.log("run why?");
+                router.push("/auth/login");
+            }
+        }
+    }, [partner, userRole, branch]);
 
     const setLogout = () => {
-        setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
+        setPartner({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, });
         setBranch({ name: "", profileId: 0, phone: "", username: "", accountIdMerch: 0, branchType: '', branchId: 0, hasPinCode: false });
         setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
         setCardIndex(0);
@@ -246,17 +237,14 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         setLoginType("creater");
         clear();
         setUserRole("");
+        authService.remToken();
+        authBranchService.remBranchToken();
+        authService.remRole();
         setParams({ offset: 0, limit: 20, pagingStart: 0, maxPage: 1, beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'), endDate: dayjs().format('YYYY-MM-DD') });
         router.push('/auth/login');
     };
 
     const clear = () => {
-        localStorage.removeItem('branchToken');
-        localStorage.removeItem('branch');
-        localStorage.removeItem("partner");
-        localStorage.removeItem("partnerRole");
-        localStorage.removeItem("partner");
-        localStorage.removeItem("branchRole");
         jsCookie.remove('partnerToken');
         jsCookie.remove('partner');
         jsCookie.remove('branch');

@@ -48,15 +48,30 @@ const Topbar: React.FC<TopbarProps> = ({ name, logo }) => {
 
                             <Dropdown.Menu className="information">
                                 <li className="text-muted mb-2">Тохиргоо</li>
-                                <Dropdown.Item className="d-flex align-items-center mr-8" href='/app/settings'>
-                                    <img src="/icon-user.svg" alt="User Icon" />
-                                    <span className='ml-3' style={{ color: "#5B698E" }}>Мерчант мэдээлэл</span>
+                                <Dropdown.Item className="d-flex align-items-center mr-8">
+                                    <Link href="/app/settings">
+                                        <Row g-0 className='g-0'>
+                                            <Col>
+                                                <img src="/icon-user.svg" alt="User Icon" />
+                                            </Col>
+                                            <Col>
+                                                <span className='ml-3' style={{ color: "#5B698E" }}>Мерчант мэдээлэл</span>
+                                            </Col>
+                                        </Row>
+                                    </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Divider style={{ color: "#5B698E" }} />
-                                <Dropdown.Item className="d-flex align-items-center"
-                                    href="/app/settings">
-                                    <img src="/svg/app-icon-password.svg" alt="User Icon" />
-                                    <span className='ml-3' style={{ color: "#5B698E" }}>Нууц үг солих</span>
+                                <Dropdown.Item className="d-flex align-items-center">
+                                    <Link href="/app/settings">
+                                        <Row g-0 className='g-0'>
+                                            <Col>
+                                                <img src="/svg/app-icon-password.svg" alt="User Icon" />
+                                            </Col>
+                                            <Col>
+                                                <span className='ml-3' style={{ color: "#5B698E" }}>Нууц үг солих</span>
+                                            </Col>
+                                        </Row>
+                                    </Link>
                                 </Dropdown.Item >
                             </Dropdown.Menu>
                         </Dropdown>

@@ -1,12 +1,11 @@
 "use client";
 
-import { LoginResult } from "@/types/user";
+import { LoginResult, Partner } from "@/types/user";
 import Cookies from "js-cookie";
-import { Banner, BannerResponse, BaseResponse, ChangePhoneResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
+import { BannerResponse, BaseResponse, ChangePhoneResponse, GraphicAgeResponse, TransactionListResponse } from "@/types";
 import { BalanceResult } from "@/types/user/balance";
 import { BanksResponse } from "@/types/bank";
 import { DistrictGraphicResponse, GenderGraphicResponse, SalesGraphic, SalesPartnerGraphic } from "@/types/demo";
-import { TransactionBranchListResponse } from "@/types/branch";
 export const tokenKey = "partnerToken";
 
 class ApiError extends Error {
@@ -22,24 +21,39 @@ class ApiError extends Error {
 }
 
 namespace authService {
-
+    //token
     export const hasToken = () => !!Cookies.get(tokenKey);
 
     export const getToken = () => Cookies.get(tokenKey);
 
-    export const getPartner = () => Cookies.get("partner");
-
     export const remToken = () => Cookies.remove(tokenKey);
 
-    export const remoPartner = () => Cookies.remove("partner");
-
-    export const setPartner = (partner: string, token: string) => {
-        localStorage.setItem('partner', partner);
-        Cookies.set(tokenKey, token, { expires: 12 });
-        localStorage.setItem(tokenKey, token);
-        Cookies.set("partner", partner);
-        localStorage.setItem("partnerRole", "partner");
+    export const setToken = (token: string) => {
+        Cookies.set(tokenKey, token, { expires: 1 });
     };
+
+    //role
+    export const getRole = () => Cookies.get("role");
+
+    export const remRole = () => Cookies.remove("role");
+
+    export const setRole = (role: string) => {
+        Cookies.set("role", role, { expires: 1 });
+    }
+
+    // export const setPartner = (partner: string, token: string) => {
+    //     localStorage.setItem('partner', partner);
+    //     Cookies.set(tokenKey, token, { expires: 12 });
+    //     localStorage.setItem(tokenKey, token);
+    //     Cookies.set("partner", partner);
+    //     localStorage.setItem("partnerRole", "partner");
+    // };
+
+    // export const setPartnerData = (partner: string) => {
+    //     localStorage.setItem('partner', partner);
+    //     Cookies.set("partner", partner);
+    //     localStorage.setItem("partnerRole", "partner");
+    // };
 
     export const getBalance = async (profileId: number): Promise<BalanceResult> => {
         return new Promise(async (resolve, reject) => {
@@ -627,7 +641,7 @@ namespace authService {
         });
     };
 
-    export const messageGet = async (phoneNumber: string): Promise<DefaultResponse> => {
+    export const messageGet = async (phoneNumber: string): Promise<BaseResponse<Partner>> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/email', {
@@ -635,7 +649,7 @@ namespace authService {
                     headers: { Authorization: `Bearer ${getToken()}`, },
                     body: JSON.stringify({ "phone": phoneNumber })
                 });
-                const data: DefaultResponse = await response.json();
+                const data: BaseResponse<Partner> = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {
@@ -686,6 +700,30 @@ namespace authService {
                     body: JSON.stringify({ "phone": phone })
                 });
                 const data: BaseResponse<ChangePhoneResponse> = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getUserInfo = async (): Promise<BaseResponse<Partner>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/name', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${getToken()}`, },
+                });
+                const data: BaseResponse<Partner> = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

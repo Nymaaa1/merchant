@@ -1,30 +1,18 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type OtpPinPutProps = {
-    type: string;
     otp: string[];
-    setOtp: Function;
-}
-const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
-    // const [otp, setOtp] = useState(new Array(4).fill(""));
-    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-    const [inputType, setInputType] = useState(type);
+    setOtp: (otp: string[]) => void;
+};
 
-    // useEffect(() => {
-    //     let timer: NodeJS.Timeout | undefined;
-    //     if (isPassword) {
-    //         timer = setTimeout(() => {
-    //             setIsPassword(false);
-    //         }, 1000);
-    //     }
-    //     return () => clearTimeout(timer);
-    // }, [isPassword]);
+const OtpInput: React.FC<OtpPinPutProps> = ({ otp, setOtp }) => {
+    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    const [inputTypes, setInputTypes] = useState<string[]>(new Array(otp.length).fill("text"));
 
     const handleFocus = (index: number) => {
         setFocusedIndex(index);
     };
-
 
     const handleBlur = () => {
         setFocusedIndex(null);
@@ -32,14 +20,38 @@ const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
 
     const handleChange = (element: HTMLInputElement, index: number) => {
         const value = element.value;
+
         if (!isNaN(Number(value)) && value.length <= 1) {
+            if (value === "") {
+                setTimeout(() => {
+                    const newInputTypes = [...inputTypes];
+                    newInputTypes[index] = "text";
+                    setInputTypes(newInputTypes);
+                }, 300);
+            } else {
+                
+                setTimeout(() => {
+                    if (newOtp[index]) {
+                        const newInputTypes = [...inputTypes];
+                        newInputTypes[index] = "password";
+                        setInputTypes(newInputTypes);
+                    }
+                }, 300);
+                // alert("-" + inputTypes[index]);
+            }
+
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
+
             if (value !== "" && index < otp.length - 1) {
                 const nextInput = element.nextSibling as HTMLInputElement;
                 nextInput?.focus();
             }
+        } else if (value === "") {
+            const newOtp = [...otp];
+            newOtp[index] = "";
+            setOtp(newOtp);
         }
     };
 
@@ -57,7 +69,8 @@ const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
                 const borderColor = focusedIndex === index ? "#4341CC" : "#D1D5E4";
                 return (
                     <input
-                        type={inputType}
+                        // type={inputTypes[index]} 
+                        type='text'
                         key={index}
                         value={data}
                         required
@@ -79,7 +92,7 @@ const OtpInput: React.FC<OtpPinPutProps> = ({ type, otp, setOtp }) => {
                             marginRight: "8px",
                         }}
                     />
-                )
+                );
             })}
         </div>
     );

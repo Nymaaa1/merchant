@@ -79,103 +79,92 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Container fluid>
-            <Row className="tw-form">
-                <Col
-                    className="tw-image-section d-none d-xl-flex"
-                    style={{
-                        backgroundImage: `url("/login/Bg.png")`,
-                    }}
-                    xl={7}
-                    xxl={7}
-                >
+        <>
 
-                </Col>
-                <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
-                    <div className="tw-logo-title">
-                        <Link href="/">
-                            <div>
-                                <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
-                            </div>
-                        </Link>
-                        <div className="tw-form-title">
-                            <span>{t('title')}</span>
+            <Col className="tw-login-form" xl={5} xxl={5} xs={12}>
+                <div className="tw-logo-title">
+                    <Link href="/">
+                        <div>
+                            <Image src="/logo/monpay-logo.png" width={185} height={45} alt={''} />
+                        </div>
+                    </Link>
+                    <div className="tw-form-title">
+                        <span>{t('title')}</span>
+                    </div>
+                </div>
+                <Form
+                    ref={ref}
+                    className="tw-register"
+                    noValidate
+                    validated={validated}
+                    onSubmit={handleSubmit}
+                >
+                    <Form.Group>
+                        <InputGroup hasValidation>
+                            <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
+                            <Form.Control
+                                required
+                                name="comname"
+                                type="text"
+                                className="tw-input tw-phone"
+                                placeholder={t('name')}
+                                maxLength={100}
+                                autoComplete="off"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Нэр / Байгууллагын нэр оруулна уу!
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                        <InputGroup hasValidation>
+                            <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
+                            <Form.Control
+                                required
+                                name="phone"
+                                type="text"
+                                className="tw-input tw-phone"
+                                placeholder={t('phone')}
+                                onKeyPress={(event) => {
+                                    if (isNaN(Number(event.key))) event.preventDefault();
+                                }}
+                                maxLength={8}
+                                pattern="[1-9]{1}[0-9]{7}"
+                                autoComplete="off"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Утасны дугаар оруулна уу!
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                        <InputGroup hasValidation>
+                            <InputGroup.Text
+                                className="password"
+                                id="inputGroupPrepend"
+                            ></InputGroup.Text>
+                            <Form.Control
+                                required
+                                name="email"
+                                type='text'
+                                className="tw-input tw-password"
+                                placeholder={t('email')}
+                                autoComplete="off"
+                            />
+
+                            <Form.Control.Feedback type="invalid">
+                                И-Мэйл хаяг оруулна уу!
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                    </Form.Group>
+                    <div className="tw-form-buttons">
+                        <div className="tw-top-button">
+                            <Button type="submit">{t('button')}</Button>
+                        </div>
+                        <div className="tw-bottom-button">
+                            <Link href="/auth/login">
+                                <Button type="submit">Буцах</Button>
+                            </Link>
                         </div>
                     </div>
-                    <Form
-                        ref={ref}
-                        className="tw-register"
-                        noValidate
-                        validated={validated}
-                        onSubmit={handleSubmit}
-                    >
-                        <Form.Group>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
-                                <Form.Control
-                                    required
-                                    name="comname"
-                                    type="text"
-                                    className="tw-input tw-phone"
-                                    placeholder={t('name')}
-                                    maxLength={100}
-                                    autoComplete="off"
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Нэр / Байгууллагын нэр оруулна уу!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
-                                <Form.Control
-                                    required
-                                    name="phone"
-                                    type="text"
-                                    className="tw-input tw-phone"
-                                    placeholder={t('phone')}
-                                    onKeyPress={(event) => {
-                                        if (isNaN(Number(event.key))) event.preventDefault();
-                                    }}
-                                    maxLength={8}
-                                    pattern="[1-9]{1}[0-9]{7}"
-                                    autoComplete="off"
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Утасны дугаар оруулна уу!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text
-                                    className="password"
-                                    id="inputGroupPrepend"
-                                ></InputGroup.Text>
-                                <Form.Control
-                                    required
-                                    name="email"
-                                    type='text'
-                                    className="tw-input tw-password"
-                                    placeholder={t('email')}
-                                    autoComplete="off"
-                                />
-
-                                <Form.Control.Feedback type="invalid">
-                                    И-Мэйл хаяг оруулна уу!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-                        </Form.Group>
-                        <div className="tw-form-buttons">
-                            <div className="tw-top-button">
-                                <Button type="submit">{t('button')}</Button>
-                            </div>
-                            <div className="tw-bottom-button">
-                                <Link href="/auth/login">
-                                    <Button type="submit">Буцах</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </Form>
-                </Col>
-            </Row>
+                </Form>
+            </Col>
             {alerts.show && (
                 <FailNotification
                     show={alerts.show}
@@ -234,7 +223,7 @@ const Login: React.FC = () => {
                     </Modal.Footer>
                 </div>
             </Modal>
-        </Container>
+        </>
     );
 };
 

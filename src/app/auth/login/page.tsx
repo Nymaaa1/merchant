@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState, FormEvent, useRef, useEffect } from 'react';
+import React, { useContext, useState, FormEvent, useRef } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup, Tabs, Tab } from 'react-bootstrap';
 import Link from 'next/link';
 import IctContext from '@/context/ict-context';
@@ -16,18 +16,12 @@ import { useLoading } from "@/context/loading";
 const Login: React.FC = () => {
     const t = useTranslations('login');
     const ref = useRef<HTMLFormElement>(null)
-    const { setPartner, setBranch, setUserRole, setLoginType, loginType } = useContext(IctContext);
+    const { setPartner, setBranch, setUserRole, setLoginType, loginType, userRole, partner } = useContext(IctContext);
     const [passwordShown, setPasswordShown] = useState(false);
     const [validated, setValidated] = useState(false);
     const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
     const router = useRouter();
     const { setLoading, setColor } = useLoading();
-
-    useEffect(() => {
-        if (!loginType) {
-            setLoginType("creater");
-        }
-    }, []);
 
     const togglePasswordVisibility = () => {
         setPasswordShown(!passwordShown);
@@ -41,7 +35,7 @@ const Login: React.FC = () => {
         onSuccess: async (data) => {
             setPartner(data.result.partner);
             setUserRole("partner");
-            authService.setPartner(JSON.stringify(data.result.partner), data.result.token);
+            authService.setToken(data.result.token);
             setLoading(false);
             router.push("/app/dashboard");
         },
@@ -60,8 +54,8 @@ const Login: React.FC = () => {
         manual: true,
         onSuccess: async (data) => {
             setBranch(data.result.branch);
+            authBranchService.setBranchToken(data.result.token);
             setUserRole("branch");
-            authBranchService.setBranch(JSON.stringify(data.result.branch), data.result.token);
             setLoading(false);
             router.push("/branch/dashboard");
         },
