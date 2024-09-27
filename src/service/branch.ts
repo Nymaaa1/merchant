@@ -1,8 +1,8 @@
 "use client";
 
-import { BranchResponse, LoginResult } from "@/types/user";
+import { BranchResponse } from "@/types/user";
 import Cookies from "js-cookie";
-import { BaseResponse, TransactionListResponse } from "@/types";
+import { BaseResponse } from "@/types";
 import { BanksResponse } from "@/types/bank";
 import { BranchBalance, ChangePasswordBranchModel, TransactionBranchListResponse } from "@/types/branch";
 export const tokenKey = "branchToken";
@@ -188,7 +188,7 @@ namespace authBranchService {
         });
     };
 
-    export const changePassword = (body: ChangePasswordModel): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
+    export const changePassword = (body: any): Promise<BaseResponse<PostPasswordRecoverResponse>> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/branch/password/new', {
@@ -226,6 +226,56 @@ namespace authBranchService {
                     body: JSON.stringify(body),
                 });
                 const data: DefaultResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+
+    export const getHelpList = async (): Promise<HelpResponse> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/help', {
+                    method: 'GET'
+                });
+                const data: HelpResponse = await response.json();
+                if (!response.ok) {
+                    reject(new ApiError(data.info, response.status, data));
+                } else {
+                    resolve(data);
+                }
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+                } else {
+                    console.error('Unexpected Error:', error);
+                }
+                reject(error);
+            }
+        });
+    };
+
+    export const getUserInfo = async (): Promise<BaseResponse<BranchResponse>> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/branch/info', {
+                    headers: {
+                        Authorization: `Bearer ${getBranchToken()}`,
+                    },
+                    method: 'GET'
+                });
+                const data: BaseResponse<BranchResponse> = await response.json();
                 if (!response.ok) {
                     reject(new ApiError(data.info, response.status, data));
                 } else {

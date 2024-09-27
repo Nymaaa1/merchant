@@ -34,7 +34,6 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
   const [typeDate, setTypeDate] = useState<ChooseTypeProps[]>([{ name: "Жилээр", en: "annual" }, { name: "Сараар", en: "monthly" }, { name: "7 хоног", en: "weekly" }]);
   const [typeUser, setTypeUser] = useState<ChooseTypeProps[]>([{ name: "Хэрэглэгчийн тоо", en: "user" }, { name: "Гүйлгээний тоо", en: "transaction" }, { name: "Мөнгөн дүн", en: "amount" }]);
   const [tableDataType, setTableDataType] = useState<string>("amount");
-  const [axisValue, setAxisValue] = useState<string[]>([]);
   const [chartData, setChartData] = useState<ChartData>({
     series: [
       {
@@ -175,7 +174,7 @@ const SalesDataChart: React.FC<SalesDataChartProps> = ({ sales, type, handleChan
               value={type}
               name="bankCode"
               style={{ fontSize: "10px" }}
-              onChange={(e) => { handleChange(e.target.value); alert(e.target.value) }}
+              onChange={(e) => { handleChange(e.target.value); }}
             >
               {typeDate?.map((data, index) => {
                 return (

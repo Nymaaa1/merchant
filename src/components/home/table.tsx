@@ -24,30 +24,30 @@ const HomeTable = () => {
 
     useEffect(() => {
         setColor("#4341CC");
-        if (cardIndex === 0 && transaction?.result?.length === 0) {
+        if (cardIndex === 0 && transaction?.result?.length === 0 && partnerBalance?.balanceList[0]?.accountId !== undefined) {
             setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
-            recentAction.run(partner?.profileId, params);
-        } else if (transaction?.result?.length === 0) {
+            getPartnerDetialTransaction.run(partnerBalance?.balanceList[0]?.accountId, params);
+        } else if (transaction?.result?.length === 0 && partnerBalance?.balanceList[0]?.accountId !== undefined) {
             setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
         }
-    }, [cardIndex]);
+    }, [cardIndex, partnerBalance]);
 
-    const recentAction = useRequest(authService.getRecent, {
-        onBefore: () => {
-            setLoading(true);
-        },
-        manual: true,
-        onSuccess: async (data) => {
-            setTransaction(data);
-        },
-        onError: (e) => {
-            setAlert({ show: true, message: e.message });
-        },
-        onFinally: () => {
-            setLoading(false)
-        }
-    });
+    // const recentAction = useRequest(authService.getRecent, {
+    //     onBefore: () => {
+    //         setLoading(true);
+    //     },
+    //     manual: true,
+    //     onSuccess: async (data) => {
+    //         setTransaction(data);
+    //     },
+    //     onError: (e) => {
+    //         setAlert({ show: true, message: e.message });
+    //     },
+    //     onFinally: () => {
+    //         setLoading(false)
+    //     }
+    // });
 
     const getBranchTableData = useRequest(authService.getBranchTableData, {
         onBefore: () => {
@@ -109,24 +109,6 @@ const HomeTable = () => {
         } else {
             setTransaction({ code: 0, info: "", result: [], offset: 0, limit: 0, total: 0, paging: { count: 0, start: 0, size: 0, maxPage: 0 } });
             getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-        }
-    };
-
-    const changeDateRange = (value: [Date, Date] | null) => {
-        if (value && value[0] && value[1]) {
-            setParams({
-                limit: 20,
-                offset: params.offset,
-                maxPage: params.maxPage,
-                pagingStart: 0,
-                beginDate: format(value[0], 'yyyy-MM-dd'),
-                endDate: format(value[1], 'yyyy-MM-dd'),
-            });
-            if (cardIndex === 0) {
-                getPartnerDetialTransaction.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-            } else {
-                getBranchTableData.run(partnerBalance.balanceList[cardIndex]?.accountId, params);
-            }
         }
     };
 
@@ -249,6 +231,7 @@ const HomeTable = () => {
                                 <Tab.Pane eventKey="0">
                                     <div className="tabs-header ">
                                         <Table
+                                            key={"table-1`"}
                                             className="transaction-history"
                                             responsive="sm"
                                         >
@@ -320,6 +303,7 @@ const HomeTable = () => {
                                 <Tab.Pane eventKey="1">
                                     <div className="tabs-header ">
                                         <Table
+                                            key={"table-1`"}
                                             className="transaction-history"
                                             responsive="sm"
                                         >
@@ -392,6 +376,7 @@ const HomeTable = () => {
                                 <Tab.Pane eventKey="2">
                                     <div className="tabs-header ">
                                         <Table
+                                            key={"table-1`"}
                                             className="transaction-history"
                                             responsive="sm"
                                         >
@@ -410,7 +395,31 @@ const HomeTable = () => {
                                                         <tbody key={i}>
                                                             <tr>
                                                                 <td>
-                                                                    <h5>{cat.description}</h5>
+                                                                    <span>
+                                                                        {formatDate(cat.date)}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>
+                                                                        {tableHideAbout ? cat.amount
+                                                                            .toString()
+                                                                            .replace(
+                                                                                /\B(?=(\d{3})+(?!\d))/g,
+                                                                                ','
+                                                                            ) : '*'.repeat(cat.amount.toString().length)} ₮
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span style={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center",
+                                                                        gap: "5px",
+                                                                        height: "24px",
+                                                                    }}>
+                                                                        <Image src={"/logo/logo.png"} alt="Toggle password visibility" width={16} height={16} />
+                                                                        {tableHideAbout ? cat.coopAccountNo : "********"}
+                                                                    </span>
                                                                 </td>
                                                                 <td>
                                                                     <span
@@ -428,24 +437,7 @@ const HomeTable = () => {
                                                                     </span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>
-                                                                        {tableHideAbout ? cat.amount
-                                                                            .toString()
-                                                                            .replace(
-                                                                                /\B(?=(\d{3})+(?!\d))/g,
-                                                                                ','
-                                                                            ) : '*'.repeat(cat.amount.toString().length)} ₮
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>
-                                                                        {tableHideAbout ? cat.coopAccountNo : "********"}
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>
-                                                                        {formatDate(cat.date)}
-                                                                    </span>
+                                                                    <h5>{cat.description}</h5>
                                                                 </td>
                                                             </tr>
                                                         </tbody>

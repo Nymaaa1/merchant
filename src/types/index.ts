@@ -56,7 +56,7 @@ export interface DeleteConfirm {
 }
 
 export interface Banner {
-  imageUrl: string;
+  url: string;
 }
 
 export interface BannerResponse {

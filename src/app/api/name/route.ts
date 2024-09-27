@@ -52,7 +52,6 @@ export async function POST(request: Request): Promise<NextResponse> {
             config
         );
         const data = res.data;
-        console.log(data)
         if (res.status === 200) return NextResponse.json(data, { status: 200 });
         else return NextResponse.json(
             { info: 'Unexpected status code' },
@@ -86,7 +85,6 @@ export async function GET(request: Request): Promise<NextResponse> {
             config
         );
         const data = res.data;
-        console.log(data)
         if (res.status === 200) return NextResponse.json(data, { status: 200 });
         else return NextResponse.json(
             { info: 'Unexpected status code' },

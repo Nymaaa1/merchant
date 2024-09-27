@@ -21,7 +21,7 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'monpaycontent.blob.ub.cloud.mobinet.mn',
                 port: '',
-                pathname: '/images/**',
+                pathname: '/**',
             },
         ],
     },

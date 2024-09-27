@@ -40,7 +40,7 @@ const TodeySales: React.FC<SalesDataProps> = ({ briefinfo }) => {
             .replace(
                 /\B(?=(\d{3})+(?!\d))/g,
                 ','
-            )} сая`,
+            )} ₮`,
         url: "Борлуулалтын дүн",
         video: "#DCFCE7"
     }, {

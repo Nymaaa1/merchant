@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
-import { Col, Nav, Tab, Table, Alert, Form, Pagination, Button, Row } from "react-bootstrap";
+import { Col, Nav, Tab, Table, Pagination, Button, Row } from "react-bootstrap";
 import { useRequest } from "ahooks";
 import FailNotification from "../notification/fail-notif";
 import authBranchService from "@/service/branch";
@@ -9,12 +9,13 @@ import { TransactionBranchListResponse } from "@/types/branch";
 import Image from "next/image";
 import React from "react";
 import IctContext from "@/context/ict-context";
-import { DateRangePicker } from "rsuite";
+// import { DateRangePicker } from "rsuite";
 import 'rsuite/DateRangePicker/styles/index.css';
 import { format } from 'date-fns';
 import { useLoading } from "@/context/loading";
 import { excelDownload } from "@/utils/excel";
 import Switch from "../widget/switch";
+import DatePickerModel from "../widget/date";
 
 const BranchTable = () => {
     const { setLoading, setColor } = useLoading();
@@ -32,17 +33,41 @@ const BranchTable = () => {
         endDate: dayjs().format('YYYY-MM-DD'),
     });
 
-    const changeDateRange = (value: [Date, Date] | null) => {
-        if (value && value[0] && value[1]) {
-            setParams((params) => ({
-                ...params,
-                pagingStart: 0,
-                beginDate: format(value[0], 'yyyy-MM-dd'),
-                endDate: format(value[1], 'yyyy-MM-dd'),
-            }));
-            recentAction.run(branch?.accountIdMerch, params);
-        }
-    };
+    // const changeDateRange = (value: [Date, Date] | null) => {
+    //     if (value && value[0] && value[1]) {
+    //         setParams((params) => ({
+    //             ...params,
+    //             pagingStart: 0,
+    //             beginDate: format(value[0], 'yyyy-MM-dd'),
+    //             endDate: format(value[1], 'yyyy-MM-dd'),
+    //         }));
+    //         recentAction.run(branch?.accountIdMerch, params);
+    //     }
+    // };
+
+    const changeBeginDate = (value: Date) => {
+        setParams({
+            limit: 20,
+            offset: params.offset,
+            maxPage: params.maxPage,
+            pagingStart: 0,
+            beginDate: format(value, 'yyyy-MM-dd'),
+            endDate: params.endDate,
+        });
+        recentAction.run(branch?.accountIdMerch, params);
+    }
+
+    const changeEndDate = (value: Date) => {
+        setParams({
+            limit: 20,
+            offset: params.offset,
+            maxPage: params.maxPage,
+            pagingStart: 0,
+            beginDate: params.beginDate,
+            endDate: format(value, 'yyyy-MM-dd'),
+        });
+        recentAction.run(branch?.accountIdMerch, params);
+    }
 
     useEffect(() => {
         setColor("#4341CC");
@@ -145,14 +170,9 @@ const BranchTable = () => {
                                         </Nav.Link>
                                     </Nav.Item>
                                     <div className="date-graphic">
-                                        <div className="content" style={{ height: "48px" }}>
-                                            <DateRangePicker
-                                                className="custom-date-range-picker"
-                                                value={[beginDate, endDate]}
-                                                disabled={false}
-                                                placement="autoVerticalEnd"
-                                                onChange={changeDateRange}
-                                            />
+                                        <div className="content d-flex justify-content-between align-items-center" style={{ height: "48px" }}>
+                                            <DatePickerModel selectedDate={beginDate} setSelectedDate={changeBeginDate} />
+                                            <DatePickerModel selectedDate={endDate} setSelectedDate={changeEndDate} />
                                         </div>
                                         <div className="item d-flex justify-content-center align-items-center" style={{ width: "155px", height: "48px", }}>
                                             <Row className="d-flex justify-content-between align-items-center g-0 m-0 p-0">

@@ -25,8 +25,7 @@ const FeaturedInfo = () => {
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
 
   useEffect(() => {
-    if (partnerBalance.balanceList.length === 0 && partner) {
-      console.log('called = ' + partner?.profileId)
+    if (partnerBalance.balanceList.length === 0 && partner.profileId !== 0) {
       balanceAction.run(partner?.profileId);
     }
   }, [partnerBalance, partner]);
@@ -290,6 +289,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const [showPaymentPassword, setShowPaymentPassword] = useState<boolean>(false);
   const [phoneDeActive, setPhoneDeActive] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [changePhoneOtp, setChangePhoneOtp] = useState<boolean>(false);
   const [alerts, setAlert] = useState<Alert>({ show: false, message: "" });
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -299,12 +299,13 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
   const [changePhoneRequired, setChangePhoneRequired] = useState<boolean>(false);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const [phoneChangeStatus, setPhoneChangeStatus] = useState<boolean>(false);
+  const [userChangePhone, setUserChangePhone] = useState<string>("");
 
   useEffect(() => {
     setName(partnerBalance?.balanceList[index]?.nickName ?? "");
     setPhone(partner.phone);
     if (partner.phone === undefined) {
-      setIsChecked(true);
+      setIsChecked(false);
     }
   }, [partnerBalance]);
 
@@ -322,12 +323,25 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
 
   const changeCheckSwitch = (val: boolean) => {
     if (val) {
+      setUserChangePhone("");
+      setChangePhoneOtp(false);
+      setOtp1(new Array(4).fill(""));
       setPhoneDeActive(true);
     } else {
       setPhoneChangeStatus(true);
     }
     // messageGet.run(!isChecked ? partner?.verifiedPhone : "")
   };
+
+  const changeMessageStatusToggle = (val: boolean) => {
+    if (val) {
+      setPhoneDeActive(false);
+      messageGet.run(userChangePhone, otp1.join(""), partnerBalance.balanceList[0].accountNo);
+    } else {
+      setPhoneChangeStatus(false);
+      messageGet.run("", otp1.join(""), partnerBalance.balanceList[0].accountNo);
+    }
+  }
 
   const messageGet = useRequest(authService.messageGet, {
     onBefore: () => {
@@ -452,7 +466,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
                 </Col>
               </Form.Group>
             </div>
-            {phone !== "" && phone !== undefined ?
+            {phone !== undefined ?
               <>
                 <div className="person-title mt-2">
                   <h5 style={{ fontSize: "13px", color: "#5B698E" }}>
@@ -467,7 +481,8 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
                         readOnly
                         type="text"
                         name="lastname"
-                        placeholder={converHidePhone(phone)}
+                        placeholder={phone}
+                        value={converHidePhone(phone)}
                         style={{ paddingLeft: "10px", fontSize: "13px" }}
                         className="custom-placeholder"
                       />
@@ -679,36 +694,48 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
           </div>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group as={Row} controlId="customSwitch">
-            <Col sm={9}>
-              <Form.Control
-                plaintext
-                readOnly
-                type="text"
-                name="lastname"
-                placeholder={converHidePhone(partner?.phone)}
-                style={{ paddingLeft: "10px", fontSize: "13px" }}
-                className="custom-placeholder"
-              />
-            </Col>
-            <Col sm={3} className="d-flex justify-content-end align-items-center">
-              <label className="switch">
-                <input type="checkbox" checked={isChecked} onChange={() => changeCheckSwitch(false)} />
-                <span className="slider round"></span>
-              </label>
-            </Col>
-          </Form.Group>
-          <div className="d-flex justify-content-center align-items-center">
-            <OtpInput otp={otp1} setOtp={setOtp1} />
-          </div>
-          <div className="d-flex justify-content-end p-0 mt-2">
-            <Link style={{ fontSize: "13px", color: "#8089AC", paddingRight: "20px" }} href="/app/settings">Нууц үг сэргээх</Link>
-          </div>
+          {!changePhoneOtp ?
+            <div className='monpayGroupText' style={{ fontFamily: "Code Next", marginLeft: "22px", marginRight: "22px", marginBottom: "30px" }}>
+              <InputGroup hasValidation>
+                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
+                <Form.Control
+                  required
+                  name="comname"
+                  type="number"
+                  className="tw-input tw-phone"
+                  placeholder="Дугаар бичих"
+                  value={userChangePhone}
+                  onChange={(e) => setUserChangePhone(e.target.value)}
+                  maxLength={8}
+                  autoComplete="off"
+                  style={{ fontFamily: "Code Next", fontSize: "13px" }}
+                  onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (e.target.value.length > 8) {
+                      e.target.value = e.target.value.slice(0, 8);
+                    }
+                  }}
+                />
+              </InputGroup>
+            </div> :
+            <>
+              <div className="d-flex justify-content-center align-items-center">
+                <OtpInput otp={otp1} setOtp={setOtp1} />
+              </div>
+              <div className="d-flex justify-content-end p-0 mt-2">
+                <Link style={{ fontSize: "13px", color: "#8089AC", paddingRight: "20px" }} href="/app/settings">Нууц үг сэргээх</Link>
+              </div>
+            </>
+          }
         </Modal.Body>
         <Modal.Footer className='mt-0 pt-0'>
           <div className="tw-single-button">
             <Button
-              onClick={() => { if (otp1.join("").length === 4) { changePhoneAction() } }}
+              onClick={() => {
+                if (!changePhoneOtp && userChangePhone.length === 8) {
+                  setChangePhoneOtp(true);
+                }
+                if (otp1.join("").length === 4) { changeMessageStatusToggle(true) }
+              }}
             >
               Хадгалах
             </Button>
@@ -732,7 +759,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
             </div>
           </Modal.Header>
           <Modal.Body>
-            <div className="body-content">
+            <div className="body-content mb-10">
               <div className="title">
                 <h5>Анхааруулга</h5>
               </div>
@@ -758,18 +785,25 @@ const AccountInfo: React.FC<AccountInfoProps> = ({ index }) => {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Row>
-              <Col>
-                <Button onClick={handleClose} className='w-100' variant='outline-primary' style={{ color: "#4341CC", width: "200px" }}>
+            <div className="card-button-warning">
+              <div className="buttons-inner-warning">
+                <Button
+                  className="custom-button"
+                  style={{ minWidth: "200px" }}
+                  onClick={() => setPhoneChangeStatus(false)}
+                  variant='outline-primary'
+                >
                   Хаах
                 </Button>
-              </Col>
-              <Col>
-                <Button onClick={handleClose} className='w-100' style={{ backgroundColor: "#4341CC", border: "unset" }}>
+                <Button
+                  className="custom-button"
+                  style={{ minWidth: "200px" }}
+                  onClick={() => changeMessageStatusToggle(false)}
+                >
                   Зөвшөөрөх
                 </Button>
-              </Col>
-            </Row>
+              </div>
+            </div>
           </Modal.Footer>
         </div>
       </Modal>

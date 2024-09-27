@@ -3244,9 +3244,9 @@ strong {
   align-items: center;
   display: flex;
   justify-content: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
+  /* background-repeat: no-repeat; */
+  background-size: fill;
+  /* background-position: center center; */
 }
 
 .tw-form .tw-login-form .tw-logo-title {
@@ -5462,6 +5462,7 @@ input[type='number']::-webkit-inner-spin-button {
   justify-content: center;
   margin-right: 4px;
 }
+
 /* warning modal */
 
 
@@ -5536,8 +5537,8 @@ input[type='number']::-webkit-inner-spin-button {
   /* border: unset;
   padding: 0; */
   /* display: flex; */
-  justify-content: center;
-  margin-top: 24px;
+  /* justify-content: center;
+  margin-top: 24px; */
 }
 
 .modal-dialog.warning-modal .modal-content {
@@ -5561,16 +5562,16 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .modal-dialog.warning-modal .modal-content .modal-footer button {
-  font-family: 'Code Next';
+  /* font-family: 'Code Next';
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 24px;
   text-align: center;
   letter-spacing: -0.008em;
-  color: #ffffff;
+  color: #ffffff; */
   /* background-color: #11d8e2; */
-  border-radius: 8px;
+  /* border-radius: 8px; */
   /* margin: 0; */
   /* border: unset; */
   /* width: 100%; */
@@ -6404,6 +6405,38 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .card-buttons .buttons-inner button {
+  height: 48px;
+  padding: 12px 0;
+  width: 100%;
+  border-color: #4341CC;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: 'Code Next';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: -0.024em;
+}
+
+
+.card-button-warning {
+  padding-top: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.card-button-warning .buttons-inner-warning {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-button-warning .buttons-inner-warning button {
   height: 48px;
   padding: 12px 0;
   width: 100%;
@@ -13001,4 +13034,33 @@ header .mp-header-button ul li {
   font-size: 32px;
   font-weight: bold;
   line-height: 1;
+}
+
+.monpayGroupText .input-group-text {
+  background-color: #ffffff;
+  padding: 0;
+  border: unset;
+}
+
+.monpayGroupText .input-group-text::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-image: url(/svg/app-icon-mobile.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 16px;
+  z-index: 999;
+}
+
+.custom-button {
+  min-width: 200px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #4341CC;
+  color: white;
+  border-color: #4341CC;
 }

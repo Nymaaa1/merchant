@@ -108,25 +108,7 @@ const ForgotNewPassword = () => {
             setLoading(false);
             setAlert({ show: true, message: e.message });
         }
-    })
-
-    const branchOTPAction = useRequest(authBranchService.changePassword, {
-        onBefore: () => {
-            setLoading(true);
-        },
-        manual: true,
-        onSuccess: async (data) => {
-            setLoading(false);
-            setPasswordRecoverOTP("");
-            jsCookie.remove('passwordToken');
-            jsCookie.remove('phoneAndEmail');
-            router.push('/auth/success');
-        },
-        onError: (e) => {
-            setLoading(false);
-            setAlert({ show: true, message: e.message });
-        }
-    })
+    });
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
@@ -135,7 +117,7 @@ const ForgotNewPassword = () => {
             event.preventDefault();
         } else {
             const body: ChangePasswordModel = {
-                accessType: phoneRegex.test(phoneNumber) ? "PHONE" : "EMAIL",
+                accessType: "PHONE",
                 newPassword: password1,
                 accessValue: phoneNumber,
                 passwordTokenValue: token
@@ -143,7 +125,13 @@ const ForgotNewPassword = () => {
             if (loginType === "creater") {
                 otpAction.run(body);
             } else {
-                branchOTPAction.run(body);
+                const branchBody =
+                {
+                    "type": "BRANCHPHONE",
+                    "accessValue": phoneNumber,
+                    "passwordTokenValue": token
+                }
+                // branchOTPAction.run(branchBody);
             }
         }
     };

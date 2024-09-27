@@ -1,54 +1,30 @@
+"use client";
+import IctContext from '@/context/ict-context';
+import authBranchService from '@/service/branch';
+import { useRequest } from 'ahooks';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 
-type HelpPartnerdata = {
-    image: string,
-    name: string,
-    url: string,
-    phone: string,
-    video: string
-};
-
 const Control = () => {
-    const partnerHelpdata: HelpPartnerdata[] = [{
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }, {
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }, {
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }, {
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }, {
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }, {
-        image: "/logo/smart-logic.png",
-        name: "Смарт ложик",
-        url: "https://smartlogic.mn/",
-        phone: "77019090",
-        video: "/help/video.png"
-    }];
+    const { helpList, setHelpList } = useContext(IctContext);
+    const [isPlay, setIsPlay] = useState(false);
+    const [currentVideo, setCurrentVideo] = useState(0);
+
+    useEffect(() => {
+        if (helpList.result.length === 0) {
+            getHelpList.run();
+        }
+    }, [helpList]);
+
+    const getHelpList = useRequest(authBranchService.getHelpList, {
+        manual: true,
+        onSuccess: async (data) => {
+            setHelpList(data);
+        },
+    });
+
     return (
         <div
             className="control"
@@ -136,12 +112,12 @@ const Control = () => {
                     }}
                 >
                     <Row className="flex-nowrap">
-                        {partnerHelpdata.map((partner, index) => (
+                        {helpList.result.map((partner, index) => (
                             <Col className="p-3" key={index} style={{ display: 'inline-block' }}>
                                 <div
                                     className="transaction-template"
                                     style={{
-                                        minWidth: "288px",
+                                        maxWidth: "288px",
                                         borderRadius: '8px',
                                         padding: '25px',
                                         height: "auto",
@@ -157,9 +133,9 @@ const Control = () => {
                                                 borderRadius: '8px',
                                             }}
                                         >
-                                            <Image
+                                            <img
                                                 className="image2"
-                                                src={partner.image}
+                                                src={partner.logo}
                                                 alt="Bill icon"
                                                 width={40}
                                                 height={40}
@@ -171,15 +147,35 @@ const Control = () => {
                                     </h5>
                                     <div className="d-flex justify-content-start align-items-center gap-2 mt-2">
                                         <Image src={'/help/url.svg'} alt="" width={16} height={16} />
-                                        <Link href={partner.url as unknown as URL}>
-                                            <h5 style={{ color: '#5B698E', fontSize: '14px' }}>{partner.url}</h5>
+                                        <Link href={partner.web as unknown as URL} target="_blank">
+                                            <h5 style={{ color: '#5B698E', fontSize: '14px' }}>{partner.web}</h5>
                                         </Link>
                                     </div>
                                     <div className="d-flex justify-content-start align-items-center gap-2 mt-2">
                                         <Image src={'/help/phone.svg'} alt="" width={16} height={16} />
                                         <h5 style={{ color: '#5B698E', fontSize: '14px' }}>{partner.phone}</h5>
                                     </div>
-                                    <Image width={244} height={137} src={partner.video} alt="" className="mt-4" />
+                                    <div className="mt-4">
+                                        {isPlay && index === currentVideo ? (
+                                            <iframe
+                                                width={237}
+                                                height={137}
+                                                src={partner.videoUrl}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            ></iframe>
+                                        ) : (
+                                            <>
+                                                <Image
+                                                    onClick={() => { setIsPlay(true); setCurrentVideo(index); }}
+                                                    width={244}
+                                                    height={137}
+                                                    src={"/help/video.png"}
+                                                    alt={"b"}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </Col>
                         ))}

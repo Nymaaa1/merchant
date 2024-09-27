@@ -126,15 +126,40 @@ const ForgotPasswordConfirm = () => {
         },
         manual: true,
         onSuccess: async (data) => {
-            setLoading(false);
-            jsCookie.set('passwordToken', data.result.passwordToken);
-            router.push('/auth/new');
+            if (loginType === "creater") {
+                setLoading(false);
+                jsCookie.set('passwordToken', data.result.passwordToken);
+                router.push('/auth/new');
+            } else {
+                const branchBody =
+                {
+                    type: "BRANCHPHONE",
+                    accessValue: phoneEmail,
+                    passwordTokenValue: data.result.passwordToken
+                }
+                branchOTPAction.run(branchBody);
+            }
         },
         onError: (e) => {
             setLoading(false);
             setAlert({ show: true, message: e.message });
         }
-    })
+    });
+
+    const branchOTPAction = useRequest(authBranchService.changePassword, {
+        manual: true,
+        onSuccess: async (data) => {
+            setLoading(false);
+            setPasswordRecoverOTP("");
+            jsCookie.remove('passwordToken');
+            jsCookie.remove('phoneAndEmail');
+            router.push('/auth/success');
+        },
+        onError: (e) => {
+            setLoading(false);
+            setAlert({ show: true, message: e.message });
+        }
+    });
 
     const closeFailNotification = () => {
         setAlert({ message: "", show: false });
@@ -150,6 +175,7 @@ const ForgotPasswordConfirm = () => {
         } else {
             branchOtpAction.run(values);
         }
+        setOtp1(new Array(4).fill(""));
         setCounter(60);
     };
 
@@ -167,7 +193,7 @@ const ForgotPasswordConfirm = () => {
                     </div>
                 </div>
                 <Form className="tw-register" onSubmit={handleSubmit}>
-                    <OtpInput otp={otp1} setOtp={setOtp1}  />
+                    <OtpInput otp={otp1} setOtp={setOtp1} />
                     <div className="timer mt-2">
                         {counter === 0 ? (
                             <span className="timer-text" onClick={retryPin}>

@@ -16,19 +16,20 @@ const BranchTopbar: React.FC<BranchTopbarProps> = ({ name, logo }) => {
 
     return (
         <>
-            <div className="topbar-inner mobile">
+            {/* <div className="topbar-inner mobile">
                 <div className="image">
                     <img src={logo} />
                 </div>
                 <span className="title">{name}</span>
-            </div>
+            </div> */}
             <div className="Topbar">
-                <div className="top-left-side">
-                    <div className="mobile-logo">
-                        <Link href="/#">
-                            <img src="/monpay-mobile-logo.svg" />
-                        </Link>
-                    </div>
+            <div className="top-left-side">
+                    {/* <div className="mobile-logo">
+                        <div className="image">
+                            <img src={logo} />
+                        </div>
+                        <span className="title">{name}</span>
+                    </div> */}
                     <div className="topbar-inner">
                         <div className="image ">
                             <img src={logo} />

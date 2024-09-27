@@ -46,3 +46,18 @@ interface NameChangeBody {
     nickName: string;
     accountNo: string;
 }
+
+type HelpPartnerdata = {
+    name: string,
+    web: string,
+    logo: string,
+    phone: string,
+    videoUrl: string
+};
+
+type HelpResponse = {
+    code: string;
+    intCode: number;
+    info: string;
+    result: HelpPartnerdata[];
+}

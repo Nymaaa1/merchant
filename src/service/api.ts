@@ -80,30 +80,30 @@ namespace authService {
         });
     };
 
-    export const getRecent = async (profileId: number, params: DatePickerModel): Promise<TransactionListResponse> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const response = await fetch('/api/recent', {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${getToken()}`, },
-                    body: JSON.stringify({ "profileId": profileId })
-                });
-                const data: TransactionListResponse = await response.json();
-                if (!response.ok) {
-                    reject(new ApiError(data.info, response.status, data));
-                } else {
-                    resolve(data);
-                }
-            } catch (error) {
-                if (error instanceof ApiError) {
-                    console.error(`API Error [${error.status}]: ${error.message}`, error.data);
-                } else {
-                    console.error('Unexpected Error:', error);
-                }
-                reject(error);
-            }
-        });
-    };
+    // export const getRecent = async (profileId: number, params: DatePickerModel): Promise<TransactionListResponse> => {
+    //     return new Promise(async (resolve, reject) => {
+    //         try {
+    //             const response = await fetch('/api/recent', {
+    //                 method: 'POST',
+    //                 headers: { Authorization: `Bearer ${getToken()}`, },
+    //                 body: JSON.stringify({ "profileId": profileId })
+    //             });
+    //             const data: TransactionListResponse = await response.json();
+    //             if (!response.ok) {
+    //                 reject(new ApiError(data.info, response.status, data));
+    //             } else {
+    //                 resolve(data);
+    //             }
+    //         } catch (error) {
+    //             if (error instanceof ApiError) {
+    //                 console.error(`API Error [${error.status}]: ${error.message}`, error.data);
+    //             } else {
+    //                 console.error('Unexpected Error:', error);
+    //             }
+    //             reject(error);
+    //         }
+    //     });
+    // };
 
     export const profileChangePassword = async (password: string, passwordOld: string): Promise<DefaultResponse> => {
         return new Promise(async (resolve, reject) => {
@@ -641,7 +641,7 @@ namespace authService {
         });
     };
 
-    export const messageGet = async (phoneNumber: string): Promise<BaseResponse<Partner>> => {
+    export const messageGet = async (phoneNumber: string, pin: string, accountNo: string): Promise<BaseResponse<Partner>> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('/api/email', {

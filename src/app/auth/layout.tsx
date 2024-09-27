@@ -50,7 +50,7 @@ export default function RootLayout({
       <Row className="tw-form">
         {pathName !== "/auth/faq" && pathName !== "/auth/help" ?
           <Col
-            className="tw-image-section"
+            className="tw-image-section p-0 m-0"
             xs={7}
             xl={7}
             xxl={7}
@@ -62,6 +62,7 @@ export default function RootLayout({
             }}
           >
             <Carousel
+              className="p-0 m-0"
               wrap={false}
               interval={3000}
               prevIcon={""}
@@ -74,9 +75,10 @@ export default function RootLayout({
               {banner.result.map((img, index) => (
                 <Carousel.Item key={index}>
                   <img
-                    src={img.imageUrl}
+                    className="p-0 m-0"
+                    src={img.url}
                     alt={`Slide ${index + 1}`}
-                    style={{ width: '100%', height: '100vh', objectFit: 'cover' }}
+                    style={{ width: '100%', height: '100vh', objectFit: 'fill' }}
                   />
                 </Carousel.Item>
               ))}

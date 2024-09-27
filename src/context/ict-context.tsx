@@ -25,6 +25,8 @@ interface IctContextProps {
     passwordRecoverOTP: string;
     transferInfo: TransferProps;
     params: DatePickerModel;
+    helpList: HelpResponse;
+    setHelpList: (val: HelpResponse) => void;
     setParams: (val: DatePickerModel) => void;
     setTransaction: (val: TransactionListResponse) => void;
     setTableHideAbout: (val: boolean) => void;
@@ -85,6 +87,8 @@ const IctContext = React.createContext<IctContextProps>({
     },
     loginType: "creater",
     params: { offset: 0, limit: 20, pagingStart: 0, maxPage: 1, beginDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'), endDate: dayjs().format('YYYY-MM-DD') },
+    helpList: { code: "", intCode: 0, info: "", result: [] },
+    setHelpList: () => { },
     setParams: () => { },
     setTransaction: () => { },
     setLoginType: () => { },
@@ -106,6 +110,7 @@ interface IctProviderProps {
 
 export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const [userRole, setUserRole] = useState<"branch" | "partner" | "">("");
+    const [helpList, setHelpList] = useState<HelpResponse>({ code: "", intCode: 0, info: "", result: [] });
     const [loginType, setLoginType] = useState<string>("creater");
     const [tableHideAbout, setTableHideAbout] = useState<boolean>(false);
     const [partner, setPartner] = useState<Partner>({ profileId: 0, profileType: "", phone: "", verifiedPhone: "", email: "", username: "", name: "", register: "", partnerId: 0, hasAccountPin: false, },);
@@ -160,12 +165,15 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
     const pathname = usePathname();
 
     useEffect(() => {
-        if (authService.hasToken()) { fetch(); };
+        if (authService.hasToken()) {
+            fetch();
+        } else if (authBranchService.hasBranchToken()) {
+            _branchProfile.run();
+        }
     }, []);
 
     const fetch = async () => {
         try {
-            console.log("call")
             await _profile.run();
         } catch (error) {
             console.error(error);
@@ -179,19 +187,31 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             setUserRole("partner");
         },
         onError: (err) => {
-            // setLogout();
+            authService.remToken();
+            authService.remRole();
+            router.push("/auth/login");
+        },
+    });
+
+    const _branchProfile = useRequest(authBranchService.getUserInfo, {
+        manual: true,
+        onSuccess: (data) => {
+            setBranch(data.result.branch);
+            setUserRole("branch");
+        },
+        onError: (err) => {
+            authBranchService.remBranchToken();
+            authService.remRole();
             router.push("/auth/login");
         },
     });
 
     useEffect(() => { //here branch token check
-        // alert(pathname)
-        if (!authService.hasToken()) {
+        if (!authService.hasToken() && !authBranchService.hasBranchToken()) {
             router.push("/auth/login");
         } else if (pathname?.match("/(app)/")) {
             // alert("here--"+pathname)
             if (partner && userRole === "partner") {
-
                 // return;
             } else if (branch && userRole === "branch") {
                 // return;
@@ -202,7 +222,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             if (partner && userRole === "partner") {
                 router.push("/app/dashboard");
             } else if (branch && userRole === "branch") {
-                return;
+                // return;
             } else {
                 router.push("/auth/login");
             }
@@ -215,14 +235,11 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
             }
         }
         else if (pathname === "/") {
-            alert("use taht")
-            console.log("run why?2");
             if (partner && authService.hasToken() && userRole === "partner") {
                 router.push("/app/dashboard");
             } else if (branch && authBranchService.hasBranchToken() && userRole === "branch") {
                 router.push("/branch/dashboard");
             } else {
-                console.log("run why?");
                 router.push("/auth/login");
             }
         }
@@ -255,6 +272,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
         <IctContext.Provider
             value={{
                 partner,
+                helpList,
                 params,
                 loginType,
                 branchBalance,
@@ -266,6 +284,7 @@ export const IctProvider: React.FC<IctProviderProps> = (props) => {
                 tableHideAbout,
                 cardIndex,
                 transaction,
+                setHelpList,
                 setParams,
                 setTransaction,
                 setTableHideAbout,
